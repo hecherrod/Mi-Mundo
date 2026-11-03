@@ -50,11 +50,11 @@ td,th{border-color:var(--line)}
 </div><div class="domino-band" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg></div>
 </section>
 <main id="app" hidden>
-<header><h1>Martes de Dominó</h1><p>Versión de prueba · Los datos de juego quedan en este navegador.</p><div class="controls"><label>Fecha de la jornada<input id="day" type="date" required></label><label>Actuar como<select id="actor"></select></label></div><div class="controls" style="margin-top:12px">
-<label id="attendanceChoice">¿Vas a jugar?<select id="selfPlays"><option>Sí</option><option>No</option></select></label>
-<button id="checkIn">Ya llegué · Voy a asistir</button><button id="signOut">Volver a bienvenida</button>
-</div><small id="checkStatus" role="status"></small></header>
-<section><h2>1. Asistencia</h2><form id="arrival"><label>Nombre<input name="player" required maxlength="80"></label><label>¿Va a jugar?<select name="plays"><option>Sí</option><option>No</option></select></label><button>Registrar llegada</button></form><ul id="people"></ul></section>
+<header><h1>Martes de Dominó</h1><p>Versión de prueba · Los datos de juego quedan en este navegador.</p><div class="controls"><label>Fecha de la jornada<input id="day" type="date" required></label><strong id="identity"></strong></div><div class="controls" style="margin-top:12px">
+<button id="signOut">Volver a bienvenida</button>
+</div></header>
+<section><h2>1. Asistencia</h2><div class="controls"><label id="attendanceChoice">¿Vas a jugar?<select id="selfPlays"><option>Sí</option><option>No</option></select></label>
+<button id="checkIn">Ya llegué · Voy a asistir</button></div><small id="checkStatus" role="status"></small><form id="arrival" hidden><label>Nombre<input name="player" required maxlength="80"></label><label>¿Va a jugar?<select name="plays"><option>Sí</option><option>No</option></select></label><button>Registrar llegada</button></form><ul id="people"></ul></section>
 <section><h2>2. Sorteo con fichas</h2><p>Hagan el sorteo en la mesa y anoten aquí las parejas que salieron. Elige primero al capitán.</p><form id="pair"><label>Capitán<select name="captain" required></select></label><label>Compañero<select name="partner" required></select></label><button>Guardar pareja</button></form><ul id="pairs"></ul></section>
 <section><h2>3. Partidas y marcadores</h2><form id="game"><label>Pareja A<select name="a" required></select></label><label>Pareja B<select name="b" required></select></label><button>Anotar cruce</button></form><div id="games"></div></section>
 <section><h2>4. Tabla mensual individual</h2><label>Mes<input id="month" type="month"></label><p>Solo cuentan los marcadores confirmados. Cada ganador recibe 3 puntos si la otra pareja termina en 0, 2 entre 1 y 49, y 1 desde 50.</p><table><thead><tr><th>Jugador</th><th>Partidas confirmadas</th><th>Puntos</th></tr></thead><tbody id="standings"></tbody></table></section>
@@ -81,11 +81,11 @@ function pairName(pair){return pair.join(' / ')}
 function points(score){const loser=Math.min(...score);return loser===0?3:loser<50?2:1}
 function save(){localStorage.setItem(key,JSON.stringify(data));render()}
 function render(){
- const s=session(), players=s.people.filter(p=>p.plays).map(p=>[p.name,p.name]);
- options(by('actor'),[[host,host],...players.filter(([name])=>name!==host)],'Elige quién eres');
+ const s=session(), uniquePeople=[...new Map(s.people.map(p=>[nameKey(p.name),p])).values()], players=uniquePeople.filter(p=>p.plays).map(p=>[p.name,p.name]);
+ by('identity').textContent=participant?'Sesión de '+participant:'Vista de invitado';
  for(const field of ['captain','partner'])options(by('pair').elements[field],players,'Elige jugador');
  for(const field of ['a','b'])options(by('game').elements[field],s.pairs.map((p,i)=>[String(i),pairName(p)]),'Elige pareja');
- by('people').replaceChildren();for(const p of s.people)el('li',p.name+' · '+(p.plays?'Juega':'No juega'),by('people'));
+ by('people').replaceChildren();for(const p of uniquePeople)el('li',p.name+' · '+(p.plays?'Juega':'No juega'),by('people'));
  by('pairs').replaceChildren();for(const p of s.pairs)el('li',pairName(p),by('pairs'));
  by('games').replaceChildren();s.games.forEach((g,i)=>renderGame(s,g,i));
  renderStandings();
@@ -94,9 +94,9 @@ function renderGame(s,g,i){
  const panel=el('article','',by('games'));
  const a=s.pairs[g.a], b=s.pairs[g.b], captains=[a[0],b[0]];
  el('h3',(i+1)+'. '+pairName(a)+' contra '+pairName(b),panel);
- const actor=by('actor').value;
+ const actor=participant;
  if(g.score)el('p',g.score.join(' – ')+' · '+(g.confirmed?'Confirmado · '+points(g.score)+' punto(s) por ganador':'Pendiente · '+g.approvals.length+'/2 capitanes'),panel);
- if(g.confirmed)return;
+ if(g.confirmed||!actor)return;
  if(g.score&&captains.includes(actor)&&!g.approvals.includes(actor)){
   const approve=el('button','Confirmar este marcador',panel);
   approve.onclick=()=>{g.approvals.push(actor);g.confirmed=captains.every(c=>g.approvals.includes(c));save()};
@@ -140,7 +140,10 @@ function renderStandings(){
 function registerArrival(name,plays){
  const s=session();
  const existing=s.people.find(p=>nameKey(p.name)===nameKey(name));
- if(existing)existing.plays=plays;else s.people.push({name,plays});
+ if(existing){
+  existing.plays=plays;
+  s.people=s.people.filter(p=>p===existing||nameKey(p.name)!==nameKey(name));
+ }else s.people.push({name,plays});
  save();
 }
 by('arrival').onsubmit=e=>{
@@ -162,7 +165,6 @@ by('game').onsubmit=e=>{
  if(s.pairs[left].some(p=>s.pairs[right].includes(p)))return alert('Las parejas deben tener cuatro jugadores distintos.');
  s.games.push({a:left,b:right,confirmed:false,approvals:[]});save();
 };
-by('actor').onchange=render;
 by('month').onchange=renderStandings;
 by('day').onchange=()=>{if(!by('day').value){by('day').value=today}by('month').value=by('day').value.slice(0,7);render();renderMedia()};
 const db=new Promise((resolve,reject)=>{
@@ -243,11 +245,13 @@ function enter(name){
  by('welcome').hidden=true;
  by('app').hidden=false;
  by('checkIn').hidden=!name;
+ by('checkIn').textContent='Ya llegué · Voy a asistir';
  by('attendanceChoice').hidden=!name;
- by('checkStatus').textContent=name?'Hola, '+name+'. Marca tu asistencia cuando llegues.':'Entraste como invitado. Registra tu llegada en Asistencia.';
+ for(const id of ['pair','game','record','audio','photos'])by(id).hidden=!name;
+ by('arrival').hidden=name!==host;
+ by('checkStatus').textContent=name?'Hola, '+name+'. Marca tu asistencia cuando llegues.':'Estás viendo la jornada como invitado. Vuelve a bienvenida para registrarte y marcar tu asistencia.';
  by('day').value=localDate();
  by('day').onchange();
- by('actor').value=name??'';
  render();
 }
 by('showLogin').onclick=()=>showAccess(false);
@@ -255,7 +259,6 @@ by('showSignup').onclick=()=>showAccess(true);
 by('guest').onclick=()=>enter(null);
 by('signOut').onclick=()=>{
  participant=null;
- by('actor').value='';
  by('app').hidden=true;
  by('welcome').hidden=false;
  by('access').hidden=true;
@@ -278,6 +281,7 @@ by('access').onsubmit=async e=>{
   const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
   const account=accounts.find(item=>nameKey(item.name)===nameKey(name));
   if(signup){
+   if(nameKey(name)===nameKey(host)){status.textContent='Ese usuario está reservado para el anfitrión.';return}
    if(account){status.textContent='Ese nombre ya está registrado. Usa «Iniciar sesión».';return}
    const salt=Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-');
    const code=Array.from(crypto.getRandomValues(new Uint32Array(4)),n=>n.toString(16).padStart(8,'0')).join('-');
@@ -324,7 +328,7 @@ by('checkIn').onclick=()=>{
  const date=localDate();
  if(by('day').value!==date){by('day').value=date;by('day').onchange()}
  registerArrival(participant,by('selfPlays').value==='Sí');
- by('actor').value=participant;
+ by('checkIn').textContent='Actualizar mi asistencia';
  render();
  by('checkStatus').textContent='Asistencia registrada para el '+date+'.';
 };
