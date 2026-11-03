@@ -35,11 +35,17 @@ td,th{border-color:var(--line)}
 #showRecovery{display:block;margin:22px 0 0;padding:5px 0;background:transparent;border:0;color:#9fb9b6;font-size:.875rem;text-decoration:underline;text-underline-offset:3px}
 #showRecovery:hover{background:transparent;color:var(--neon)}
 .league-links{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}.league-links a{color:var(--neon);border:1px solid var(--line);padding:8px 12px;border-radius:8px}.league-links a[aria-current]{background:#12332e}.admin-jornada{border-top:1px solid var(--line);padding:10px 0}#admin p{margin:6px 0}
+.league-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:620px}.league-cards a{overflow:hidden;border:1px solid var(--line);border-radius:12px;color:var(--neon);text-decoration:none}.league-cards a:hover,.league-cards a:focus-visible{border-color:var(--neon)}.league-cards img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:0}.league-cards strong{display:block;padding:12px}.league-back{color:var(--neon)}#leagueAccess .league-links{display:none}
 </style>
 <section id="welcome">
 <div class="cover"><img alt="Amigos reunidos alrededor de una mesa de dominó" src="portada.jpg"><div class="cover-title"><span class="cover-label">CLUB DE DOMINÓ</span><h1>Martes de Dominó</h1></div></div>
 <div class="domino-band" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg></div><div class="welcome-content">
-<nav class="league-links" aria-label="Ligas"><a href="?liga=ensenada" id="linkEnsenada">Martes de Dominó / Ensenada</a><a href="?liga=todos-santos" id="linkTodos">Martes de Dominó / Todos Santos</a></nav>
+<div id="leaguePicker" hidden><h2>Elige tu liga</h2><div class="league-cards">
+<a href="?liga=ensenada"><img src="portada.jpg" alt=""><strong>Ensenada</strong></a>
+<a href="?liga=los-cabos"><img src="portada-todos-santos.jpg" alt=""><strong>Los Cabos</strong></a>
+</div></div>
+<div id="leagueAccess" hidden>
+<nav class="league-links" aria-label="Ligas"><a href="?liga=ensenada" id="linkEnsenada">Martes de Dominó / Ensenada</a><a href="?liga=los-cabos" id="linkTodos">Martes de Dominó / Los Cabos</a></nav><p><a class="league-back" href="./">Elegir otra liga</a></p>
 <h2 id="welcomeLeague"></h2>
 <p>Inicia sesión para entrar a la jornada. Si todavía no tienes cuenta, regístrate.</p>
 <div class="controls"><button id="showLogin">Iniciar sesión</button><button id="showSignup">Registrarme como participante</button></div>
@@ -56,7 +62,7 @@ td,th{border-color:var(--line)}
 <label>Nueva contraseña (PIN)<input id="newPin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" required></label>
 <button>Cambiar contraseña</button>
 </form>
-<small id="accessStatus" role="status"></small>
+<small id="accessStatus" role="status"></small></div>
 </div><div class="domino-band" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg></div>
 </section>
 <main id="app" hidden>
@@ -81,10 +87,13 @@ td,th{border-color:var(--line)}
 const by=id=>document.getElementById(id);
 const leagues={
  ensenada:{label:'Ensenada',suffix:''},
- 'todos-santos':{label:'Todos Santos',suffix:'-todos-santos'}
+ 'todos-santos':{label:'Los Cabos',suffix:'-todos-santos'}
 };
 const requestedLeague=new URLSearchParams(location.search).get('liga');
-const leagueId=requestedLeague==='todos-santos'?'todos-santos':'ensenada';
+const leagueId=['todos-santos','los-cabos'].includes(requestedLeague)?'todos-santos':'ensenada';
+const choosingLeague=!['ensenada','todos-santos','los-cabos'].includes(requestedLeague);
+by('leaguePicker').hidden=!choosingLeague;
+by('leagueAccess').hidden=choosingLeague;
 const league=leagues[leagueId];
 if(leagueId==='todos-santos'){
  const cover=document.querySelector('.cover img');
@@ -93,7 +102,7 @@ if(leagueId==='todos-santos'){
  cover.style.transform='none';
 }
 const title='Martes de Dominó / '+league.label;
-document.title=title;
+document.title=choosingLeague?'Martes de Dominó':title;
 by('welcomeLeague').textContent=title;
 document.querySelector('header h1').textContent=title;
 by(leagueId==='ensenada'?'linkEnsenada':'linkTodos').setAttribute('aria-current','page');
