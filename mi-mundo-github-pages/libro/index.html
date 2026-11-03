@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conflictos, Sueños y Procesos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout concept: editorial storefront — a tall hero spread (cover + flip-through viewer)
+   over a sticky order panel, in the book's own ivory/olive palette with a warm ochre accent
+   pulled from the forest cover's late-afternoon light. */
+:root{
+  --bg:#f3efe4; --fg:#2e2f1f; --muted:#6b6b48; --accent:#9c6b3a;
+  --line:#ded7c0; --card:#fbf9f1; --shadow:0 18px 40px -22px rgba(46,47,31,.35);
+  --display:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans:'Jost','Helvetica Neue',Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1c14; --fg:#ece8d9; --muted:#a6a37e; --accent:#d59f63;
+    --line:#3a3b2a; --card:#232415; --shadow:0 18px 40px -22px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1c14; --fg:#ece8d9; --muted:#a6a37e; --accent:#d59f63;
+  --line:#3a3b2a; --card:#232415; --shadow:0 18px 40px -22px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--fg); font-family:var(--sans);
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+}
+.wrap{max-width:1040px; margin:0 auto; padding-block:48px 80px}
+h1,h2,h3{font-family:var(--display); font-weight:500; text-wrap:balance; margin:0}
+.eyebrow{font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+a{color:inherit}
+
+/* ---------- hero ---------- */
+.hero{display:flex; flex-direction:column; gap:10px; margin-bottom:40px}
+.hero h1{font-size:clamp(34px,6vw,54px); line-height:1.05}
+.hero .authors{font-family:var(--sans); font-size:14px; color:var(--muted); letter-spacing:.04em}
+.hero .lede{max-width:62ch; font-size:17px; line-height:1.6; color:var(--fg); margin-top:6px}
+
+/* ---------- main grid ---------- */
+.grid{display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:start}
+@media (max-width:860px){ .grid{grid-template-columns:1fr} }
+
+/* ---------- viewer ---------- */
+.viewer{
+  background:var(--card); border:1px solid var(--line); border-radius:4px;
+  box-shadow:var(--shadow); padding:18px; position:relative;
+}
+.viewer .stage{
+  position:relative; width:100%; aspect-ratio:1/1; border-radius:2px; overflow:hidden;
+  background:var(--line);
+}
+.viewer .stage img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  opacity:0; transition:opacity .35s ease;
+}
+.viewer .stage img.active{opacity:1}
+.viewer .controls{
+  display:flex; align-items:center; justify-content:space-between; margin-top:14px; gap:10px;
+}
+.viewer .nav-btn{
+  width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:transparent;
+  color:var(--fg); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:background .15s;
+}
+.viewer .nav-btn:hover{background:var(--line)}
+.viewer .nav-btn:disabled{opacity:.3; cursor:default}
+.viewer .count{font-size:12px; letter-spacing:.08em; color:var(--muted); font-variant-numeric:tabular-nums}
+.viewer .caption{font-size:12px; color:var(--muted); text-align:center; margin-top:8px; min-height:16px}
+.viewer .thumbs{display:flex; gap:6px; margin-top:12px; overflow-x:auto; padding-bottom:2px}
+.viewer .thumbs button{
+  flex:0 0 auto; width:34px; height:34px; border-radius:2px; border:1px solid var(--line);
+  background-size:cover; background-position:center; cursor:pointer; opacity:.55; padding:0;
+}
+.viewer .thumbs button.active{opacity:1; border-color:var(--accent)}
+.sample-tag{
+  position:absolute; top:28px; left:28px; z-index:2; font-family:var(--sans); font-size:11px;
+  letter-spacing:.1em; text-transform:uppercase; background:var(--bg); color:var(--muted);
+  padding:4px 10px; border-radius:20px; border:1px solid var(--line);
+}
+
+/* ---------- cover toggle ---------- */
+.cover-toggle{display:flex; gap:10px; margin-top:16px}
+.cover-opt{
+  flex:1; border:1px solid var(--line); border-radius:3px; padding:10px; cursor:pointer;
+  background:transparent; display:flex; flex-direction:column; align-items:center; gap:8px;
+  font-family:var(--sans); font-size:12px; color:var(--muted);
+}
+.cover-opt img{width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:2px}
+.cover-opt.active{border-color:var(--accent); color:var(--fg)}
+
+/* ---------- order panel ---------- */
+.order{
+  background:var(--card); border:1px solid var(--line); border-radius:4px; box-shadow:var(--shadow);
+  padding:26px; position:sticky; top:16px;
+}
+.order h2{font-size:24px; margin-bottom:2px}
+.order .price-row{display:flex; align-items:baseline; gap:10px; margin:10px 0 20px}
+.order .price{font-family:var(--display); font-size:34px; font-variant-numeric:tabular-nums}
+.order .price-unit{font-size:12px; color:var(--muted)}
+.field-label{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:8px}
+.option-row{display:flex; gap:8px; margin-bottom:20px}
+.option-btn{
+  flex:1; border:1px solid var(--line); background:transparent; color:var(--fg); border-radius:3px;
+  padding:10px 8px; font-family:var(--sans); font-size:13px; cursor:pointer; text-align:center;
+}
+.option-btn.active{border-color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent)}
+.option-btn .sub{display:block; font-size:11px; color:var(--muted); margin-top:2px}
+.total-row{
+  display:flex; justify-content:space-between; align-items:baseline; padding-top:16px;
+  border-top:1px solid var(--line); margin-top:4px; margin-bottom:20px;
+}
+.total-row .label{font-size:13px; color:var(--muted)}
+.total-row .amount{font-family:var(--display); font-size:28px; font-variant-numeric:tabular-nums}
+.cta{
+  display:block; width:100%; text-align:center; background:var(--accent); color:var(--card);
+  font-family:var(--sans); font-size:14px; letter-spacing:.03em; text-decoration:none;
+  padding:15px; border-radius:3px; border:none; cursor:pointer;
+}
+.cta[aria-disabled="true"]{opacity:.5; cursor:default}
+.cta-secondary{background:transparent; color:var(--fg); border:1px solid var(--line)}
+.step-row{display:flex; align-items:center; gap:10px; margin-bottom:10px}
+.step-num{
+  flex:0 0 auto; width:20px; height:20px; border-radius:50%; background:var(--accent); color:var(--bg);
+  font-family:var(--sans); font-size:11px; display:flex; align-items:center; justify-content:center;
+}
+.step-row .cta{flex:1}
+.pending-note{font-size:12px; color:var(--muted); text-align:center; margin-top:10px; line-height:1.5}
+.ship-note{font-size:12px; color:var(--muted); margin-top:-10px; margin-bottom:20px; line-height:1.5}
+
+/* ---------- detail strip ---------- */
+.detail-strip{display:flex; gap:22px; margin-top:34px; flex-wrap:wrap; font-size:13px; color:var(--muted)}
+.detail-strip b{color:var(--fg); font-weight:500}
+
+footer{margin-top:60px; padding-top:20px; border-top:1px solid var(--line); font-size:12px; color:var(--muted)}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+
+  <div class="hero">
+    <span class="eyebrow">Libro de exposición · Residencia Ragel/Herrera · CRIA</span>
+    <h1>Conflictos, Sueños y Procesos</h1>
+    <div class="authors">Susana Ragel · Héctor Herrera · Bárbara Ruelas</div>
+    <p class="lede">Residencia en colaboración Susana Ragel · Héctor Herrera · Bárbara Ruelas, realizada dentro del XV aniversario del CRIA.</p>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="viewer">
+        <span class="sample-tag">Adelanto · 15 de ~80 páginas</span>
+        <div class="stage" id="stage"></div>
+        <div class="controls">
+          <button class="nav-btn" id="prevBtn" aria-label="Página anterior">‹</button>
+          <span class="count" id="count">1 / 12</span>
+          <button class="nav-btn" id="nextBtn" aria-label="Página siguiente">›</button>
+        </div>
+        <div class="caption" id="caption"></div>
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+
+      <div class="cover-toggle" id="coverToggle">
+        <button class="cover-opt active" data-cover="arboles">
+          <img src="cover_arboles.jpg" alt="Portada: mujer entre los árboles">
+          Mujer entre los árboles
+        </button>
+        <button class="cover-opt" data-cover="coyote">
+          <img src="cover_coyote.jpg" alt="Portada: niña con el coyote">
+          Niña con el coyote
+        </button>
+      </div>
+
+      <div class="detail-strip">
+        <div><b>80 páginas</b> · pasta dura</div>
+        <div><b>30 × 30 cm</b></div>
+        <div><b>3 salas</b>: Conflictos, Sueños, Procesos</div>
+      </div>
+    </div>
+
+    <div class="order">
+      <span class="eyebrow">Tu ejemplar</span>
+      <h2>Haz tu pedido</h2>
+      <div class="price-row">
+        <span class="price">$2,950</span>
+        <span class="price-unit">MXN · envío incluido</span>
+      </div>
+
+      <span class="field-label">Portada elegida</span>
+      <div class="option-row" id="coverSummary">
+        <div class="option-btn active" style="cursor:default">Mujer entre los árboles</div>
+      </div>
+
+      <span class="field-label">Entrega</span>
+      <div class="option-row" id="deliveryToggle">
+        <button class="option-btn active" data-delivery="pickup">
+          Recoger en el CRIA
+          <span class="sub">Ensenada</span>
+        </button>
+        <button class="option-btn" data-delivery="shipping">
+          Envío a domicilio
+          <span class="sub">Incluido en el precio</span>
+        </button>
+      </div>
+      <p class="ship-note" id="shipNote" hidden>Envío a toda la república mexicana. La dirección se pide en el formulario de pedido.</p>
+
+      <div class="total-row">
+        <span class="label">Total</span>
+        <span class="amount" id="totalAmount">$2,950 MXN</span>
+      </div>
+
+      <div class="step-row">
+        <span class="step-num">1</span>
+        <a class="cta cta-secondary" href="https://docs.google.com/forms/d/e/1FAIpQLSch3R8l5TT-oIL3zFRMYz7fz00ZaV6iP-gLikCQY3pLtpQcnQ/viewform?usp=publish-editor" target="_blank" rel="noopener">Llenar tus datos</a>
+      </div>
+      <div class="step-row">
+        <span class="step-num">2</span>
+        <a class="cta" href="https://mpago.la/1YDbqVT" target="_blank" rel="noopener">Pagar con Mercado Pago</a>
+      </div>
+      <p class="pending-note">Primero llena el formulario. Si elegiste envío, incluye tu dirección. Luego paga $2,950 MXN con Mercado Pago.</p>
+    </div>
+  </div>
+
+  <footer>
+    Centro de Residencias e Investigación Artística (CRIA) · Ensenada, Baja California
+  </footer>
+</div>
+
+<script>
+(function(){
+  var pages = [
+    {src:"p4.jpg", label:"Créditos"},
+    {src:"p5.jpg", label:"Texto curatorial"},
+    {src:"p6.jpg", label:"Texto curatorial"},
+    {src:"p13.jpg", label:"Conflicto — pintura"},
+    {src:"conflicto_F.jpg", label:"Conflicto — “Dejo para después”"},
+    {src:"conflicto_I.jpg", label:"Conflicto — “El boicot”"},
+    {src:"sala_suenos.jpg", label:"Sala: Sueños"},
+    {src:"sueno_B.jpg", label:"Sueño — “Luna entre semana”"},
+    {src:"sueno_E.jpg", label:"Sueño de José"},
+    {src:"sala_procesos.jpg", label:"Sala: Procesos"},
+    {src:"proceso_3.jpg", label:"Procesos III"},
+    {src:"proceso_9.jpg", label:"Procesos IX"},
+    {src:"estudio.jpg", label:"En el estudio"},
+    {src:"residencia.jpg", label:"La residencia"},
+    {src:"atardecer.jpg", label:"Atardecer en el CRIA"}
+  ];
+
+  var stage = document.getElementById("stage");
+  var thumbs = document.getElementById("thumbs");
+  var countEl = document.getElementById("count");
+  var captionEl = document.getElementById("caption");
+  var prevBtn = document.getElementById("prevBtn");
+  var nextBtn = document.getElementById("nextBtn");
+  var idx = 0;
+
+  pages.forEach(function(p, i){
+    var img = document.createElement("img");
+    img.src = p.src; img.alt = p.label;
+    if (i === 0) img.className = "active";
+    stage.appendChild(img);
+
+    var t = document.createElement("button");
+    t.style.backgroundImage = "url(" + p.src + ")";
+    t.setAttribute("aria-label", p.label);
+    if (i === 0) t.className = "active";
+    t.addEventListener("click", function(){ show(i); });
+    thumbs.appendChild(t);
+  });
+
+  function show(i){
+    idx = (i + pages.length) % pages.length;
+    var imgs = stage.querySelectorAll("img");
+    imgs.forEach(function(im, j){ im.classList.toggle("active", j === idx); });
+    var ts = thumbs.querySelectorAll("button");
+    ts.forEach(function(tb, j){ tb.classList.toggle("active", j === idx); });
+    countEl.textContent = (idx + 1) + " / " + pages.length;
+    captionEl.textContent = pages[idx].label;
+    prevBtn.disabled = false;
+    nextBtn.disabled = false;
+  }
+  prevBtn.addEventListener("click", function(){ show(idx - 1); });
+  nextBtn.addEventListener("click", function(){ show(idx + 1); });
+  show(0);
+
+  // cover toggle (hero + order summary stay in sync)
+  var coverToggle = document.getElementById("coverToggle");
+  var coverSummary = document.getElementById("coverSummary");
+  var coverNames = {arboles:"Mujer entre los árboles", coyote:"Niña con el coyote"};
+  coverToggle.addEventListener("click", function(e){
+    var btn = e.target.closest(".cover-opt");
+    if (!btn) return;
+    coverToggle.querySelectorAll(".cover-opt").forEach(function(b){ b.classList.remove("active"); });
+    btn.classList.add("active");
+    coverSummary.innerHTML = '<div class="option-btn active" style="cursor:default">' + coverNames[btn.dataset.cover] + '</div>';
+  });
+
+  // delivery toggle
+  var deliveryToggle = document.getElementById("deliveryToggle");
+  var shipNote = document.getElementById("shipNote");
+  deliveryToggle.addEventListener("click", function(e){
+    var btn = e.target.closest(".option-btn");
+    if (!btn) return;
+    deliveryToggle.querySelectorAll(".option-btn").forEach(function(b){ b.classList.remove("active"); });
+    btn.classList.add("active");
+    var shipping = btn.dataset.delivery === "shipping";
+    shipNote.hidden = !shipping;
+  });
+})();
+</script>
+
+</body>
+</html>
