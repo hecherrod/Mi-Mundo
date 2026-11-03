@@ -95,6 +95,12 @@ const choosingLeague=!['ensenada','todos-santos','los-cabos'].includes(requested
 by('leaguePicker').hidden=!choosingLeague;
 by('leagueAccess').hidden=choosingLeague;
 const league=leagues[leagueId];
+if(choosingLeague){
+ const cover=document.querySelector('.cover img');
+ cover.src='portada-general.jpg';
+ cover.alt='Fichas de dominó sobre la mesa';
+ cover.style.transform='none';
+}
 if(leagueId==='todos-santos'){
  const cover=document.querySelector('.cover img');
  cover.src='portada-todos-santos.jpg';
