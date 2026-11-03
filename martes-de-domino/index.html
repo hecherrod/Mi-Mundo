@@ -46,6 +46,7 @@ td,th{border-color:var(--line)}
 <form id="access" hidden style="margin-top:16px">
 <label>Usuario (login)<input name="player" autocomplete="username" required maxlength="80"></label>
 <label>Contraseña (PIN)<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" title="De 4 a 8 dígitos" required></label>
+<label id="whatsappField" hidden>WhatsApp con código de país<input name="whatsapp" type="tel" autocomplete="tel" placeholder="+52 646 123 4567" maxlength="30" disabled><small>Usaremos este número para enviarte los resultados de tu liga por WhatsApp.</small></label>
 <button id="accessSubmit">Entrar</button>
 </form>
 <button id="showRecovery" type="button">Olvidé mi usuario o contraseña</button>
@@ -265,6 +266,10 @@ let participant=null;
 let signup=false;
 function showAccess(create){
  signup=create;
+ const whatsapp=by('access').elements.whatsapp;
+ by('whatsappField').hidden=!create;
+ whatsapp.disabled=!create;
+ whatsapp.required=create;
  by('recovery').hidden=true;
  by('access').reset();
  by('access').hidden=false;
@@ -315,9 +320,15 @@ by('access').onsubmit=async e=>{
   if(signup){
    if(nameKey(name)===nameKey(host)){status.textContent='Ese usuario está reservado para el anfitrión.';return}
    if(account){status.textContent='Ese nombre ya está registrado. Usa «Iniciar sesión».';return}
+   const whatsapp=fields.whatsapp.value.trim().replace(/[\s().-]/g,'');
+   if(!/^\+[1-9][0-9]{7,14}$/.test(whatsapp)){
+    status.textContent='Escribe tu WhatsApp con código de país, por ejemplo +52 seguido de tu número.';
+    fields.whatsapp.focus();
+    return;
+   }
    const salt=Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-');
    const code=Array.from(crypto.getRandomValues(new Uint32Array(4)),n=>n.toString(16).padStart(8,'0')).join('-');
-   accounts.push({name,salt,digest:await pinDigest(pin,salt),recovery:await pinDigest(code,salt)});
+   accounts.push({name,whatsapp,salt,digest:await pinDigest(pin,salt),recovery:await pinDigest(code,salt)});
    localStorage.setItem(accountKey,JSON.stringify(accounts));
    enter(name);
    by('checkStatus').textContent='Guarda tu código de recuperación: '+code;
