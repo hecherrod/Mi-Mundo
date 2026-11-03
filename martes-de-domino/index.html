@@ -85,6 +85,12 @@ const leagues={
 const requestedLeague=new URLSearchParams(location.search).get('liga');
 const leagueId=requestedLeague==='todos-santos'?'todos-santos':'ensenada';
 const league=leagues[leagueId];
+if(leagueId==='todos-santos'){
+ const cover=document.querySelector('.cover img');
+ cover.src='portada-todos-santos.jpg';
+ cover.alt='Mesas y sillones bajo los árboles en Todos Santos';
+ cover.style.transform='none';
+}
 const title='Martes de Dominó / '+league.label;
 document.title=title;
 by('welcomeLeague').textContent=title;
