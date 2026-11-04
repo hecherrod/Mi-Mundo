@@ -36,6 +36,9 @@ td,th{border-color:var(--line)}
 #showRecovery:hover{background:transparent;color:var(--neon)}
 .league-links{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}.league-links a{color:var(--neon);border:1px solid var(--line);padding:8px 12px;border-radius:8px}.league-links a[aria-current]{background:#12332e}.admin-jornada{border-top:1px solid var(--line);padding:10px 0}#admin p{margin:6px 0}
 .league-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,8vw,72px);max-width:720px;margin-inline:auto}.league-cards a{overflow:hidden;border:1px solid var(--line);border-radius:12px;color:var(--neon);text-decoration:none}.league-cards a:hover,.league-cards a:focus-visible{border-color:var(--neon)}.league-cards img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:0}.league-cards a[href="?liga=ensenada"] img{object-fit:contain;background:#000}.league-cards strong{display:block;padding:12px}.league-back{color:var(--neon)}#leagueAccess .league-links{display:none}
+#accessStatus.access-error{color:#ff8b94;animation:access-alert .7s ease-out}
+@keyframes access-alert{from{background:#5e2028}to{background:transparent}}
+@media(prefers-reduced-motion:reduce){#accessStatus.access-error{animation:none}}
 </style></head>
 <section id="welcome">
 <div class="cover"><img alt="Amigos reunidos alrededor de una mesa de dominó" src="portada.jpg"><div class="cover-title"><span class="cover-label">CLUB DE DOMINÓ</span><h1>Martes de Dominó</h1></div></div>
@@ -336,6 +339,7 @@ by('completePhone').onsubmit=event=>{
  if(!pendingPhoneAccount)return;
  const whatsapp=event.currentTarget.elements.phone.value.trim().replace(/[\s().-]/g,'');
  const status=by('accessStatus');
+ status.classList.remove('access-error');
  if(!/^[0-9]{10}$/.test(whatsapp)){
   status.textContent='Escribe los 10 dígitos de tu celular.';
   return;
@@ -353,6 +357,7 @@ by('completePhone').onsubmit=event=>{
  enter(account.name);
 };
 function showAccess(create){
+ by('accessStatus').classList.remove('access-error');
  closePhoneForm();
  signup=create;
  const whatsapp=by('access').elements.whatsapp;
@@ -396,6 +401,13 @@ const normalizePhone=value=>{
  const digits=value.replace(/[^0-9]/g,'');
  return /^52[0-9]{10}$/.test(digits)?digits.slice(2):digits;
 };
+function accessError(status,message){
+ status.textContent='';
+ status.classList.remove('access-error');
+ void status.offsetWidth;
+ status.classList.add('access-error');
+ status.textContent=message;
+}
 async function pinDigest(pin,salt){
  const bytes=new TextEncoder().encode(salt+':'+pin);
  const digest=await crypto.subtle.digest('SHA-256',bytes);
@@ -407,6 +419,7 @@ by('access').onsubmit=async e=>{
  if(!name)return;
  const status=by('accessStatus'),button=by('accessSubmit');
  button.disabled=true;
+ status.classList.remove('access-error');
  try{
   const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
   const account=accounts.find(item=>nameKey(item.name)===nameKey(name));
@@ -432,7 +445,7 @@ by('access').onsubmit=async e=>{
    by('checkIn').textContent='Actualizar mi asistencia';
    by('checkStatus').textContent='Ya estás en la lista de juego de hoy.';
   }else{
-   if(!account||account.digest!==await pinDigest(pin,account.salt)){status.textContent='Revisa el nombre y la clave.';return}
+   if(!account||account.digest!==await pinDigest(pin,account.salt)){accessError(status,'El usuario o la contraseña no coinciden. Revisa los datos y vuelve a intentar.');return}
    if(!account.whatsapp){
     pendingPhoneAccount=account.name;
     by('access').hidden=true;
@@ -449,6 +462,7 @@ by('access').onsubmit=async e=>{
  finally{button.disabled=false}
 };
 by('showRecovery').onclick=()=>{
+ by('accessStatus').classList.remove('access-error');
  closePhoneForm();
  by('access').hidden=true;
  by('recovery').reset();
@@ -459,11 +473,12 @@ by('showRecovery').onclick=()=>{
 by('recovery').onsubmit=async event=>{
  event.preventDefault();
  const status=by('accessStatus');
+ status.classList.remove('access-error');
  const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
  const phone=normalizePhone(by('recoveryPhone').value);
  const matches=accounts.filter(a=>a.whatsapp&&normalizePhone(a.whatsapp)===phone);
  if(matches.length!==1){
-  status.textContent=matches.length?'Este teléfono está asociado a varias cuentas. Pide ayuda al anfitrión.':'No encontramos ese teléfono en los registros de esta liga en este navegador.';
+  accessError(status,matches.length?'Este teléfono está asociado a varias cuentas. Pide ayuda al anfitrión.':'El celular no coincide con una cuenta de esta liga en este navegador.');
   return;
  }
  const account=matches[0];
