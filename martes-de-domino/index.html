@@ -438,8 +438,8 @@ async function enterVerified(){
  const permissions=await authClient.rpc('mi_mundo_domino_admin_leagues');
  adminLeagues=!permissions.error&&Array.isArray(permissions.data)?permissions.data:[];
  canAdmin=adminLeagues.includes(leagueId);
- const name=user.user_metadata.domino_username;
- if(!name||(!canAdmin&&user.user_metadata.domino_league!==leagueId))throw Error('Esta cuenta está registrada en otra liga.');
+ const name=user.user_metadata.domino_username||user.user_metadata.name||user.user_metadata.full_name;
+ if(!name||(!canAdmin&&user.user_metadata.domino_league&&user.user_metadata.domino_league!==leagueId))throw Error('Esta cuenta está registrada en otra liga.');
  const claimed=await authClient.rpc('mi_mundo_domino_claim_username',{p_league:leagueId,p_username:name});
  if(claimed.error)throw Error('No se pudo activar el usuario. Vuelve a intentar.');
  if(!claimed.data)throw Error('El nombre ya está en uso en esta liga.');
