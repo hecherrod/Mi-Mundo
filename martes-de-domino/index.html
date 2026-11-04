@@ -84,6 +84,7 @@ td,th{border-color:var(--line)}
 </section>
 <style>[hidden]{display:none!important}</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script src="../mi-mundo-auth.js"></script>
 <script>
 'use strict';
 const by=id=>document.getElementById(id);
@@ -396,11 +397,7 @@ const nameKey=name=>name.trim().normalize('NFC').toLocaleLowerCase('es');
 let participant=null;
 let canAdmin=false;
 let signup=false;
-const authUrl='https://rsiivqldgcjxbzujahaw.supabase.co';
-const authKey='sb_publishable_lTYDHtayR94yzT6UawYPMw_tUxOtYmo';
-const authClient=window.supabase?.createClient(authUrl,authKey,{
- auth:{storageKey:'mi-mundo-domino-auth-'+leagueId}
-});
+const authClient=window.miMundoAuth;
 const returnUrl=new URL(location.pathname,location.origin);
 returnUrl.searchParams.set('liga',leagueId);
 function accessNotice(message,error=false){
@@ -443,13 +440,13 @@ function enter(name){
 async function enterVerified(){
  const {data:{user},error}=await authClient.auth.getUser();
  if(error||!user?.email_confirmed_at)throw Error('Primero confirma tu correo.');
+ const permissions=await authClient.rpc('mi_mundo_is_admin');
+ canAdmin=!permissions.error&&permissions.data===true;
  const name=user.user_metadata.domino_username;
- if(!name||user.user_metadata.domino_league!==leagueId)throw Error('Esta cuenta está registrada en otra liga.');
+ if(!name||(!canAdmin&&user.user_metadata.domino_league!==leagueId))throw Error('Esta cuenta está registrada en otra liga.');
  const claimed=await authClient.rpc('mi_mundo_domino_claim_username',{p_league:leagueId,p_username:name});
  if(claimed.error)throw Error('No se pudo activar el usuario. Vuelve a intentar.');
  if(!claimed.data)throw Error('El nombre ya está en uso en esta liga.');
- const permissions=await authClient.rpc('mi_mundo_domino_admin_leagues');
- canAdmin=!permissions.error&&Array.isArray(permissions.data)&&permissions.data.includes(leagueId);
  enter(name);
 }
 by('showLogin').onclick=()=>showAccess(false);
@@ -531,7 +528,7 @@ function renderAdmin(){
  panel.replaceChildren();
  if(!month)return;
  if(!canAdmin)return;
- for(const item of [league]){
+ for(const item of Object.values(leagues)){
   const group=el('section','',panel);
   el('h2',item.label,group);
   const dates=JSON.parse(localStorage.getItem(leagueDataKey(item))||'{}');
