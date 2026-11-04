@@ -55,14 +55,15 @@ td,th{border-color:var(--line)}
 <form id="access" hidden style="margin-top:16px">
 <label>Nombre de usuario<input name="player" autocomplete="username" required maxlength="80"></label>
 <label id="emailField">Correo electrónico (para recuperar el PIN)<input name="email" type="email" autocomplete="email" placeholder="tu@correo.com" autocapitalize="none" required maxlength="254"></label>
-<label>Contraseña (PIN)<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" title="De 4 a 8 dígitos" required></label>
+<label>Contraseña (PIN)<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{6,8}" title="De 6 a 8 dígitos" required></label>
 <label id="whatsappField" hidden>Número de WhatsApp (10 dígitos)<input name="whatsapp" type="tel" autocomplete="tel" placeholder="646 123 4567" maxlength="30" disabled><small>Se usará para avisos de resultados de tu liga cuando se habilite el envío.</small></label>
 <button id="accessSubmit">Entrar</button>
 </form>
 
 <button id="showRecovery" type="button">Olvidé mi usuario o contraseña</button>
-<p id="recovery" hidden>La recuperación se hará por correo electrónico. El envío de enlaces para cambiar el PIN está pendiente.</p>
-<form id="completePhone" hidden><label id="completeEmailField">Correo electrónico<input name="email" type="email" autocomplete="email" maxlength="254"></label><label>Celular (10 dígitos)<input name="phone" type="tel" autocomplete="tel" placeholder="646 123 4567" required maxlength="30"></label><button>Guardar datos y entrar</button></form><small id="accessStatus" role="status"></small></div>
+<form id="recovery" hidden><label>Correo de la cuenta<input name="email" type="email" autocomplete="email" required></label><button>Enviar enlace</button></form>
+<form id="resetPin" hidden><label>PIN nuevo<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{6,8}" required></label><button>Guardar PIN</button></form>
+<small id="accessStatus" role="status"></small></div>
 </div><div class="domino-band" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg></div>
 </section>
 <main id="app" hidden>
@@ -82,6 +83,7 @@ td,th{border-color:var(--line)}
 <div id="adminLeagues"></div>
 </section>
 <style>[hidden]{display:none!important}</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script>
 'use strict';
 const by=id=>document.getElementById(id);
@@ -388,176 +390,155 @@ by('record').onclick=async()=>{
   by('mediaStatus').textContent='No se pudo usar el micrófono. Puedes adjuntar una nota de voz.';
  }finally{button.disabled=false}
 };
-const accountKey='martes-domino-accounts-v3'+league.suffix;
+
 const nameKey=name=>name.trim().normalize('NFC').toLocaleLowerCase('es');
 let participant=null;
+let canAdmin=false;
 let signup=false;
-const emailKey=email=>email.trim().toLowerCase();
-let pendingPhoneAccount=null;
-function closePhoneForm(){
- pendingPhoneAccount=null;
- by('completePhone').hidden=true;
-}
-by('completePhone').onsubmit=event=>{
- event.preventDefault();
- if(!pendingPhoneAccount)return;
- const fields=event.currentTarget.elements;
- const whatsapp=fields.phone.value.trim().replace(/[\s().-]/g,'');
+const authUrl='https://rsiivqldgcjxbzujahaw.supabase.co';
+const authKey='sb_publishable_lTYDHtayR94yzT6UawYPMw_tUxOtYmo';
+const authClient=window.supabase?.createClient(authUrl,authKey,{
+ auth:{storageKey:'mi-mundo-domino-auth-'+leagueId}
+});
+const returnUrl=new URL(location.pathname,location.origin);
+returnUrl.searchParams.set('liga',leagueId);
+function accessNotice(message,error=false){
  const status=by('accessStatus');
+ status.textContent='';
  status.classList.remove('access-error');
- if(!fields.phone.disabled&&!/^[0-9]{10}$/.test(whatsapp)){
-  status.textContent='Escribe los 10 dígitos de tu celular.';
-  return;
- }
- const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
- const account=accounts.find(a=>a.name===pendingPhoneAccount);
- if(!account){closePhoneForm();showAccess(false);return}
- if(!fields.phone.disabled&&accounts.some(a=>a!==account&&a.whatsapp&&normalizePhone(a.whatsapp)===normalizePhone(whatsapp))){
-  status.textContent='Ese celular ya está registrado en otra cuenta de esta liga.';
-  return;
- }
- if(!fields.email.disabled){
-  const email=emailKey(fields.email.value);
-  if(accounts.some(a=>a!==account&&a.email&&emailKey(a.email)===email)){
-   accessError(status,'Ese correo ya está registrado en esta liga.');
-   return;
-  }
-  account.email=email;
- }
- if(!fields.phone.disabled)account.whatsapp=whatsapp;
- localStorage.setItem(accountKey,JSON.stringify(accounts));
- closePhoneForm();
- enter(account.name);
-};
+ if(error){void status.offsetWidth;status.classList.add('access-error')}
+ status.textContent=message;
+}
 function showAccess(create){
- by('accessStatus').classList.remove('access-error');
- closePhoneForm();
  signup=create;
  const fields=by('access').elements;
  fields.email.disabled=!create;
  by('emailField').hidden=!create;
- const whatsapp=by('access').elements.whatsapp;
+ fields.whatsapp.disabled=!create;
+ fields.whatsapp.required=create;
  by('whatsappField').hidden=!create;
- whatsapp.disabled=!create;
- whatsapp.required=create;
  by('recovery').hidden=true;
+ by('resetPin').hidden=true;
  by('access').reset();
  by('access').hidden=false;
  by('accessSubmit').textContent=create?'Crear cuenta':'Entrar';
- by('accessStatus').textContent=create?'Elige una clave de 4 a 8 dígitos para esta prueba.':'';
- fields.player.focus();
+ accessNotice(create?'Usa un PIN de 6 a 8 dígitos.':'');
 }
 function enter(name){
  participant=name;
- by('adminOpen').hidden=true;
+ by('adminOpen').hidden=!canAdmin;
  by('welcome').hidden=true;
  by('app').hidden=false;
  by('checkIn').hidden=!name;
  by('checkIn').textContent='Ya llegué · Voy a asistir';
  for(const id of ['pair','game','record','audio','photos'])by(id).hidden=!name;
- by('arrival').hidden=true;
+ by('arrival').hidden=!canAdmin;
  by('checkStatus').textContent=name?'Hola, '+name+'. Marca tu asistencia cuando llegues.':'Estás viendo la jornada como invitado. Vuelve a bienvenida para registrarte y marcar tu asistencia.';
  by('day').value=localDate();
  by('day').onchange();
  render();
 }
+
+async function enterVerified(){
+ const {data:{user},error}=await authClient.auth.getUser();
+ if(error||!user?.email_confirmed_at)throw Error('Primero confirma tu correo.');
+ const name=user.user_metadata.domino_username;
+ if(!name||user.user_metadata.domino_league!==leagueId)throw Error('Esta cuenta está registrada en otra liga.');
+ const claimed=await authClient.rpc('mi_mundo_domino_claim_username',{p_league:leagueId,p_username:name});
+ if(claimed.error)throw Error('No se pudo activar el usuario. Vuelve a intentar.');
+ if(!claimed.data)throw Error('El nombre ya está en uso en esta liga.');
+ const permissions=await authClient.rpc('mi_mundo_domino_admin_leagues');
+ canAdmin=!permissions.error&&Array.isArray(permissions.data)&&permissions.data.includes(leagueId);
+ enter(name);
+}
 by('showLogin').onclick=()=>showAccess(false);
 by('showSignup').onclick=()=>showAccess(true);
-by('signOut').onclick=()=>{
+by('signOut').onclick=async()=>{
+ if(authClient)await authClient.auth.signOut({scope:'local'});
  participant=null;
+ canAdmin=false;
  by('app').hidden=true;
  by('welcome').hidden=false;
- by('access').hidden=true;
- by('recovery').hidden=true;
- by('access').reset();
- by('accessStatus').textContent='';
+ showAccess(false);
 };
-const normalizePhone=value=>{
- const digits=value.replace(/[^0-9]/g,'');
- return /^52[0-9]{10}$/.test(digits)?digits.slice(2):digits;
-};
-function accessError(status,message){
- status.textContent='';
- status.classList.remove('access-error');
- void status.offsetWidth;
- status.classList.add('access-error');
- status.textContent=message;
-}
-async function pinDigest(pin,salt){
- const bytes=new TextEncoder().encode(salt+':'+pin);
- const digest=await crypto.subtle.digest('SHA-256',bytes);
- return Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
-}
-by('access').onsubmit=async e=>{
- e.preventDefault();
- const fields=e.currentTarget.elements, name=fields.player.value.trim(), pin=fields.pin.value;
- const email=emailKey(fields.email.value);
- if(!name)return;
- const status=by('accessStatus'),button=by('accessSubmit');
+by('access').onsubmit=async event=>{
+ event.preventDefault();
+ const fields=event.currentTarget.elements, name=fields.player.value.trim(), pin=fields.pin.value;
+ if(!name||!authClient){accessNotice('No se pudo cargar el acceso. Recarga la página.',true);return}
+ const button=by('accessSubmit');
+ const creating=signup;
  button.disabled=true;
- status.classList.remove('access-error');
+ accessNotice(creating?'Creando cuenta…':'Comprobando tus datos…');
  try{
-  const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
-  const account=accounts.find(item=>nameKey(item.name)===nameKey(name));
-  const existingEmail=accounts.some(item=>item.email&&emailKey(item.email)===email);
-  if(signup){
-   if(name.includes('@')){accessError(status,'Escribe tu nombre para las partidas. El correo va en su propio campo.');return}
-   if(existingEmail){accessError(status,'Ese correo ya está registrado. Usa «Iniciar sesión».');return}
-   if(account){accessError(status,'Ese nombre ya está en uso para las partidas. Usa otro nombre para distinguirte en las partidas.');return}
-   const whatsapp=fields.whatsapp.value.trim().replace(/[\s().-]/g,'');
-   if(!/^[0-9]{10}$/.test(whatsapp)){
-    status.textContent='Escribe los 10 dígitos de tu celular.';
-    fields.whatsapp.focus();
-    return;
-   }
-   if(accounts.some(account=>account.whatsapp&&normalizePhone(account.whatsapp)===normalizePhone(whatsapp))){
-    status.textContent='Ese teléfono ya está registrado en esta liga. Usa la opción de recuperación.';
-    return;
-   }
-   const salt=Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-');
-   accounts.push({name,email,whatsapp,salt,digest:await pinDigest(pin,salt)});
-   localStorage.setItem(accountKey,JSON.stringify(accounts));
-   enter(name);
-
+  if(creating){
+   const email=fields.email.value.trim();
+   const whatsapp=fields.whatsapp.value.replace(/[\s().-]/g,'');
+   if(name.includes('@')||!/^\d{10}$/.test(whatsapp))throw Error('Escribe un nombre de usuario y un WhatsApp de 10 dígitos.');
+   const {error}=await authClient.auth.signUp({email,password:pin,
+    options:{emailRedirectTo:returnUrl.href,data:{domino_username:name,domino_league:leagueId,domino_whatsapp:whatsapp}}});
+   if(error)throw Error(error.message);
+   showAccess(false);
+   accessNotice('Revisa tu correo y abre el enlace de confirmación para activar tu usuario.');
   }else{
-   if(!account||account.digest!==await pinDigest(pin,account.salt)){accessError(status,'Los datos de acceso no coinciden. Revisa los datos y vuelve a intentar.');return}
-   if(!account.whatsapp||!account.email){
-    pendingPhoneAccount=account.name;
-    by('access').hidden=true;
-    by('completePhone').reset();
-    const extra=by('completePhone').elements;
-    extra.email.disabled=Boolean(account.email);
-    extra.email.required=!extra.email.disabled;
-    by('completeEmailField').hidden=extra.email.disabled;
-    extra.phone.disabled=Boolean(account.whatsapp);
-    extra.phone.closest('label').hidden=extra.phone.disabled;
-    by('completePhone').hidden=false;
-    status.textContent='Completa los datos de tu cuenta para continuar.';
-    (extra.email.disabled?extra.phone:extra.email).focus();
-    return;
-   }
-   enter(account.name);
+   const response=await fetch(authUrl+'/functions/v1/bright-function',{
+    method:'POST',headers:{apikey:authKey,'Content-Type':'application/json'},
+    body:JSON.stringify({username:name,league:leagueId,pin})
+   });
+   const data=await response.json();
+   if(!response.ok)throw Error(data.error||'No se pudo iniciar sesión.');
+   const {error}=await authClient.auth.setSession(data);
+   if(error)throw Error(error.message);
+   await enterVerified();
   }
-  by('access').reset();
- }catch{status.textContent='No se pudo acceder al registro local de participantes.'}
+ }catch(error){accessNotice(error.message||'No se pudo completar el acceso.',true)}
  finally{button.disabled=false}
 };
 by('showRecovery').onclick=()=>{
- closePhoneForm();
  by('access').hidden=true;
- by('accessStatus').textContent='';
+ by('resetPin').hidden=true;
  by('recovery').hidden=false;
+ accessNotice('');
 };
+by('recovery').onsubmit=async event=>{
+ event.preventDefault();
+ if(!authClient){accessNotice('El servicio de acceso no está disponible.',true);return}
+ const redirect=new URL(returnUrl.href);
+ redirect.searchParams.set('recuperar','1');
+ const {error}=await authClient.auth.resetPasswordForEmail(event.currentTarget.elements.email.value.trim(),{redirectTo:redirect.href});
+ accessNotice(error?error.message:'Si el correo está registrado, te llegará un enlace para crear un PIN nuevo.',Boolean(error));
+};
+by('resetPin').onsubmit=async event=>{
+ event.preventDefault();
+ const {error}=await authClient.auth.updateUser({password:event.currentTarget.elements.pin.value});
+ if(error){accessNotice(error.message,true);return}
+ await authClient.auth.signOut({scope:'local'});
+ history.replaceState(null,'',returnUrl.href);
+ showAccess(false);
+ accessNotice('PIN actualizado. Ya puedes iniciar sesión.');
+};
+async function restoreAccess(){
+ if(!authClient||choosingLeague)return;
+ try{
+  const {data:{session},error}=await authClient.auth.getSession();
+  if(error)throw Error(error.message);
+  if(!session)return;
+  if(new URLSearchParams(location.hash.slice(1)).get('type')==='recovery'||new URLSearchParams(location.search).has('recuperar')){
+   by('access').hidden=true;
+   by('resetPin').hidden=false;
+   return;
+  }
+  await enterVerified();
+ }catch(error){accessNotice(error.message,true)}
+}
 function renderAdmin(){
  const month=by('adminMonth').value;
  const panel=by('adminLeagues');
  panel.replaceChildren();
  if(!month)return;
- for(const item of Object.values(leagues)){
+ if(!canAdmin)return;
+ for(const item of [league]){
   const group=el('section','',panel);
   el('h2',item.label,group);
-  const accounts=JSON.parse(localStorage.getItem('martes-domino-accounts-v3'+item.suffix)||'[]');
-  el('p','Participantes registrados: '+(accounts.map(a=>a.name).join(', ')||'Sin registros'),group);
   const dates=JSON.parse(localStorage.getItem('martes-domino-v2'+item.suffix)||'{}');
   const days=new Set(Object.keys(dates).filter(date=>date.startsWith(month+'-')));
   for(let date=new Date(month+'-01T12:00:00Z');date.toISOString().startsWith(month+'-');date.setUTCDate(date.getUTCDate()+1)){
@@ -577,6 +558,13 @@ function renderAdmin(){
   }
  }
 }
+by('adminOpen').onclick=()=>{
+ if(!canAdmin)return;
+ by('adminMonth').value=by('day').value.slice(0,7);
+ renderAdmin();
+ by('app').hidden=true;
+ by('admin').hidden=false;
+};
 by('adminClose').onclick=()=>{by('admin').hidden=true;by('app').hidden=false};
 by('adminMonth').onchange=renderAdmin;
 by('checkIn').onclick=()=>{
@@ -590,5 +578,6 @@ by('checkIn').onclick=()=>{
 };
 if(!choosingLeague)showAccess(false);
 render();
+restoreAccess();
 </script></html>
 
