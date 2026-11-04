@@ -53,18 +53,20 @@ td,th{border-color:var(--line)}
 <p>Inicia sesión para entrar a la jornada. Si todavía no tienes cuenta, regístrate.</p>
 <div class="controls"><button id="showLogin">Iniciar sesión</button><button id="showSignup">Registrarme como participante</button></div>
 <form id="access" hidden style="margin-top:16px">
-<label>Usuario (login)<input name="player" autocomplete="username" required maxlength="80"></label>
+<label>Nombre para las partidas<input name="player" autocomplete="name" required maxlength="80"></label>
+<label id="emailField">Correo electrónico<input name="email" type="email" autocomplete="username" required maxlength="254"></label>
 <label>Contraseña (PIN)<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" title="De 4 a 8 dígitos" required></label>
 <label id="whatsappField" hidden>Celular (10 dígitos)<input name="whatsapp" type="tel" autocomplete="tel" placeholder="646 123 4567" maxlength="30" disabled><small>Usaremos este número para enviarte los resultados de tu liga por WhatsApp.</small></label>
 <button id="accessSubmit">Entrar</button>
 </form>
+<button id="legacyLogin" type="button">Mi cuenta anterior usa mi nombre</button>
 <button id="showRecovery" type="button">Olvidé mi usuario o contraseña</button>
 <form id="recovery" hidden>
 <label>Teléfono registrado<input id="recoveryPhone" type="tel" autocomplete="tel" placeholder="646 123 4567" required></label>
 <label>Nueva contraseña (PIN)<input id="newPin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" required></label>
 <button>Cambiar contraseña</button>
 </form>
-<form id="completePhone" hidden><label>Celular (10 dígitos)<input name="phone" type="tel" autocomplete="tel" placeholder="646 123 4567" required maxlength="30"></label><button>Guardar celular y entrar</button></form><small id="accessStatus" role="status"></small></div>
+<form id="completePhone" hidden><label id="completeEmailField">Correo electrónico<input name="email" type="email" autocomplete="email" maxlength="254"></label><label>Celular (10 dígitos)<input name="phone" type="tel" autocomplete="tel" placeholder="646 123 4567" required maxlength="30"></label><button>Guardar datos y entrar</button></form><small id="accessStatus" role="status"></small></div>
 </div><div class="domino-band" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg></div>
 </section>
 <main id="app" hidden>
@@ -329,6 +331,8 @@ const accountKey='martes-domino-accounts-v1'+league.suffix;
 const nameKey=name=>name.trim().normalize('NFC').toLocaleLowerCase('es');
 let participant=null;
 let signup=false;
+let legacyLogin=false;
+const emailKey=email=>email.trim().toLowerCase();
 let pendingPhoneAccount=null;
 function closePhoneForm(){
  pendingPhoneAccount=null;
@@ -337,29 +341,44 @@ function closePhoneForm(){
 by('completePhone').onsubmit=event=>{
  event.preventDefault();
  if(!pendingPhoneAccount)return;
- const whatsapp=event.currentTarget.elements.phone.value.trim().replace(/[\s().-]/g,'');
+ const fields=event.currentTarget.elements;
+ const whatsapp=fields.phone.value.trim().replace(/[\s().-]/g,'');
  const status=by('accessStatus');
  status.classList.remove('access-error');
- if(!/^[0-9]{10}$/.test(whatsapp)){
+ if(!fields.phone.disabled&&!/^[0-9]{10}$/.test(whatsapp)){
   status.textContent='Escribe los 10 dígitos de tu celular.';
   return;
  }
  const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
  const account=accounts.find(a=>a.name===pendingPhoneAccount);
  if(!account){closePhoneForm();showAccess(false);return}
- if(accounts.some(a=>a!==account&&a.whatsapp&&normalizePhone(a.whatsapp)===normalizePhone(whatsapp))){
+ if(!fields.phone.disabled&&accounts.some(a=>a!==account&&a.whatsapp&&normalizePhone(a.whatsapp)===normalizePhone(whatsapp))){
   status.textContent='Ese celular ya está registrado en otra cuenta de esta liga.';
   return;
  }
- account.whatsapp=whatsapp;
+ if(!fields.email.disabled){
+  const email=emailKey(fields.email.value);
+  if(accounts.some(a=>a!==account&&a.email&&emailKey(a.email)===email)){
+   accessError(status,'Ese correo ya está registrado en esta liga.');
+   return;
+  }
+  account.email=email;
+ }
+ if(!fields.phone.disabled)account.whatsapp=whatsapp;
  localStorage.setItem(accountKey,JSON.stringify(accounts));
  closePhoneForm();
  enter(account.name);
 };
-function showAccess(create){
+function showAccess(create,legacy=false){
  by('accessStatus').classList.remove('access-error');
  closePhoneForm();
  signup=create;
+ legacyLogin=legacy;
+ const fields=by('access').elements;
+ fields.player.disabled=!(create||legacy);
+ fields.player.closest('label').hidden=fields.player.disabled;
+ fields.email.disabled=legacy;
+ by('emailField').hidden=legacy;
  const whatsapp=by('access').elements.whatsapp;
  by('whatsappField').hidden=!create;
  whatsapp.disabled=!create;
@@ -369,7 +388,7 @@ function showAccess(create){
  by('access').hidden=false;
  by('accessSubmit').textContent=create?'Crear cuenta':'Entrar';
  by('accessStatus').textContent=create?'Elige una clave de 4 a 8 dígitos para esta prueba.':'';
- by('access').elements.player.focus();
+ (legacy||create?fields.player:fields.email).focus();
 }
 function enter(name){
  participant=name;
@@ -387,6 +406,7 @@ function enter(name){
  render();
 }
 by('showLogin').onclick=()=>showAccess(false);
+by('legacyLogin').onclick=()=>showAccess(false,true);
 by('showSignup').onclick=()=>showAccess(true);
 by('signOut').onclick=()=>{
  participant=null;
@@ -416,19 +436,21 @@ async function pinDigest(pin,salt){
 by('access').onsubmit=async e=>{
  e.preventDefault();
  const fields=e.currentTarget.elements, name=fields.player.value.trim(), pin=fields.pin.value;
- if(!name)return;
+ const email=emailKey(fields.email.value);
+ if((signup||legacyLogin)&&!name)return;
  const status=by('accessStatus'),button=by('accessSubmit');
  button.disabled=true;
  status.classList.remove('access-error');
  try{
   const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
-  const account=accounts.find(item=>nameKey(item.name)===nameKey(name));
+  const account=legacyLogin?accounts.find(item=>!item.email&&nameKey(item.name)===nameKey(name)):accounts.find(item=>item.email&&emailKey(item.email)===email);
   if(signup){
    if(nameKey(name)===nameKey(host)){status.textContent='Ese usuario está reservado para el anfitrión.';return}
-   if(account){status.textContent='Ese nombre ya está registrado. Usa «Iniciar sesión».';return}
+   if(account){accessError(status,'Ese correo ya está registrado. Usa «Iniciar sesión».');return}
+   if(accounts.some(item=>nameKey(item.name)===nameKey(name))){accessError(status,'Ese nombre ya está en uso para las partidas. Si es tu cuenta anterior, entra con tu nombre.');return}
    const whatsapp=fields.whatsapp.value.trim().replace(/[\s().-]/g,'');
    if(!/^[0-9]{10}$/.test(whatsapp)){
-    status.textContent='Escribe tu Celular (10 dígitos), por ejemplo +52 seguido de tu número.';
+    status.textContent='Escribe los 10 dígitos de tu celular.';
     fields.whatsapp.focus();
     return;
    }
@@ -437,7 +459,7 @@ by('access').onsubmit=async e=>{
     return;
    }
    const salt=Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-');
-   accounts.push({name,whatsapp,salt,digest:await pinDigest(pin,salt)});
+   accounts.push({name,email,whatsapp,salt,digest:await pinDigest(pin,salt)});
    localStorage.setItem(accountKey,JSON.stringify(accounts));
    enter(name);
    by('selfPlays').value='Sí';
@@ -445,14 +467,20 @@ by('access').onsubmit=async e=>{
    by('checkIn').textContent='Actualizar mi asistencia';
    by('checkStatus').textContent='Ya estás en la lista de juego de hoy.';
   }else{
-   if(!account||account.digest!==await pinDigest(pin,account.salt)){accessError(status,'El usuario o la contraseña no coinciden. Revisa los datos y vuelve a intentar.');return}
-   if(!account.whatsapp){
+   if(!account||account.digest!==await pinDigest(pin,account.salt)){accessError(status,'Los datos de acceso no coinciden. Revisa los datos y vuelve a intentar.');return}
+   if(!account.whatsapp||!account.email){
     pendingPhoneAccount=account.name;
     by('access').hidden=true;
     by('completePhone').reset();
+    const extra=by('completePhone').elements;
+    extra.email.disabled=Boolean(account.email);
+    extra.email.required=!extra.email.disabled;
+    by('completeEmailField').hidden=extra.email.disabled;
+    extra.phone.disabled=Boolean(account.whatsapp);
+    extra.phone.closest('label').hidden=extra.phone.disabled;
     by('completePhone').hidden=false;
-    status.textContent='Agrega tu celular para recuperar el acceso a esta cuenta.';
-    by('completePhone').elements.phone.focus();
+    status.textContent='Completa los datos de tu cuenta para continuar.';
+    (extra.email.disabled?extra.phone:extra.email).focus();
     return;
    }
    enter(account.name);
@@ -486,8 +514,9 @@ by('recovery').onsubmit=async event=>{
   account.digest=await pinDigest(by('newPin').value,account.salt);
   localStorage.setItem(accountKey,JSON.stringify(accounts));
   by('recovery').reset();
-  showAccess(false);
-  by('access').elements.player.value=account.name;
+  showAccess(false,!account.email);
+  if(account.email)by('access').elements.email.value=account.email;
+  else by('access').elements.player.value=account.name;
   status.textContent='Contraseña actualizada. Ya puedes iniciar sesión.';
  }catch{status.textContent='No se pudo cambiar la contraseña.'}
 };
