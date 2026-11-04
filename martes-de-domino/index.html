@@ -53,8 +53,8 @@ td,th{border-color:var(--line)}
 <p>Inicia sesión para entrar a la jornada. Si todavía no tienes cuenta, regístrate.</p>
 <div class="controls"><button id="showLogin">Iniciar sesión</button><button id="showSignup">Registrarme como participante</button></div>
 <form id="access" hidden style="margin-top:16px">
-<label>Nombre de usuario<input name="player" autocomplete="username" required maxlength="80"></label>
-<label id="emailField">Correo electrónico (para recuperar el PIN)<input name="email" type="email" autocomplete="email" placeholder="tu@correo.com" autocapitalize="none" required maxlength="254"></label>
+<label id="playerField">Nombre para los juegos y la tabla<input name="player" autocomplete="name" required maxlength="80"></label>
+<label id="emailField">Correo electrónico<input name="email" type="email" autocomplete="username" placeholder="tu@correo.com" autocapitalize="none" required maxlength="254"></label>
 <label>Contraseña (PIN)<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{6,8}" title="De 6 a 8 dígitos" required></label>
 <label id="whatsappField" hidden>Número de WhatsApp (10 dígitos)<input name="whatsapp" type="tel" autocomplete="tel" placeholder="646 123 4567" maxlength="30" disabled><small>Se usará para avisos de resultados de tu liga cuando se habilite el envío.</small></label>
 <button id="accessSubmit">Entrar</button>
@@ -413,8 +413,8 @@ function accessNotice(message,error=false){
 function showAccess(create){
  signup=create;
  const fields=by('access').elements;
- fields.email.disabled=!create;
- by('emailField').hidden=!create;
+ fields.player.disabled=!create;
+ by('playerField').hidden=!create;
  fields.whatsapp.disabled=!create;
  fields.whatsapp.required=create;
  by('whatsappField').hidden=!create;
@@ -465,7 +465,7 @@ by('signOut').onclick=async()=>{
 by('access').onsubmit=async event=>{
  event.preventDefault();
  const fields=event.currentTarget.elements, name=fields.player.value.trim(), pin=fields.pin.value;
- if(!name||!authClient){accessNotice('No se pudo cargar el acceso. Recarga la página.',true);return}
+ if(!authClient){accessNotice('No se pudo cargar el acceso. Recarga la página.',true);return}
  const button=by('accessSubmit');
  const creating=signup;
  button.disabled=true;
@@ -474,21 +474,15 @@ by('access').onsubmit=async event=>{
   if(creating){
    const email=fields.email.value.trim();
    const whatsapp=fields.whatsapp.value.replace(/[\s().-]/g,'');
-   if(name.includes('@')||!/^\d{10}$/.test(whatsapp))throw Error('Escribe un nombre de usuario y un WhatsApp de 10 dígitos.');
+   if(!name||name.includes('@')||!/^\d{10}$/.test(whatsapp))throw Error('Escribe tu nombre para los juegos y un WhatsApp de 10 dígitos.');
    const {error}=await authClient.auth.signUp({email,password:pin,
     options:{emailRedirectTo:returnUrl.href,data:{domino_username:name,domino_league:leagueId,domino_whatsapp:whatsapp}}});
    if(error)throw Error(error.message);
    showAccess(false);
    accessNotice('Revisa tu correo y abre el enlace de confirmación para activar tu usuario.');
   }else{
-   const response=await fetch(authUrl+'/functions/v1/bright-function',{
-    method:'POST',headers:{apikey:authKey,'Content-Type':'application/json'},
-    body:JSON.stringify({username:name,league:leagueId,pin})
-   });
-   const data=await response.json();
-   if(!response.ok)throw Error(data.error||'No se pudo iniciar sesión.');
-   const {error}=await authClient.auth.setSession(data);
-   if(error)throw Error(error.message);
+   const {error}=await authClient.auth.signInWithPassword({email:fields.email.value.trim(),password:pin});
+   if(error)throw Error(error.code==='invalid_credentials'?'El correo o el PIN no coinciden.':error.message);
    await enterVerified();
   }
  }catch(error){accessNotice(error.message||'No se pudo completar el acceso.',true)}
