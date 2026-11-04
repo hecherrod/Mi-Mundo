@@ -112,9 +112,8 @@ document.title=choosingLeague?'Martes de Dominó':title;
 by('welcomeLeague').textContent=title;
 document.querySelector('header h1').textContent=title;
 by(leagueId==='ensenada'?'linkEnsenada':'linkTodos').setAttribute('aria-current','page');
-const key='martes-domino-v1'+league.suffix;
+const key='martes-domino-v2'+league.suffix;
 const data=JSON.parse(localStorage.getItem(key)||'{}');
-const host='Héctor Herrera';
 function localDate(){
  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Tijuana',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
  return ['year','month','day'].map(type=>parts.find(part=>part.type===type).value).join('-');
@@ -277,7 +276,7 @@ function renderGame(s,g,i){
   const same=g.score?.every((value,index)=>value===score[index]);
   g.approvals=same?g.approvals:[];
   if(captains.includes(actor)&&!g.approvals.includes(actor))g.approvals.push(actor);
-  g.score=score;g.confirmed=actor===host||captains.every(c=>g.approvals.includes(c));save();
+  g.score=score;g.confirmed=captains.every(c=>g.approvals.includes(c));save();
  };
 }
 function renderStandings(){
@@ -330,7 +329,7 @@ by('game').onsubmit=e=>{
 by('month').onchange=renderStandings;
 by('day').onchange=()=>{if(!by('day').value){by('day').value=today}by('month').value=by('day').value.slice(0,7);render();renderMedia()};
 const db=new Promise((resolve,reject)=>{
- const request=indexedDB.open('martes-domino-media'+league.suffix,1);
+ const request=indexedDB.open('martes-domino-media-v2'+league.suffix,1);
  request.onupgradeneeded=()=>request.result.createObjectStore('files',{autoIncrement:true});
  request.onsuccess=()=>resolve(request.result);
  request.onerror=()=>reject(request.error);
@@ -389,7 +388,7 @@ by('record').onclick=async()=>{
   by('mediaStatus').textContent='No se pudo usar el micrófono. Puedes adjuntar una nota de voz.';
  }finally{button.disabled=false}
 };
-const accountKey='martes-domino-accounts-v2'+league.suffix;
+const accountKey='martes-domino-accounts-v3'+league.suffix;
 const nameKey=name=>name.trim().normalize('NFC').toLocaleLowerCase('es');
 let participant=null;
 let signup=false;
@@ -450,13 +449,13 @@ function showAccess(create){
 }
 function enter(name){
  participant=name;
- by('adminOpen').hidden=leagueId!=='ensenada'||name!==host;
+ by('adminOpen').hidden=true;
  by('welcome').hidden=true;
  by('app').hidden=false;
  by('checkIn').hidden=!name;
  by('checkIn').textContent='Ya llegué · Voy a asistir';
  for(const id of ['pair','game','record','audio','photos'])by(id).hidden=!name;
- by('arrival').hidden=name!==host;
+ by('arrival').hidden=true;
  by('checkStatus').textContent=name?'Hola, '+name+'. Marca tu asistencia cuando llegues.':'Estás viendo la jornada como invitado. Vuelve a bienvenida para registrarte y marcar tu asistencia.';
  by('day').value=localDate();
  by('day').onchange();
@@ -503,7 +502,6 @@ by('access').onsubmit=async e=>{
   const existingEmail=accounts.some(item=>item.email&&emailKey(item.email)===email);
   if(signup){
    if(name.includes('@')){accessError(status,'Escribe tu nombre para las partidas. El correo va en su propio campo.');return}
-   if(nameKey(name)===nameKey(host)){status.textContent='Ese usuario está reservado para el anfitrión.';return}
    if(existingEmail){accessError(status,'Ese correo ya está registrado. Usa «Iniciar sesión».');return}
    if(account){accessError(status,'Ese nombre ya está en uso para las partidas. Usa otro nombre para distinguirte en las partidas.');return}
    const whatsapp=fields.whatsapp.value.trim().replace(/[\s().-]/g,'');
@@ -558,9 +556,9 @@ function renderAdmin(){
  for(const item of Object.values(leagues)){
   const group=el('section','',panel);
   el('h2',item.label,group);
-  const accounts=JSON.parse(localStorage.getItem('martes-domino-accounts-v2'+item.suffix)||'[]');
+  const accounts=JSON.parse(localStorage.getItem('martes-domino-accounts-v3'+item.suffix)||'[]');
   el('p','Participantes registrados: '+(accounts.map(a=>a.name).join(', ')||'Sin registros'),group);
-  const dates=JSON.parse(localStorage.getItem('martes-domino-v1'+item.suffix)||'{}');
+  const dates=JSON.parse(localStorage.getItem('martes-domino-v2'+item.suffix)||'{}');
   const days=new Set(Object.keys(dates).filter(date=>date.startsWith(month+'-')));
   for(let date=new Date(month+'-01T12:00:00Z');date.toISOString().startsWith(month+'-');date.setUTCDate(date.getUTCDate()+1)){
    if(date.getUTCDay()===2)days.add(date.toISOString().slice(0,10));
@@ -579,13 +577,6 @@ function renderAdmin(){
   }
  }
 }
-by('adminOpen').onclick=()=>{
- if(leagueId!=='ensenada'||participant!==host)return;
- by('adminMonth').value=by('day').value.slice(0,7);
- renderAdmin();
- by('app').hidden=true;
- by('admin').hidden=false;
-};
 by('adminClose').onclick=()=>{by('admin').hidden=true;by('app').hidden=false};
 by('adminMonth').onchange=renderAdmin;
 by('checkIn').onclick=()=>{
@@ -597,25 +588,6 @@ by('checkIn').onclick=()=>{
  render();
  by('checkStatus').textContent='Asistencia registrada para el '+date+'.';
 };
-function removeMistakenHectorEntry(){
- if(leagueId!=='ensenada')return;
- const marker='martes-domino-hector-entry-cleanup-v1';
- if(localStorage.getItem(marker))return;
- const mistaken=name=>/^(hector\s+h\.?|hecherrod@gmail\.com)$/.test(
-  nameKey(name).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
- );
- const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
- localStorage.setItem(accountKey,JSON.stringify(accounts.filter(a=>!mistaken(a.name))));
- const todayEntry=data[localDate()];
- if(todayEntry){
-  todayEntry.people=todayEntry.people.filter(p=>!mistaken(p.name));
-  todayEntry.games=todayEntry.games.filter(g=>g.confirmed||g.score||
-   ![...todayEntry.pairs[g.a],...todayEntry.pairs[g.b]].some(mistaken));
-  localStorage.setItem(key,JSON.stringify(data));
- }
- localStorage.setItem(marker,'1');
-}
-removeMistakenHectorEntry();
 if(!choosingLeague)showAccess(false);
 render();
 </script></html>
