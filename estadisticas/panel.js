@@ -17,7 +17,7 @@
   }
   by('excludeBrowser').onchange = event => excludeBrowser(event.target.checked);
   exclusionState();
-  const names = { inicio: 'Mi Mundo', subasta: 'Subasta', libro: 'Libro', domino: 'Dominó', ensenada: 'Ensenada', 'todos-santos': 'Todos Santos' };
+  const names = { inicio: 'Mi Mundo', subasta: 'Subasta', libro: 'Libro', domino: 'Dominó', ensenada: 'Ensenada', 'todos-santos': 'Todos Santos', 'laboratorio-digital-cria': 'Laboratorio Digital CRIA', 'laboratorio-digital-cria--cotizador-giclees': 'Cotizador de Gicleés' };
   const name = key => names[key] || key;
   const number = value => Number(value || 0).toLocaleString('es-MX');
   function status(text, error = false) { by('status').textContent = text; by('status').className = error ? 'error' : ''; }
@@ -39,7 +39,7 @@
     card('totals', 'Sesiones', data.total.sessions);
     by('since').textContent = data.started_at ? 'Medición desde ' + new Date(data.started_at).toLocaleString('es-MX', { timeZone: 'America/Tijuana' }) + ' · hora de Tijuana.' : 'Aún no hay visitas registradas. Los contadores comienzan al activar la medición.';
     const sections = new Map(data.sections.map(s => [s.section, s]));
-    for (const key of ['inicio', 'subasta', 'libro', 'domino']) if (!sections.has(key)) sections.set(key, { section: key, views: 0, visitors: 0, sessions: 0 });
+    for (const key of ['inicio', 'subasta', 'libro', 'domino', 'laboratorio-digital-cria', 'laboratorio-digital-cria--cotizador-giclees']) if (!sections.has(key)) sections.set(key, { section: key, views: 0, visitors: 0, sessions: 0 });
     sections.forEach(s => row('sections', [name(s.section), number(s.views), number(s.visitors), number(s.sessions)]));
     data.leagues.forEach(l => { const p = document.createElement('p'); p.textContent = `Dominó · ${name(l.area)}: ${number(l.views)} visitas · ${number(l.visitors)} visitantes`; by('leagues').append(p); });
     if (!data.routes.length) row('routes', ['Aún no hay recorridos registrados.', '—']);

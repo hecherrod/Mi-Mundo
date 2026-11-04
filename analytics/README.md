@@ -25,3 +25,7 @@ Desde `subasta`, ejecutar `npm ci` y `npm run test:traffic` con Node 22 o poster
 `002_exclude_owner.sql` descarta en servidor los eventos de la sesión del administrador general. El colector envía la sesión únicamente al servicio Supabase existente; no guarda identidad en los eventos. Una sesión vencida queda pendiente hasta poder renovarse, sin degradarse a visita anónima.
 
 El panel activa además `mm-traffic-disabled` al reconocer al administrador. La casilla «No contar mis visitas en este navegador» permite excluir también visitas sin sesión. La exclusión es por navegador y origen: hay que activarla en cada navegador que se utilice sin sesión. Los eventos pendientes de ese navegador se descartan. No se eliminan visitas anónimas anteriores porque no están asociadas a una identidad.
+
+## Laboratorio Digital CRIA
+
+`/laboratorio-digital-cria/` es el directorio de aplicaciones. Cada aplicación usa un segundo segmento y tiene contador propio, por ejemplo `laboratorio-digital-cria--cotizador-giclees`. Los enlaces de navegación permanecen en Mi Mundo. El cotizador se incrusta desde su implementación pública de Google Apps Script, sin parámetros de taller ni acceso a la API interna. No se duplican precios ni registros en el portal.

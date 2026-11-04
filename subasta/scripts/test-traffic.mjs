@@ -87,4 +87,8 @@ localStorage.setItem('mi-mundo-auth-v1',JSON.stringify({access_token:'test-sessi
 await page('/subasta/');
 assert.equal(requestHeaders.at(-1).Authorization,'Bearer test-session-token');
 assert.equal(JSON.parse(sessionStorage.getItem('mm-traffic-pending')).length,0);
+localStorage.setItem('mi-mundo-auth-v1','null');
+await page('/laboratorio-digital-cria/cotizador-giclees/','?taller=never-send');
+assert.equal(requests.at(-1).p_section,'laboratorio-digital-cria--cotizador-giclees');
+assert.ok(!JSON.stringify(requests.at(-1)).includes('taller'));
 console.log('PASS: RLS, admin-only report, idempotency, unique totals, journeys, registration deduplication, invalid input, session expiry, private URL stripping, retry queue.');

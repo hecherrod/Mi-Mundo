@@ -12,7 +12,8 @@
   function section() {
     const parts = location.pathname.split('/').filter(Boolean);
     if (parts[0] === 'Mi-Mundo') parts.shift();
-    const slug = parts[0] || 'inicio';
+    const slug = parts[0] === 'laboratorio-digital-cria' && parts[1] && parts[1] !== 'index.html'
+      ? parts.slice(0, 2).join('--') : parts[0] || 'inicio';
     if (['estadisticas', 'privacidad'].includes(slug)) return null;
     if (['martes-domingo', 'martes-de-domino'].includes(slug)) return 'domino';
     return /^[a-z0-9][a-z0-9-]{0,59}$/.test(slug) ? slug : null;
