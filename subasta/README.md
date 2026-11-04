@@ -16,7 +16,7 @@ GitHub Pages sirve `index.html` y los archivos compilados de `assets/`. El códi
 
 ## Activación de la base
 
-La revisión automática de permisos bloqueó la activación inicial. Estos archivos están preparados para revisión, requieren autorización antes de ejecutarse en producción:
+La base se activó con autorización del propietario. Los archivos siguientes documentan los cambios aplicados en el proyecto de Mi Mundo:
 
 1. `supabase/001_auction.sql` crea cinco tablas privadas, el motor de vencimientos y la interfaz de acceso controlado `mi_mundo_auction`.
 2. `supabase/002_sample_catalog.sql` incorpora las seis obras ilustrativas de la versión anterior y conserva el cierre de muestra.
