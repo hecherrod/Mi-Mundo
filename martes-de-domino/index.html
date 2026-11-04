@@ -72,7 +72,7 @@ td,th{border-color:var(--line)}
 <section><h2>1. Asistencia</h2><div class="controls"><label id="attendanceChoice">¿Vas a jugar?<select id="selfPlays"><option>Sí</option><option>No</option></select></label>
 <button id="checkIn">Ya llegué · Voy a asistir</button></div><small id="checkStatus" role="status"></small><form id="arrival" hidden><label>Nombre<input name="player" required maxlength="80"></label><label>¿Va a jugar?<select name="plays"><option>Sí</option><option>No</option></select></label><button>Registrar llegada</button></form><ul id="people"></ul></section>
 <section><h2>2. Sorteo con fichas</h2><p>Hagan el sorteo en la mesa y anoten aquí las parejas que salieron. Elige primero al capitán.</p><form id="pair"><label>Capitán<select name="captain" required></select></label><label>Compañero<select name="partner" required></select></label><button>Guardar pareja</button></form><ul id="pairs"></ul></section>
-<section><h2>3. Partidas y marcadores</h2><form id="game"><label>Pareja A<select name="a" required></select></label><label>Pareja B<select name="b" required></select></label><button>Anotar cruce</button></form><div id="games"></div></section>
+<section><h2>3. Turnos y rondas</h2><label>Mesas disponibles<select id="tableCount"><option>1</option><option>2</option></select></label><div id="turns" aria-live="polite"></div><button id="queueFinal" hidden>Agregar final con las parejas ganadoras</button><h3>Partidas y marcadores</h3><form id="game"><label>Pareja A<select name="a" required></select></label><label>Pareja B<select name="b" required></select></label><label>Ronda<select name="round"><option>Por puntos</option><option>Previa</option><option>Semifinal</option><option>Final</option></select></label><button>Anotar cruce</button></form><div id="games"></div></section>
 <section><h2>4. Tabla mensual individual</h2><label>Mes<input id="month" type="month"></label><p>Solo cuentan los marcadores confirmados. Cada ganador recibe 3 puntos si la otra pareja termina en 0, 2 entre 1 y 49, y 1 desde 50.</p><table><thead><tr><th>Jugador</th><th>Partidas confirmadas</th><th>Puntos</th></tr></thead><tbody id="standings"></tbody></table></section>
 <section><h2>5. Receta y fotos</h2><p>Graba la receta o adjunta un audio. Las fotos se agregan juntas.</p><div class="controls"><button id="record" type="button">Grabar receta</button><label>Adjuntar audio<input id="audio" type="file" accept="audio/*"></label><label>Fotos en general<input id="photos" type="file" accept="image/*" multiple></label></div><small id="mediaStatus" role="status"></small><div id="media"></div></section>
 </main>
@@ -127,15 +127,63 @@ function el(tag,value,parent){const node=document.createElement(tag);node.textCo
 function options(select,items,placeholder){const current=select.value;select.replaceChildren();if(placeholder)select.add(new Option(placeholder,''));for(const [value,label] of items)select.add(new Option(label,value));if([...select.options].some(o=>o.value===current)&&current)select.value=current}
 function pairName(pair){return pair.join(' / ')}
 function points(score){const loser=Math.min(...score);return loser===0?3:loser<50?2:1}
-function save(){localStorage.setItem(key,JSON.stringify(data));render()}
+function save(){advanceTurns(session());localStorage.setItem(key,JSON.stringify(data));render()}
+function advanceTurns(s){
+ const active=s.games.filter(g=>g.table&&!g.confirmed);
+ const busy=new Set(active.flatMap(g=>[...s.pairs[g.a],...s.pairs[g.b]]));
+ for(let table=1;table<=(s.tables||1);table++){
+  if(active.some(g=>g.table===table))continue;
+  const next=s.games.find(g=>!g.confirmed&&!g.table&&!g.score&&
+   [...s.pairs[g.a],...s.pairs[g.b]].every(name=>!busy.has(name)&&s.people.some(p=>p.name===name&&p.plays)));
+  if(!next)continue;
+  next.table=table;
+  for(const name of [...s.pairs[next.a],...s.pairs[next.b]])busy.add(name);
+ }
+}
+function finalists(s){
+ const semis=s.games.filter(g=>g.round==='Semifinal');
+ if(semis.length!==2||semis.some(g=>!g.confirmed)||s.games.some(g=>g.round==='Final'))return [];
+ return [...new Set(semis.map(g=>g.score[0]>g.score[1]?g.a:g.b))];
+}
+function renderTurns(s){
+ const board=by('turns');
+ board.replaceChildren();
+ const active=s.games.filter(g=>!g.confirmed&&g.table);
+ const queued=s.games.filter(g=>!g.confirmed&&!g.table&&!g.score);
+ const name=g=>pairName(s.pairs[g.a])+' contra '+pairName(s.pairs[g.b])+' · '+(g.round||'Por puntos');
+ el('p','En mesa: '+(active.map(g=>'Mesa '+g.table+' · '+name(g)).join(' / ')||'Sin partida en curso'),board);
+ el('p','Siguientes turnos: '+(queued.map(name).join(' / ')||'Sin cruces pendientes'),board);
+ const assigned=new Set([...active,...queued].flatMap(g=>[...s.pairs[g.a],...s.pairs[g.b]]));
+ const waiting=s.people.filter(p=>p.plays&&!assigned.has(p.name)).map(p=>p.name);
+ el('p','Disponibles sin turno: '+([...new Set(waiting)].join(', ')||'Nadie'),board);
+ const final=s.games.find(g=>g.round==='Final'&&g.confirmed);
+ if(final)el('p','Campeones: '+pairName(s.pairs[final.score[0]>final.score[1]?final.a:final.b]),board);
+ by('queueFinal').hidden=!participant||finalists(s).length!==2;
+}
+by('queueFinal').onclick=()=>{
+ const s=session(),[a,b]=finalists(s);
+ if(!participant||a===undefined||b===undefined)return;
+ s.games.push({a,b,round:'Final',confirmed:false,approvals:[]});save();
+};
+by('tableCount').onchange=()=>{
+ if(!participant)return;
+ const s=session(),count=Number(by('tableCount').value);
+ if(s.games.some(g=>!g.confirmed&&g.table>count)){render();return alert('Termina la partida de esa mesa antes de quitarla.')}
+ s.tables=count;save();
+};
 function render(){
+ advanceTurns(session());
  const s=session(), uniquePeople=[...new Map(s.people.map(p=>[nameKey(p.name),p])).values()], players=uniquePeople.filter(p=>p.plays).map(p=>[p.name,p.name]);
  by('identity').textContent=participant?'Sesión de '+participant:'Vista de invitado';
  for(const field of ['captain','partner'])options(by('pair').elements[field],players,'Elige jugador');
  for(const field of ['a','b'])options(by('game').elements[field],s.pairs.map((p,i)=>[String(i),pairName(p)]),'Elige pareja');
  by('people').replaceChildren();for(const p of uniquePeople)el('li',p.name+' · '+(p.plays?'Juega':'No juega'),by('people'));
  by('pairs').replaceChildren();for(const p of s.pairs)el('li',pairName(p),by('pairs'));
- by('games').replaceChildren();s.games.forEach((g,i)=>renderGame(s,g,i));
+ renderTurns(s);
+ by('games').replaceChildren();
+ s.games.forEach((g,i)=>{if(g.confirmed||g.table||g.score)renderGame(s,g,i)});
+ by('tableCount').value=String(s.tables||1);
+ by('tableCount').disabled=!participant;
  renderStandings();
 }
 function renderGame(s,g,i){
@@ -211,7 +259,7 @@ by('game').onsubmit=e=>{
  e.preventDefault();const {a,b}=e.currentTarget.elements,s=session();
  const left=Number(a.value),right=Number(b.value);
  if(s.pairs[left].some(p=>s.pairs[right].includes(p)))return alert('Las parejas deben tener cuatro jugadores distintos.');
- s.games.push({a:left,b:right,confirmed:false,approvals:[]});save();
+ s.games.push({a:left,b:right,round:e.currentTarget.elements.round.value,confirmed:false,approvals:[]});save();
 };
 by('month').onchange=renderStandings;
 by('day').onchange=()=>{if(!by('day').value){by('day').value=today}by('month').value=by('day').value.slice(0,7);render();renderMedia()};
