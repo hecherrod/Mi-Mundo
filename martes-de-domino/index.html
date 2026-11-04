@@ -39,6 +39,7 @@ td,th{border-color:var(--line)}
 #accessStatus.access-error{color:#ff8b94;animation:access-alert .7s ease-out}
 @keyframes access-alert{from{background:#5e2028}to{background:transparent}}
 @media(prefers-reduced-motion:reduce){#accessStatus.access-error{animation:none}}
+#confirmationNotice{margin:18px 0;padding:18px;border:2px solid var(--neon);background:#10312c;line-height:1.6}#confirmationNotice button{display:block;margin-top:12px}
 </style></head>
 <section id="welcome">
 <div class="cover"><img alt="Amigos reunidos alrededor de una mesa de dominó" src="portada.jpg"><div class="cover-title"><span class="cover-label">CLUB DE DOMINÓ</span><h1>Martes de Dominó</h1></div></div>
@@ -63,7 +64,7 @@ td,th{border-color:var(--line)}
 <button id="showRecovery" type="button">Olvidé mi usuario o contraseña</button>
 <form id="recovery" hidden><label>Correo de la cuenta<input name="email" type="email" autocomplete="email" required></label><button>Enviar enlace</button></form>
 <form id="resetPin" hidden><label>PIN nuevo<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{6,8}" required></label><button>Guardar PIN</button></form>
-<small id="accessStatus" role="status"></small></div>
+<div id="confirmationNotice" role="status" hidden></div><small id="accessStatus" role="status"></small></div>
 </div><div class="domino-band" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg></div>
 </section>
 <main id="app" hidden>
@@ -71,7 +72,7 @@ td,th{border-color:var(--line)}
 <button id="adminOpen" hidden>Administración de ligas</button><button id="signOut">Volver a bienvenida</button>
 </div></header>
 <section><h2>1. Asistencia</h2><div class="controls">
-<button id="checkIn">Ya llegué</button></div><small id="checkStatus" role="status"></small><form id="arrival" hidden><label>Nombre<input name="player" required maxlength="80"></label><label>¿Va a jugar?<select name="plays"><option>Sí</option><option>No</option></select></label><button>Registrar llegada</button></form><ul id="people"></ul></section>
+<label>¿Vas a jugar?<select id="willPlay"><option value="yes">Sí</option><option value="no">No</option></select></label><button id="checkIn">Registrar llegada</button></div><small id="checkStatus" role="status"></small><ul id="people"></ul></section>
 <section><h2>2. Sorteo con fichas</h2><p>Hagan el sorteo en la mesa y anoten aquí las parejas que salieron. Elige primero al capitán.</p><form id="pair"><label>Capitán<select name="captain" required></select></label><label>Compañero<select name="partner" required></select></label><button>Guardar pareja</button></form><ul id="pairs"></ul></section>
 <section><h2>3. Turnos y rondas</h2><label>Mesas disponibles<select id="tableCount"><option>1</option><option>2</option></select></label><div id="turns" aria-live="polite"></div><details><summary>Rol sugerido de juegos</summary><div id="bracket"></div><button id="followBracket" hidden>Usar este rol</button></details><button id="queueFinal" hidden>Agregar final con las parejas ganadoras</button><h3>Partidas y marcadores</h3><form id="game"><label>Pareja A<select name="a" required></select></label><label>Pareja B<select name="b" required></select></label><label>Ronda<select name="round"><option>Por puntos</option><option>Previa</option><option>Semifinal</option><option>Final</option></select></label><button>Anotar cruce</button></form><div id="games"></div></section>
 <section><h2>4. Tabla mensual individual</h2><label>Mes<input id="month" type="month"></label><p>Solo cuentan los marcadores confirmados. Cada ganador recibe 3 puntos si la otra pareja termina en 0, 2 entre 1 y 49, y 1 desde 50.</p><table><thead><tr><th>Jugador</th><th>Partidas confirmadas</th><th>Puntos</th></tr></thead><tbody id="standings"></tbody></table></section>
@@ -311,13 +312,6 @@ function registerArrival(name,plays){
  }else s.people.push({name,plays});
  save();
 }
-by('arrival').onsubmit=e=>{
- e.preventDefault();
- const fields=e.currentTarget.elements,name=fields.player.value.trim();
- if(!name)return;
- registerArrival(name,fields.plays.value==='Sí');
- e.currentTarget.reset();
-};
 by('pair').onsubmit=e=>{
  e.preventDefault();const {captain,partner}=e.currentTarget.elements,s=session();
  if(captain.value===partner.value)return alert('Elige dos jugadores distintos.');
@@ -429,9 +423,9 @@ function enter(name){
  by('welcome').hidden=true;
  by('app').hidden=false;
  by('checkIn').hidden=!name;
- by('checkIn').textContent='Ya llegué · Voy a asistir';
+ by('checkIn').textContent='Registrar llegada';
+ by('willPlay').value='yes';
  for(const id of ['pair','game','record','audio','photos'])by(id).hidden=!name;
- by('arrival').hidden=!canAdmin;
  by('checkStatus').textContent=name?'Hola, '+name+'. Marca tu asistencia cuando llegues.':'Estás viendo la jornada como invitado. Vuelve a bienvenida para registrarte y marcar tu asistencia.';
  by('day').value=localDate();
  by('day').onchange();
@@ -479,10 +473,19 @@ by('access').onsubmit=async event=>{
     options:{emailRedirectTo:returnUrl.href,data:{domino_username:name,domino_league:leagueId,domino_whatsapp:whatsapp}}});
    if(error)throw Error(error.message);
    showAccess(false);
-   accessNotice('Revisa tu correo y abre el enlace de confirmación para activar tu usuario.');
+   by('access').hidden=true;
+   const notice=by('confirmationNotice');
+   notice.replaceChildren();
+   el('strong','Confirma tu correo para poder entrar',notice);
+   el('p','Te enviamos un enlace a '+email+'. Abre tu correo, pulsa el enlace de confirmación y luego vuelve a iniciar sesión. Revisa también spam o correo no deseado.',notice);
+   const done=el('button','Ya confirmé mi correo · Iniciar sesión',notice);
+   done.onclick=()=>{notice.hidden=true;showAccess(false)};
+   notice.hidden=false;
+   notice.scrollIntoView({block:'center',behavior:'smooth'});
+   notice.focus();
   }else{
    const {error}=await authClient.auth.signInWithPassword({email:fields.email.value.trim(),password:pin});
-   if(error)throw Error(error.code==='invalid_credentials'?'El correo o el PIN no coinciden.':error.message);
+   if(error)throw Error(error.code==='email_not_confirmed'?'Confirma tu correo antes de entrar. Abre el enlace que te enviamos y revisa también spam.':error.code==='invalid_credentials'?'El correo o el PIN no coinciden.':error.message);
    await enterVerified();
   }
  }catch(error){accessNotice(error.message||'No se pudo completar el acceso.',true)}
@@ -566,10 +569,10 @@ by('checkIn').onclick=()=>{
  if(!participant)return;
  const date=localDate();
  if(by('day').value!==date){by('day').value=date;by('day').onchange()}
- registerArrival(participant,true);
- by('checkIn').textContent='Ya estás en la lista';
+ registerArrival(participant,by('willPlay').value==='yes');
+ by('checkIn').textContent='Actualizar llegada';
  render();
- by('checkStatus').textContent='Asistencia registrada para el '+date+'.';
+ by('checkStatus').textContent=participant+' · llegada registrada para el '+date+(by('willPlay').value==='yes'?' · disponible para jugar.':' · hoy no juega.');
 };
 if(!choosingLeague)showAccess(false);
 render();
