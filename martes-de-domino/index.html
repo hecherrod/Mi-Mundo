@@ -52,16 +52,16 @@ td,th{border-color:var(--line)}
 <form id="access" hidden style="margin-top:16px">
 <label>Usuario (login)<input name="player" autocomplete="username" required maxlength="80"></label>
 <label>Contraseña (PIN)<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" title="De 4 a 8 dígitos" required></label>
-<label id="whatsappField" hidden>WhatsApp con código de país<input name="whatsapp" type="tel" autocomplete="tel" placeholder="+52 646 123 4567" maxlength="30" disabled><small>Usaremos este número para enviarte los resultados de tu liga por WhatsApp.</small></label>
+<label id="whatsappField" hidden>Celular (10 dígitos)<input name="whatsapp" type="tel" autocomplete="tel" placeholder="646 123 4567" maxlength="30" disabled><small>Usaremos este número para enviarte los resultados de tu liga por WhatsApp.</small></label>
 <button id="accessSubmit">Entrar</button>
 </form>
 <button id="showRecovery" type="button">Olvidé mi usuario o contraseña</button>
 <form id="recovery" hidden>
-<label>Teléfono registrado<input id="recoveryPhone" type="tel" autocomplete="tel" placeholder="+52 646 123 4567" required></label>
+<label>Teléfono registrado<input id="recoveryPhone" type="tel" autocomplete="tel" placeholder="646 123 4567" required></label>
 <label>Nueva contraseña (PIN)<input id="newPin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" required></label>
 <button>Cambiar contraseña</button>
 </form>
-<form id="completePhone" hidden><label>Celular con código de país<input name="phone" type="tel" autocomplete="tel" placeholder="+52 646 123 4567" required maxlength="30"></label><button>Guardar celular y entrar</button></form><small id="accessStatus" role="status"></small></div>
+<form id="completePhone" hidden><label>Celular (10 dígitos)<input name="phone" type="tel" autocomplete="tel" placeholder="646 123 4567" required maxlength="30"></label><button>Guardar celular y entrar</button></form><small id="accessStatus" role="status"></small></div>
 </div><div class="domino-band" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg></div>
 </section>
 <main id="app" hidden>
@@ -336,8 +336,8 @@ by('completePhone').onsubmit=event=>{
  if(!pendingPhoneAccount)return;
  const whatsapp=event.currentTarget.elements.phone.value.trim().replace(/[\s().-]/g,'');
  const status=by('accessStatus');
- if(!/^\+[1-9][0-9]{7,14}$/.test(whatsapp)){
-  status.textContent='Escribe tu celular con código de país, por ejemplo +52 seguido de tu número.';
+ if(!/^[0-9]{10}$/.test(whatsapp)){
+  status.textContent='Escribe los 10 dígitos de tu celular.';
   return;
  }
  const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
@@ -392,7 +392,10 @@ by('signOut').onclick=()=>{
  by('access').reset();
  by('accessStatus').textContent='';
 };
-const normalizePhone=value=>value.replace(/[^0-9]/g,'');
+const normalizePhone=value=>{
+ const digits=value.replace(/[^0-9]/g,'');
+ return /^52[0-9]{10}$/.test(digits)?digits.slice(2):digits;
+};
 async function pinDigest(pin,salt){
  const bytes=new TextEncoder().encode(salt+':'+pin);
  const digest=await crypto.subtle.digest('SHA-256',bytes);
@@ -411,8 +414,8 @@ by('access').onsubmit=async e=>{
    if(nameKey(name)===nameKey(host)){status.textContent='Ese usuario está reservado para el anfitrión.';return}
    if(account){status.textContent='Ese nombre ya está registrado. Usa «Iniciar sesión».';return}
    const whatsapp=fields.whatsapp.value.trim().replace(/[\s().-]/g,'');
-   if(!/^\+[1-9][0-9]{7,14}$/.test(whatsapp)){
-    status.textContent='Escribe tu WhatsApp con código de país, por ejemplo +52 seguido de tu número.';
+   if(!/^[0-9]{10}$/.test(whatsapp)){
+    status.textContent='Escribe tu Celular (10 dígitos), por ejemplo +52 seguido de tu número.';
     fields.whatsapp.focus();
     return;
    }
@@ -450,7 +453,7 @@ by('showRecovery').onclick=()=>{
  by('access').hidden=true;
  by('recovery').reset();
  by('recovery').hidden=false;
- by('accessStatus').textContent='Escribe el teléfono que registraste en esta liga, incluido el código de país.';
+ by('accessStatus').textContent='Escribe el teléfono que registraste en esta liga.';
  by('recoveryPhone').focus();
 };
 by('recovery').onsubmit=async event=>{
