@@ -53,7 +53,7 @@ td,th{border-color:var(--line)}
 <p>Inicia sesión para entrar a la jornada. Si todavía no tienes cuenta, regístrate.</p>
 <div class="controls"><button id="showLogin">Iniciar sesión</button><button id="showSignup">Registrarme como participante</button></div>
 <form id="access" hidden style="margin-top:16px">
-<label>Nombre para las partidas<input name="player" autocomplete="name" required maxlength="80"></label>
+<label>Nombre que se mostrará en las partidas<input name="player" autocomplete="name" required maxlength="80"></label>
 <label id="emailField">Correo electrónico (usuario)<input name="email" type="email" autocomplete="username" placeholder="tu@correo.com" autocapitalize="none" required maxlength="254"></label>
 <label>Contraseña (PIN)<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" title="De 4 a 8 dígitos" required></label>
 <label id="whatsappField" hidden>Número de WhatsApp (10 dígitos)<input name="whatsapp" type="tel" autocomplete="tel" placeholder="646 123 4567" maxlength="30" disabled><small>Usaremos este número para enviarte los resultados de tu liga por WhatsApp.</small></label>
@@ -444,6 +444,7 @@ by('access').onsubmit=async e=>{
   const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
   const account=legacyLogin?accounts.find(item=>!item.email&&nameKey(item.name)===nameKey(name)):accounts.find(item=>item.email&&emailKey(item.email)===email);
   if(signup){
+   if(name.includes('@')){accessError(status,'Escribe tu nombre para las partidas. El correo va en su propio campo.');return}
    if(nameKey(name)===nameKey(host)){status.textContent='Ese usuario está reservado para el anfitrión.';return}
    if(account){accessError(status,'Ese correo ya está registrado. Usa «Iniciar sesión».');return}
    if(accounts.some(item=>nameKey(item.name)===nameKey(name))){accessError(status,'Ese nombre ya está en uso para las partidas. Usa otro nombre para distinguirte en las partidas.');return}
@@ -566,6 +567,25 @@ by('checkIn').onclick=()=>{
  render();
  by('checkStatus').textContent='Asistencia registrada para el '+date+'.';
 };
+function removeMistakenHectorEntry(){
+ if(leagueId!=='ensenada')return;
+ const marker='martes-domino-hector-entry-cleanup-v1';
+ if(localStorage.getItem(marker))return;
+ const mistaken=name=>/^(hector\s+h\.?|hecherrod@gmail\.com)$/.test(
+  nameKey(name).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+ );
+ const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
+ localStorage.setItem(accountKey,JSON.stringify(accounts.filter(a=>!mistaken(a.name))));
+ const todayEntry=data[localDate()];
+ if(todayEntry){
+  todayEntry.people=todayEntry.people.filter(p=>!mistaken(p.name));
+  todayEntry.games=todayEntry.games.filter(g=>g.confirmed||g.score||
+   ![...todayEntry.pairs[g.a],...todayEntry.pairs[g.b]].some(mistaken));
+  localStorage.setItem(key,JSON.stringify(data));
+ }
+ localStorage.setItem(marker,'1');
+}
+removeMistakenHectorEntry();
 if(!choosingLeague)showAccess(false);
 render();
 </script></html>
