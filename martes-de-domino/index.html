@@ -57,8 +57,7 @@ td,th{border-color:var(--line)}
 </form>
 <button id="showRecovery" type="button">Olvidé mi usuario o contraseña</button>
 <form id="recovery" hidden>
-<label>Usuario guardado<select id="savedUser" required></select></label>
-<label>Código de recuperación<input id="recoveryCode" required autocomplete="off"></label>
+<label>Teléfono registrado<input id="recoveryPhone" type="tel" autocomplete="tel" placeholder="+52 646 123 4567" required></label>
 <label>Nueva contraseña (PIN)<input id="newPin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" required></label>
 <button>Cambiar contraseña</button>
 </form>
@@ -366,6 +365,7 @@ by('signOut').onclick=()=>{
  by('access').reset();
  by('accessStatus').textContent='';
 };
+const normalizePhone=value=>value.replace(/[^0-9]/g,'');
 async function pinDigest(pin,salt){
  const bytes=new TextEncoder().encode(salt+':'+pin);
  const digest=await crypto.subtle.digest('SHA-256',bytes);
@@ -389,15 +389,18 @@ by('access').onsubmit=async e=>{
     fields.whatsapp.focus();
     return;
    }
+   if(accounts.some(account=>account.whatsapp&&normalizePhone(account.whatsapp)===normalizePhone(whatsapp))){
+    status.textContent='Ese teléfono ya está registrado en esta liga. Usa la opción de recuperación.';
+    return;
+   }
    const salt=Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-');
-   const code=Array.from(crypto.getRandomValues(new Uint32Array(4)),n=>n.toString(16).padStart(8,'0')).join('-');
-   accounts.push({name,whatsapp,salt,digest:await pinDigest(pin,salt),recovery:await pinDigest(code,salt)});
+   accounts.push({name,whatsapp,salt,digest:await pinDigest(pin,salt)});
    localStorage.setItem(accountKey,JSON.stringify(accounts));
    enter(name);
    by('selfPlays').value='Sí';
    registerArrival(name,true);
    by('checkIn').textContent='Actualizar mi asistencia';
-   by('checkStatus').textContent='Ya estás en la lista de juego de hoy. Guarda tu código de recuperación: '+code;
+   by('checkStatus').textContent='Ya estás en la lista de juego de hoy.';
   }else{
    if(!account||account.digest!==await pinDigest(pin,account.salt)){status.textContent='Revisa el nombre y la clave.';return}
    enter(account.name);
@@ -410,20 +413,21 @@ by('showRecovery').onclick=()=>{
  by('access').hidden=true;
  by('recovery').reset();
  by('recovery').hidden=false;
- const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
- options(by('savedUser'),accounts.map(a=>[a.name,a.name]),'Elige tu usuario');
- by('accessStatus').textContent=accounts.length?'Aquí aparecen los usuarios de este navegador. Las cuentas anteriores a esta actualización pueden recuperar el usuario, pero necesitan su PIN original.':'No hay usuarios guardados en este navegador.';
+ by('accessStatus').textContent='Escribe el teléfono que registraste en esta liga, incluido el código de país.';
+ by('recoveryPhone').focus();
 };
 by('recovery').onsubmit=async event=>{
  event.preventDefault();
  const status=by('accessStatus');
  const accounts=JSON.parse(localStorage.getItem(accountKey)||'[]');
- const account=accounts.find(a=>a.name===by('savedUser').value);
- if(!account?.recovery){status.textContent='Esta cuenta no tiene código de recuperación.';return}
+ const phone=normalizePhone(by('recoveryPhone').value);
+ const matches=accounts.filter(a=>a.whatsapp&&normalizePhone(a.whatsapp)===phone);
+ if(matches.length!==1){
+  status.textContent=matches.length?'Este teléfono está asociado a varias cuentas. Pide ayuda al anfitrión.':'No encontramos ese teléfono en los registros de esta liga en este navegador.';
+  return;
+ }
+ const account=matches[0];
  try{
-  if(account.recovery!==await pinDigest(by('recoveryCode').value.trim(),account.salt)){
-   status.textContent='El código de recuperación no coincide.';return;
-  }
   account.digest=await pinDigest(by('newPin').value,account.salt);
   localStorage.setItem(accountKey,JSON.stringify(accounts));
   by('recovery').reset();
