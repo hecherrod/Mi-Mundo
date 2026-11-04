@@ -1,0 +1,12 @@
+-- Obras ilustrativas existentes. Sustituir por el catálogo real antes de cobrar.
+begin;
+insert into mi_mundo_private.auction_rounds(id,title,closes_at,is_trial)
+values('muestra-2026','Primera ronda · muestra','2026-11-16T02:00:00Z',true);
+insert into mi_mundo_private.auction_lots(round_id,id,details) values
+('muestra-2026',1,'{"id":1,"title":"El silencio del sol","artist":"Elena Robles","year":2025,"type":"Pintura","medium":"Acrílico sobre lienzo","size":"80 × 100 cm","base":8500,"colors":["#ded5b8","#aa492e","#243e39"],"desc":"Un diálogo entre la luz del desierto y las formas que deja el tiempo. Texturas cálidas, planos de color y un horizonte que invita a detenerse."}'::jsonb),
+('muestra-2026',2,'{"id":2,"title":"La forma de la calma","artist":"Mateo Vidal","year":2026,"type":"Pintura","medium":"Óleo sobre lienzo","size":"60 × 80 cm","base":6200,"colors":["#ddd9c8","#273f3d","#b89662"],"desc":"Una composición de formas orgánicas que encuentra equilibrio en la imperfección. Verdes profundos y tonos minerales."}'::jsonb),
+('muestra-2026',3,'{"id":3,"title":"Territorio interior","artist":"Lucía Montes","year":2025,"type":"Arte digital","medium":"Composición digital · edición de muestra","size":"70 × 90 cm","base":4800,"colors":["#e2cdb5","#b3452c","#e3a743"],"desc":"Arquitecturas imaginadas y paisajes de la memoria. Una exploración de la relación entre espacio, color y emoción."}'::jsonb),
+('muestra-2026',4,'{"id":4,"title":"Donde habita el azul","artist":"Tomás del Valle","year":2024,"type":"Pintura","medium":"Técnica mixta sobre lienzo","size":"90 × 120 cm","base":11000,"colors":["#d9d9cf","#243f65","#8ba5b0"],"desc":"Capas de azul que evocan la profundidad del agua y la amplitud del cielo. Una pieza de carácter contemplativo."}'::jsonb),
+('muestra-2026',5,'{"id":5,"title":"Equilibrio imperfecto","artist":"Ana Beltrán","year":2026,"type":"Obra gráfica","medium":"Impresión artística · edición de muestra","size":"50 × 70 cm","base":3200,"colors":["#eee7d5","#302c28","#b48d65"],"desc":"Un estudio de líneas, espacios y silencios. La fuerza de lo esencial en una composición de ritmo pausado."}'::jsonb),
+('muestra-2026',6,'{"id":6,"title":"Un jardín posible","artist":"Nicolás Serra","year":2025,"type":"Obra gráfica","medium":"Composición gráfica","size":"65 × 85 cm","base":5400,"colors":["#ddd6b7","#58704c","#c77651"],"desc":"Formas botánicas abstractas en una paleta de tierra. Un jardín que existe entre lo observado y lo imaginado."}'::jsonb);
+commit;
