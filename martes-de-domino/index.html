@@ -114,7 +114,8 @@ document.title=choosingLeague?'Martes de Dominó':title;
 by('welcomeLeague').textContent=title;
 document.querySelector('header h1').textContent=title;
 by(leagueId==='ensenada'?'linkEnsenada':'linkTodos').setAttribute('aria-current','page');
-const key='martes-domino-v2'+league.suffix;
+const leagueDataKey=item=>item.suffix?'martes-domino-v2'+item.suffix:'martes-domino-v3-ensenada';
+const key=leagueDataKey(league);
 const data=JSON.parse(localStorage.getItem(key)||'{}');
 function localDate(){
  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Tijuana',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
@@ -331,7 +332,7 @@ by('game').onsubmit=e=>{
 by('month').onchange=renderStandings;
 by('day').onchange=()=>{if(!by('day').value){by('day').value=today}by('month').value=by('day').value.slice(0,7);render();renderMedia()};
 const db=new Promise((resolve,reject)=>{
- const request=indexedDB.open('martes-domino-media-v2'+league.suffix,1);
+ const request=indexedDB.open(league.suffix?'martes-domino-media-v2'+league.suffix:'martes-domino-media-v3-ensenada',1);
  request.onupgradeneeded=()=>request.result.createObjectStore('files',{autoIncrement:true});
  request.onsuccess=()=>resolve(request.result);
  request.onerror=()=>reject(request.error);
@@ -539,7 +540,7 @@ function renderAdmin(){
  for(const item of [league]){
   const group=el('section','',panel);
   el('h2',item.label,group);
-  const dates=JSON.parse(localStorage.getItem('martes-domino-v2'+item.suffix)||'{}');
+  const dates=JSON.parse(localStorage.getItem(leagueDataKey(item))||'{}');
   const days=new Set(Object.keys(dates).filter(date=>date.startsWith(month+'-')));
   for(let date=new Date(month+'-01T12:00:00Z');date.toISOString().startsWith(month+'-');date.setUTCDate(date.getUTCDate()+1)){
    if(date.getUTCDay()===2)days.add(date.toISOString().slice(0,10));
