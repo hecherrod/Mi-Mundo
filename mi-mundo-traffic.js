@@ -20,13 +20,37 @@
   let pending = Array.isArray(read(session, 'mm-traffic-pending')) ? read(session, 'mm-traffic-pending').slice(-40) : [];
   let sending = false;
   async function flush() {
+    if (read(local, 'mm-traffic-disabled') === true) {
+      pending = [];
+      write(session, 'mm-traffic-pending', pending);
+      return;
+    }
     if (sending || !pending.length || navigator.onLine === false) return;
     sending = true;
     try {
+      const headers = { apikey: key, 'Content-Type': 'application/json' };
+      // Use the shared session only with the same Supabase service. The server
+      // checks administrator status; never trust an email or role from storage.
+      if (window.miMundoAuth?.auth?.getSession) {
+        const { data, error } = await window.miMundoAuth.auth.getSession();
+        if (error) return;
+        if (data.session?.access_token) headers.Authorization = 'Bearer ' + data.session.access_token;
+      } else {
+        const saved = read(local, 'mi-mundo-auth-v1');
+        if (saved?.access_token) {
+          // Preserve queued events until the shared client can refresh an old
+          // session, rather than mistakenly counting a signed-in owner as anon.
+          if (!saved.expires_at || saved.expires_at * 1000 <= Date.now()) return;
+          headers.Authorization = 'Bearer ' + saved.access_token;
+        }
+      }
       while (pending.length) {
+        if (read(local, 'mm-traffic-disabled') === true) {
+          pending = []; write(session, 'mm-traffic-pending', pending); break;
+        }
         const event = pending[0];
         const response = await fetch(endpoint, { method: 'POST', keepalive: true,
-          headers: { apikey: key, 'Content-Type': 'application/json' }, body: JSON.stringify(event) });
+          headers, body: JSON.stringify(event) });
         if (!response.ok) break;
         pending.shift();
         write(session, 'mm-traffic-pending', pending);

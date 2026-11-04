@@ -19,3 +19,9 @@ Incluir `<script src="../mi-mundo-traffic.js" defer></script>` en cada nuevo `in
 Desde `subasta`, ejecutar `npm ci` y `npm run test:traffic` con Node 22 o posterior. Las pruebas ejecutan el SQL real en PostgreSQL aislado y verifican permisos efectivos de `anon` y `authenticated`, protección del informe, reintentos, rutas, totales sin duplicar, sesión y exclusión de parámetros privados.
 
 `001_traffic.sql` fue aplicada en Supabase con el nombre `mi_mundo_traffic_counters`. No volver a ejecutarla sobre la misma base.
+
+## Excluir al propietario
+
+`002_exclude_owner.sql` descarta en servidor los eventos de la sesión del administrador general. El colector envía la sesión únicamente al servicio Supabase existente; no guarda identidad en los eventos. Una sesión vencida queda pendiente hasta poder renovarse, sin degradarse a visita anónima.
+
+El panel activa además `mm-traffic-disabled` al reconocer al administrador. La casilla «No contar mis visitas en este navegador» permite excluir también visitas sin sesión. La exclusión es por navegador y origen: hay que activarla en cada navegador que se utilice sin sesión. Los eventos pendientes de ese navegador se descartan. No se eliminan visitas anónimas anteriores porque no están asociadas a una identidad.

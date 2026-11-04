@@ -1,6 +1,22 @@
 (() => {
   const by = id => document.getElementById(id);
   const client = window.miMundoAuth;
+  function exclusionState() {
+    try {
+      const excluded = localStorage.getItem('mm-traffic-disabled') === 'true';
+      by('excludeBrowser').checked = excluded;
+      by('exclusionStatus').textContent = excluded ? 'Este navegador está excluido de los contadores y recorridos.' : 'Este navegador todavía puede contar visitas cuando no tengas sesión de administrador.';
+    } catch { by('exclusionStatus').textContent = 'El navegador no permite guardar esta preferencia. Tus visitas con sesión de administrador se excluyen igualmente.'; }
+  }
+  function excludeBrowser(excluded) {
+    try {
+      localStorage.setItem('mm-traffic-disabled', JSON.stringify(excluded));
+      if (excluded) sessionStorage.setItem('mm-traffic-pending', '[]');
+      exclusionState();
+    } catch { by('exclusionStatus').textContent = 'No se pudo guardar la preferencia. Tus visitas con sesión de administrador se excluyen igualmente.'; }
+  }
+  by('excludeBrowser').onchange = event => excludeBrowser(event.target.checked);
+  exclusionState();
   const names = { inicio: 'Mi Mundo', subasta: 'Subasta', libro: 'Libro', domino: 'Dominó', ensenada: 'Ensenada', 'todos-santos': 'Todos Santos' };
   const name = key => names[key] || key;
   const number = value => Number(value || 0).toLocaleString('es-MX');
@@ -46,6 +62,7 @@
       if (!user) { by('report').hidden = true; by('login').hidden = false; status(''); return; }
       const { data, error } = await client.rpc('mi_mundo_traffic_report', { p_days: Number(by('days').value) });
       if (error) throw Error(error.code === '42501' ? 'Esta cuenta no es el administrador general de Mi Mundo.' : 'No se pudieron consultar las estadísticas. Intenta de nuevo.');
+      excludeBrowser(true);
       render(data); by('report').hidden = false; by('login').hidden = true; status('Actualizado · ' + new Date().toLocaleTimeString('es-MX', { timeZone: 'America/Tijuana' }));
     } catch (error) { by('report').hidden = true; by('login').hidden = false; status(error.message, true); }
     finally { by('refresh').disabled = false; }
