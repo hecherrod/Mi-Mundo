@@ -69,10 +69,10 @@ td,th{border-color:var(--line)}
 <header><h1>Martes de Dominó</h1><p>Versión de prueba · Los datos de juego quedan en este navegador.</p><div class="controls"><label>Fecha de la jornada<input id="day" type="date" required></label><strong id="identity"></strong></div><div class="controls" style="margin-top:12px">
 <button id="adminOpen" hidden>Administración de ligas</button><button id="signOut">Volver a bienvenida</button>
 </div></header>
-<section><h2>1. Asistencia</h2><div class="controls"><label id="attendanceChoice">¿Vas a jugar?<select id="selfPlays"><option>Sí</option><option>No</option></select></label>
-<button id="checkIn">Ya llegué · Voy a asistir</button></div><small id="checkStatus" role="status"></small><form id="arrival" hidden><label>Nombre<input name="player" required maxlength="80"></label><label>¿Va a jugar?<select name="plays"><option>Sí</option><option>No</option></select></label><button>Registrar llegada</button></form><ul id="people"></ul></section>
+<section><h2>1. Asistencia</h2><div class="controls">
+<button id="checkIn">Ya llegué</button></div><small id="checkStatus" role="status"></small><form id="arrival" hidden><label>Nombre<input name="player" required maxlength="80"></label><label>¿Va a jugar?<select name="plays"><option>Sí</option><option>No</option></select></label><button>Registrar llegada</button></form><ul id="people"></ul></section>
 <section><h2>2. Sorteo con fichas</h2><p>Hagan el sorteo en la mesa y anoten aquí las parejas que salieron. Elige primero al capitán.</p><form id="pair"><label>Capitán<select name="captain" required></select></label><label>Compañero<select name="partner" required></select></label><button>Guardar pareja</button></form><ul id="pairs"></ul></section>
-<section><h2>3. Turnos y rondas</h2><label>Mesas disponibles<select id="tableCount"><option>1</option><option>2</option></select></label><div id="turns" aria-live="polite"></div><button id="queueFinal" hidden>Agregar final con las parejas ganadoras</button><h3>Partidas y marcadores</h3><form id="game"><label>Pareja A<select name="a" required></select></label><label>Pareja B<select name="b" required></select></label><label>Ronda<select name="round"><option>Por puntos</option><option>Previa</option><option>Semifinal</option><option>Final</option></select></label><button>Anotar cruce</button></form><div id="games"></div></section>
+<section><h2>3. Turnos y rondas</h2><label>Mesas disponibles<select id="tableCount"><option>1</option><option>2</option></select></label><div id="turns" aria-live="polite"></div><details><summary>Rol sugerido de juegos</summary><div id="bracket"></div><button id="followBracket" hidden>Usar este rol</button></details><button id="queueFinal" hidden>Agregar final con las parejas ganadoras</button><h3>Partidas y marcadores</h3><form id="game"><label>Pareja A<select name="a" required></select></label><label>Pareja B<select name="b" required></select></label><label>Ronda<select name="round"><option>Por puntos</option><option>Previa</option><option>Semifinal</option><option>Final</option></select></label><button>Anotar cruce</button></form><div id="games"></div></section>
 <section><h2>4. Tabla mensual individual</h2><label>Mes<input id="month" type="month"></label><p>Solo cuentan los marcadores confirmados. Cada ganador recibe 3 puntos si la otra pareja termina en 0, 2 entre 1 y 49, y 1 desde 50.</p><table><thead><tr><th>Jugador</th><th>Partidas confirmadas</th><th>Puntos</th></tr></thead><tbody id="standings"></tbody></table></section>
 <section><h2>5. Receta y fotos</h2><p>Graba la receta o adjunta un audio. Las fotos se agregan juntas.</p><div class="controls"><button id="record" type="button">Grabar receta</button><label>Adjuntar audio<input id="audio" type="file" accept="audio/*"></label><label>Fotos en general<input id="photos" type="file" accept="image/*" multiple></label></div><small id="mediaStatus" role="status"></small><div id="media"></div></section>
 </main>
@@ -129,6 +129,7 @@ function pairName(pair){return pair.join(' / ')}
 function points(score){const loser=Math.min(...score);return loser===0?3:loser<50?2:1}
 function save(){advanceTurns(session());localStorage.setItem(key,JSON.stringify(data));render()}
 function advanceTurns(s){
+ advanceBracket(s);
  const active=s.games.filter(g=>g.table&&!g.confirmed);
  const busy=new Set(active.flatMap(g=>[...s.pairs[g.a],...s.pairs[g.b]]));
  for(let table=1;table<=(s.tables||1);table++){
@@ -141,11 +142,76 @@ function advanceTurns(s){
  }
 }
 function finalists(s){
- const semis=s.games.filter(g=>g.round==='Semifinal');
+ const semis=s.games.filter(g=>g.round==='Semifinal'&&!g.bracket);
  if(semis.length!==2||semis.some(g=>!g.confirmed)||s.games.some(g=>g.round==='Final'))return [];
  return [...new Set(semis.map(g=>g.score[0]>g.score[1]?g.a:g.b))];
 }
+function bracketDraft(s){
+ const busy=new Set(s.games.filter(g=>!g.confirmed).flatMap(g=>[...s.pairs[g.a],...s.pairs[g.b]]));
+ const names=[...new Set(s.people.filter(p=>p.plays&&!busy.has(p.name)).map(p=>p.name))];
+ const pairs=[];
+ for(let i=0;i+1<names.length;i+=2)pairs.push(names.slice(i,i+2));
+ return {pairs,waiting:names.length%2?names.at(-1):null};
+}
+function bracketRound(s,slots){
+ const target=2**Math.floor(Math.log2(slots.length));
+ const count=slots.length===target?slots.length/2:slots.length-target;
+ const label=slots.length===2?'Final':slots.length===4?'Semifinal':'Ronda '+(s.bracket.rounds.length+1);
+ const games=[];
+ for(let i=0;i<count*2;i+=2){
+  games.push(s.games.length);
+  s.games.push({a:slots[i],b:slots[i+1],round:label,bracket:true,confirmed:false,approvals:[]});
+ }
+ s.bracket.rounds.push({label,games,waiting:slots.slice(count*2)});
+}
+function advanceBracket(s){
+ const round=s.bracket?.rounds.at(-1);
+ if(!round||s.bracket.winner!==undefined)return;
+ const games=round.games.map(i=>s.games[i]);
+ if(games.some(g=>!g.confirmed))return;
+ const winners=games.map(g=>g.score[0]>g.score[1]?g.a:g.b).concat(round.waiting);
+ if(winners.length===1)s.bracket.winner=winners[0];
+ else bracketRound(s,winners);
+}
+by('followBracket').onclick=()=>{
+ const s=session(),draft=bracketDraft(s);
+ if(!participant||s.bracket||draft.pairs.length<2)return;
+ const slots=draft.pairs.map(pair=>{
+  const existing=s.pairs.findIndex(p=>p.length===2&&pair.every(name=>p.includes(name)));
+  if(existing>=0)return existing;
+  s.pairs.push(pair);
+  return s.pairs.length-1;
+ });
+ s.bracket={rounds:[]};
+ bracketRound(s,slots);
+ save();
+};
+function renderBracket(s){
+ const panel=by('bracket');
+ panel.replaceChildren();
+ const draft=bracketDraft(s);
+ by('followBracket').hidden=!participant||!!s.bracket||draft.pairs.length<2;
+ if(!s.bracket){
+  el('p','Sugerencia según el orden de llegada. También pueden seguir armando cruces manualmente.',panel);
+  if(draft.pairs.length<2){el('p','Se necesitan cuatro jugadores disponibles.',panel);return}
+  const target=2**Math.floor(Math.log2(draft.pairs.length));
+  const count=draft.pairs.length===target?target/2:draft.pairs.length-target;
+  for(let i=0;i<count*2;i+=2)el('p',pairName(draft.pairs[i])+' contra '+pairName(draft.pairs[i+1]),panel);
+  for(const pair of draft.pairs.slice(count*2))el('p',pairName(pair)+' · pasa a la siguiente ronda',panel);
+  if(draft.waiting)el('p',draft.waiting+' · espera pareja',panel);
+  return;
+ }
+ for(const round of s.bracket.rounds){
+  el('h3',round.label,panel);
+  for(const i of round.games){
+   const g=s.games[i];
+   el('p',pairName(s.pairs[g.a])+' contra '+pairName(s.pairs[g.b])+(g.confirmed?' · '+g.score.join('–'):' · pendiente'),panel);
+  }
+ }
+ if(s.bracket.winner!==undefined)el('p','Campeones: '+pairName(s.pairs[s.bracket.winner]),panel);
+}
 function renderTurns(s){
+ renderBracket(s);
  const board=by('turns');
  board.replaceChildren();
  const active=s.games.filter(g=>!g.confirmed&&g.table);
@@ -389,7 +455,6 @@ function enter(name){
  by('app').hidden=false;
  by('checkIn').hidden=!name;
  by('checkIn').textContent='Ya llegué · Voy a asistir';
- by('attendanceChoice').hidden=!name;
  for(const id of ['pair','game','record','audio','photos'])by(id).hidden=!name;
  by('arrival').hidden=name!==host;
  by('checkStatus').textContent=name?'Hola, '+name+'. Marca tu asistencia cuando llegues.':'Estás viendo la jornada como invitado. Vuelve a bienvenida para registrarte y marcar tu asistencia.';
@@ -455,10 +520,7 @@ by('access').onsubmit=async e=>{
    accounts.push({name,email,whatsapp,salt,digest:await pinDigest(pin,salt)});
    localStorage.setItem(accountKey,JSON.stringify(accounts));
    enter(name);
-   by('selfPlays').value='Sí';
-   registerArrival(name,true);
-   by('checkIn').textContent='Actualizar mi asistencia';
-   by('checkStatus').textContent='Ya estás en la lista de juego de hoy.';
+
   }else{
    if(!account||account.digest!==await pinDigest(pin,account.salt)){accessError(status,'Los datos de acceso no coinciden. Revisa los datos y vuelve a intentar.');return}
    if(!account.whatsapp||!account.email){
@@ -530,8 +592,8 @@ by('checkIn').onclick=()=>{
  if(!participant)return;
  const date=localDate();
  if(by('day').value!==date){by('day').value=date;by('day').onchange()}
- registerArrival(participant,by('selfPlays').value==='Sí');
- by('checkIn').textContent='Actualizar mi asistencia';
+ registerArrival(participant,true);
+ by('checkIn').textContent='Ya estás en la lista';
  render();
  by('checkStatus').textContent='Asistencia registrada para el '+date+'.';
 };
