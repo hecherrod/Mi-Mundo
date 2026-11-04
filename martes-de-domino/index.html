@@ -56,10 +56,10 @@ td,th{border-color:var(--line)}
 <label>Nombre para las partidas<input name="player" autocomplete="name" required maxlength="80"></label>
 <label id="emailField">Correo electrónico<input name="email" type="email" autocomplete="username" required maxlength="254"></label>
 <label>Contraseña (PIN)<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" title="De 4 a 8 dígitos" required></label>
-<label id="whatsappField" hidden>Celular (10 dígitos)<input name="whatsapp" type="tel" autocomplete="tel" placeholder="646 123 4567" maxlength="30" disabled><small>Usaremos este número para enviarte los resultados de tu liga por WhatsApp.</small></label>
+<label id="whatsappField" hidden>Número de WhatsApp (10 dígitos)<input name="whatsapp" type="tel" autocomplete="tel" placeholder="646 123 4567" maxlength="30" disabled><small>Usaremos este número para enviarte los resultados de tu liga por WhatsApp.</small></label>
 <button id="accessSubmit">Entrar</button>
 </form>
-<button id="legacyLogin" type="button">Mi cuenta anterior usa mi nombre</button>
+
 <button id="showRecovery" type="button">Olvidé mi usuario o contraseña</button>
 <form id="recovery" hidden>
 <label>Teléfono registrado<input id="recoveryPhone" type="tel" autocomplete="tel" placeholder="646 123 4567" required></label>
@@ -327,7 +327,7 @@ by('record').onclick=async()=>{
   by('mediaStatus').textContent='No se pudo usar el micrófono. Puedes adjuntar una nota de voz.';
  }finally{button.disabled=false}
 };
-const accountKey='martes-domino-accounts-v1'+league.suffix;
+const accountKey='martes-domino-accounts-v2'+league.suffix;
 const nameKey=name=>name.trim().normalize('NFC').toLocaleLowerCase('es');
 let participant=null;
 let signup=false;
@@ -406,7 +406,6 @@ function enter(name){
  render();
 }
 by('showLogin').onclick=()=>showAccess(false);
-by('legacyLogin').onclick=()=>showAccess(false,true);
 by('showSignup').onclick=()=>showAccess(true);
 by('signOut').onclick=()=>{
  participant=null;
@@ -447,7 +446,7 @@ by('access').onsubmit=async e=>{
   if(signup){
    if(nameKey(name)===nameKey(host)){status.textContent='Ese usuario está reservado para el anfitrión.';return}
    if(account){accessError(status,'Ese correo ya está registrado. Usa «Iniciar sesión».');return}
-   if(accounts.some(item=>nameKey(item.name)===nameKey(name))){accessError(status,'Ese nombre ya está en uso para las partidas. Si es tu cuenta anterior, entra con tu nombre.');return}
+   if(accounts.some(item=>nameKey(item.name)===nameKey(name))){accessError(status,'Ese nombre ya está en uso para las partidas. Usa otro nombre para distinguirte en las partidas.');return}
    const whatsapp=fields.whatsapp.value.trim().replace(/[\s().-]/g,'');
    if(!/^[0-9]{10}$/.test(whatsapp)){
     status.textContent='Escribe los 10 dígitos de tu celular.';
@@ -528,7 +527,7 @@ function renderAdmin(){
  for(const item of Object.values(leagues)){
   const group=el('section','',panel);
   el('h2',item.label,group);
-  const accounts=JSON.parse(localStorage.getItem('martes-domino-accounts-v1'+item.suffix)||'[]');
+  const accounts=JSON.parse(localStorage.getItem('martes-domino-accounts-v2'+item.suffix)||'[]');
   el('p','Participantes registrados: '+(accounts.map(a=>a.name).join(', ')||'Sin registros'),group);
   const dates=JSON.parse(localStorage.getItem('martes-domino-v1'+item.suffix)||'{}');
   const days=new Set(Object.keys(dates).filter(date=>date.startsWith(month+'-')));
