@@ -394,7 +394,10 @@ by('access').onsubmit=async e=>{
    accounts.push({name,whatsapp,salt,digest:await pinDigest(pin,salt),recovery:await pinDigest(code,salt)});
    localStorage.setItem(accountKey,JSON.stringify(accounts));
    enter(name);
-   by('checkStatus').textContent='Guarda tu código de recuperación: '+code;
+   by('selfPlays').value='Sí';
+   registerArrival(name,true);
+   by('checkIn').textContent='Actualizar mi asistencia';
+   by('checkStatus').textContent='Ya estás en la lista de juego de hoy. Guarda tu código de recuperación: '+code;
   }else{
    if(!account||account.digest!==await pinDigest(pin,account.salt)){status.textContent='Revisa el nombre y la clave.';return}
    enter(account.name);
