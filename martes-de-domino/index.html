@@ -396,6 +396,7 @@ by('record').onclick=async()=>{
 const nameKey=name=>name.trim().normalize('NFC').toLocaleLowerCase('es');
 let participant=null;
 let canAdmin=false;
+let adminLeagues=[];
 let signup=false;
 const authClient=window.miMundoAuth;
 const returnUrl=new URL(location.pathname,location.origin);
@@ -440,8 +441,9 @@ function enter(name){
 async function enterVerified(){
  const {data:{user},error}=await authClient.auth.getUser();
  if(error||!user?.email_confirmed_at)throw Error('Primero confirma tu correo.');
- const permissions=await authClient.rpc('mi_mundo_is_admin');
- canAdmin=!permissions.error&&permissions.data===true;
+ const permissions=await authClient.rpc('mi_mundo_domino_admin_leagues');
+ adminLeagues=!permissions.error&&Array.isArray(permissions.data)?permissions.data:[];
+ canAdmin=adminLeagues.includes(leagueId);
  const name=user.user_metadata.domino_username;
  if(!name||(!canAdmin&&user.user_metadata.domino_league!==leagueId))throw Error('Esta cuenta está registrada en otra liga.');
  const claimed=await authClient.rpc('mi_mundo_domino_claim_username',{p_league:leagueId,p_username:name});
@@ -455,6 +457,7 @@ by('signOut').onclick=async()=>{
  if(authClient)await authClient.auth.signOut({scope:'local'});
  participant=null;
  canAdmin=false;
+ adminLeagues=[];
  by('app').hidden=true;
  by('welcome').hidden=false;
  showAccess(false);
@@ -528,7 +531,7 @@ function renderAdmin(){
  panel.replaceChildren();
  if(!month)return;
  if(!canAdmin)return;
- for(const item of Object.values(leagues)){
+ for(const [id,item] of Object.entries(leagues).filter(([id])=>adminLeagues.includes(id))){
   const group=el('section','',panel);
   el('h2',item.label,group);
   const dates=JSON.parse(localStorage.getItem(leagueDataKey(item))||'{}');
