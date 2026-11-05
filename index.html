@@ -2,25 +2,1029 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>*{box-sizing:border-box}html,body{margin:0}</style>
 <title>Mi mundo · Héctor Herrera</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=IBM+Plex+Mono:wght@300;400;500&display=swap">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f3efe4;color:#292a21;font:1rem/1.55 system-ui,sans-serif}header,main,footer{max-width:1120px;margin:auto;padding:1.5rem clamp(1rem,4vw,3rem)}header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;border-bottom:1px solid #c9c1ad}nav{display:flex;flex-wrap:wrap;gap:1rem}a{color:inherit;text-underline-offset:.25em}.hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:2rem;padding:2rem 0 3rem}.hero img{width:100%;height:clamp(240px,38vw,430px);object-fit:cover}h1,h2{font-family:Georgia,serif;font-weight:400;margin:.2em 0}h1{font-size:clamp(3.4rem,8vw,7rem);line-height:.95}h2{font-size:2.1rem}.label{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase}.entries{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}article{border-top:1px solid #8b8065;padding:1rem 0}article p{max-width:30ch}.button{display:inline-block;background:#313625;color:white;padding:.65rem 1rem}footer{border-top:1px solid #c9c1ad}@media(max-width:680px){.hero,.entries{grid-template-columns:1fr}.hero{gap:1rem}}
+/* Carta de navegación viva: las mismas estrellas son el mapa, el viaje, el espacio y la página.
+   Nada se corta: al llegar, las estrellas se detienen, se juntan en el lugar y se van llenando del color de la página. */
+:root{
+  --vacio:#040305;
+  --luz:#f3eeec;
+  --gris:#958b8e;
+  --rosa:#f0b9c6;
+  --marco:rgba(243,238,236,.26);
+  --display:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--vacio);color:var(--luz);font-family:var(--mono);overflow:hidden;touch-action:none;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#cielo{position:fixed;inset:0;width:100%;height:100%;display:block}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:1px solid var(--rosa);outline-offset:3px}
 
-body{background:#000;color:#f5f0e6}header,footer{border-color:#393939}.hero{display:flex;flex-direction:column;align-items:stretch;gap:1.5rem}.hero img{width:100%;height:clamp(220px,43vw,560px);object-fit:cover;object-position:center}.hero figure{margin:0 calc(50% - 50vw);line-height:0}.entries article{background:#f3efe4;color:#292a21;border:0;padding:1.25rem}.button{color:#fff}
+.hud{position:fixed;z-index:4;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gris);line-height:1.7;transition:opacity .8s}
+.hud.izq{top:calc(env(safe-area-inset-top,0px) + 18px);left:max(20px,env(safe-area-inset-left,0px))}
+.hud.der{top:calc(env(safe-area-inset-top,0px) + 18px);right:max(20px,env(safe-area-inset-right,0px));text-align:right}
+.hud .marca{font-size:1.2rem;letter-spacing:.32em;color:var(--luz);font-weight:400;margin-bottom:.15rem}
+.hud .linea{color:var(--luz)}
+.hud .destino b{font-weight:400;color:var(--rosa)}
+.hud .destino b::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--rosa);box-shadow:0 0 6px var(--rosa);margin:0 .5em .12em 0;vertical-align:middle}
+.hud a{text-decoration:none;opacity:.7}.hud a:hover{opacity:1}
+.viajando .hud,.viajando .ficha,.viajando .nodo,.viajando .ayuda{opacity:0;pointer-events:none}
+.viajando .nodo{opacity:0!important;visibility:hidden!important} /* al viajar, los demás mundos se apagan */
+
+.nodo{position:fixed;left:0;top:0;z-index:3;transform-origin:15.5px 50%;display:flex;align-items:center;gap:.5rem;background:none;border:0;padding:12px;margin:-12px 0 0 -12px;
+  cursor:pointer;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(243,238,236,.8);white-space:nowrap;transition:opacity .6s;will-change:transform}
+.nodo i{position:relative;width:7px;height:7px;border-radius:50%;background:var(--luz);box-shadow:0 0 12px 4px rgba(240,185,198,.45);flex:none}
+.nodo i::after{content:"";position:absolute;left:50%;top:50%;width:22px;height:22px;border:1px solid var(--marco);border-radius:50%;transform:translate(-50%,-50%)}
+.nodo span{display:flex;align-items:center;gap:.5rem}
+.nodo span::before{content:"";width:20px;height:1px;background:var(--marco)}
+.nodo.actual{color:#fff}
+.nodo i::after,.nodo i::before{animation:pulso 3.2s ease-out infinite;animation-delay:var(--d,0s)}
+.nodo i::before{content:"";position:absolute;left:50%;top:50%;border:1px solid var(--marco);border-radius:50%;transform:translate(-50%,-50%);animation-delay:calc(var(--d,0s) + 1.6s)}
+.nodo.actual i::after,.nodo.actual i::before{border-color:rgba(240,185,198,.75)}
+.nodo.actual span{color:#fff}
+.nodo:hover i::after{border-color:var(--rosa)}
+@keyframes pulso{0%{width:12px;height:12px;opacity:1}100%{width:64px;height:64px;opacity:0}}
+
+.ficha{position:fixed;z-index:4;left:max(24px,env(safe-area-inset-left,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 124px); /* deja libre el renglón del medidor */
+  width:min(24rem,calc(100vw - 48px));transition:opacity .6s,transform .6s}
+.ficha.oculta{opacity:0;transform:translateY(8px)}
+.etiqueta{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--rosa);margin:0 0 .5rem}
+.ficha h1,.ficha h2{font-family:var(--display);font-weight:300;line-height:.95;margin:0 0 .7rem;text-wrap:balance}
+.ficha h1{font-size:clamp(3rem,7vw,5.4rem)}
+.ficha h2{font-size:clamp(2.2rem,4.6vw,3.4rem)}
+.ficha p.texto{font-family:var(--display);font-size:1.15rem;line-height:1.4;color:#d8cfcd;margin:0 0 1.1rem;max-width:32ch}
+.boton{display:inline-flex;align-items:center;gap:.7rem;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;background:rgba(4,3,5,.35);
+  border:1px solid var(--marco);padding:.75rem 1.05rem;cursor:pointer;text-decoration:none;color:var(--luz);transition:border-color .3s,background .3s}
+.boton:hover{border-color:var(--luz);background:rgba(243,238,236,.07)}
+.boton::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--rosa);box-shadow:0 0 6px var(--rosa)}
+
+.tabs{position:fixed;z-index:4;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(16px,env(safe-area-inset-left,0px));
+  max-width:900px;margin:0 auto;transition:opacity .6s}
+.tabs button{border:1px solid rgba(243,238,236,.14);background:rgba(4,3,5,.45);padding:.95rem .3rem;cursor:pointer;
+  font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gris);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .4s,border-color .4s}
+.tabs button[aria-current="true"]{color:var(--luz);border-color:rgba(243,238,236,.5)}
+.ayuda{position:fixed;z-index:4;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);text-align:center;font-size:.58rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gris);opacity:.75;pointer-events:none;transition:opacity .6s}
+
+.viaje{position:fixed;z-index:5;inset:auto 0 0 0;display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;
+  padding:0 max(20px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 22px) max(20px,env(safe-area-inset-left,0px));
+  font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gris);opacity:0;pointer-events:none;transition:opacity 1s,color 1.5s}
+.viajando .viaje{opacity:1;pointer-events:auto}
+.viaje .lugar{color:var(--luz);font-size:.68rem;transition:color 1.5s}
+.viaje .lugar b{display:block;font-family:var(--display);font-weight:300;font-size:2rem;letter-spacing:0;text-transform:none;margin-top:.3rem}
+.viaje.claro{color:#6b675d}.viaje.claro .lugar{color:#292a21}
+.viaje button{background:none;border:1px solid currentColor;padding:.6rem .9rem;cursor:pointer;color:inherit;letter-spacing:.18em;text-transform:uppercase;font-size:.6rem}
+.final{position:fixed;z-index:6;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 28px);transform:translateX(-50%);display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center}
+.final[hidden]{display:none}
+.boton[hidden]{display:none}
+.final .boton{background:#1c1b17;border-color:#1c1b17;color:#f3efe4}
+
+.llegando .hud,.llegando .ficha,.llegando .nodo,.llegando .ayuda{opacity:0!important;transition:opacity 1.2s}
+/* medidor: verde olivo, solo líneas y letras, como un instrumento discreto de navegación */
+.medidor{--az:174,180,118; /* verde olivo claro */position:fixed;z-index:4;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);transform:translate(-50%,6px);width:min(560px,calc(100% - 32px));
+  padding:0;border:0;background:none;
+  opacity:0;pointer-events:none;transition:opacity .5s,transform .5s;font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(var(--az),.26)}
+.medidor.visible{opacity:.72;transform:translate(-50%,0)}
+.medidor.visible~.ayuda{opacity:0}
+.regla{position:relative;height:30px;border-bottom:1px solid rgba(var(--az),.14);
+  background:repeating-linear-gradient(90deg,rgba(var(--az),.14) 0 1px,transparent 1px 10%) bottom/100% 9px no-repeat,
+             repeating-linear-gradient(90deg,rgba(var(--az),.07) 0 1px,transparent 1px 2%) bottom/100% 4px no-repeat}
+.regla .marca{position:absolute;bottom:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:3px;white-space:nowrap;font-size:.5rem;letter-spacing:.14em;color:rgba(var(--az),.32)}
+.regla .marca::after{content:"";width:1px;height:7px;background:rgba(var(--az),.3)}
+.regla .marca.alta::after{height:18px}
+.regla .marca.inicio{transform:none;align-items:flex-start}
+.regla .marca.final{transform:translateX(-100%);align-items:flex-end}
+.regla{margin-top:12px}
+.aguja{position:absolute;bottom:-4px;width:1px;height:38px;background:rgba(var(--az),.5);box-shadow:0 0 4px rgba(var(--az),.3);transform:translateX(-50%)}
+.aguja::before{content:"";position:absolute;left:50%;bottom:0;width:7px;height:7px;border-radius:50%;background:rgba(var(--az),.55);box-shadow:0 0 4px rgba(var(--az),.3);transform:translate(-50%,50%)}
+.lecturas{display:flex;justify-content:space-between;gap:12px;margin-top:9px;font-variant-numeric:tabular-nums}
+.lecturas b{font-weight:400;color:rgba(var(--az),.42);margin-left:.4em}
+.viajando .medidor{opacity:0!important}
+.pagina-libro{position:fixed;inset:0;z-index:5;opacity:0;pointer-events:none;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain}
+.pagina-libro iframe{display:block;width:100%;height:100%;border:0}
+.final.sobre-pagina{top:calc(env(safe-area-inset-top,0px) + 10px);bottom:auto;left:auto;right:max(10px,env(safe-area-inset-right,0px));transform:none;gap:.4rem}
+.final.sobre-pagina .boton{padding:.5rem .7rem;font-size:.56rem;background:rgba(28,27,23,.82)}
+.final{z-index:7}
+/* Laboratorio: los dos menús flotan en la pared libre, entre las ventanas rojas y la impresora (el código los coloca sobre la foto) */
+.menus{position:fixed;z-index:6;left:50%;top:40%;transform:translate(-50%,-50%);display:flex;gap:12px;pointer-events:none}
+.menus[hidden]{display:none}
+.menu{position:relative;width:min(13.5rem,calc(50vw - 22px));display:flex;flex-direction:column;text-align:left;padding:.75rem .9rem .8rem;
+  background:rgba(6,10,9,.5);border:1px solid rgba(212,236,230,.22);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  cursor:pointer;pointer-events:auto;opacity:0;transform:translateY(14px);transition:opacity .9s,transform .9s,border-color .3s,background .3s}
+.menus.visible .menu{opacity:1;transform:none}
+.menus.visible .menu:nth-child(2){transition-delay:.25s}
+.menu>span{display:block;animation:flotar 5.5s ease-in-out infinite}
+.menu:nth-child(2)>span{animation-delay:-2.7s}
+.menu:hover{border-color:rgba(212,236,230,.6);background:rgba(10,18,16,.62)}
+.menu .etiqueta{display:block;font-size:.52rem;letter-spacing:.18em;color:rgba(212,236,230,.7);margin:0 0 .35rem}
+.menu b{display:block;font-family:var(--display);font-weight:300;font-size:1.4rem;line-height:1;margin-bottom:.45rem}
+.menu em{display:block;font-style:normal;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--rosa)}
+.menu[aria-disabled="true"]{cursor:default}
+.menu[aria-disabled="true"] em{color:var(--gris)}
+@keyframes flotar{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media (max-width:700px){.menus{gap:8px}.menu{padding:.6rem .65rem .65rem}.menu b{font-size:1.1rem}.menu .etiqueta{font-size:.48rem;letter-spacing:.12em}.menu em{font-size:.5rem;letter-spacing:.12em}}
+@media (prefers-reduced-motion:reduce){.menu>span{animation:none}}
+@media (max-width:700px){
+  .hud .marca{font-size:1rem}
+  .hud.der .linea:last-child{display:none}
+  .ficha{bottom:calc(env(safe-area-inset-bottom,0px) + 118px);left:20px}
+  .ficha h1{font-size:3rem}.ficha h2{font-size:2.3rem}
+  .ficha p.texto{font-size:1.05rem;margin-bottom:.9rem}
+  .tabs{gap:4px}.tabs button{font-size:.52rem;letter-spacing:.08em;padding:.85rem .1rem}
+  .ayuda{font-size:.5rem;letter-spacing:.12em}
+}
+@media (prefers-reduced-motion:reduce){.nodo i::after,.nodo i::before{animation:none}}
 </style>
-<script src="./mi-mundo-traffic.js?v=laboratorio-cria-1" defer></script></head>
-<body>
-<header><strong>Héctor Herrera</strong><nav aria-label="Proyectos"><a href="./subasta/">Subasta</a><a href="./libro/">Libro</a><a href="./martes-domingo/">Martes de dominó</a><a href="./laboratorio-digital-cria/">Laboratorio Digital CRIA</a></nav></header>
-<main>
-<section class="hero" aria-labelledby="titulo"><div><p class="label">Obra y proyectos</p><h1 id="titulo">Mi mundo</h1><p>Un espacio para compartir lo que hago y los proyectos que están tomando forma.</p></div><figure><img src="libro/atardecer.jpg" alt="Atardecer en el CRIA"></figure></section>
-<section class="entries" aria-label="Entradas">
-<article id="subasta"><p class="label">01 · Público</p><h2>Subasta</h2><p>Las obras, las fechas y la forma de participar se anunciarán aquí.</p></article>
-<article id="libro"><p class="label">02 · Libro</p><h2>Conflictos, sueños y procesos</h2><p>Explora el libro y elige tu portada. $2,950 MXN con envío incluido.</p><a class="button" href="./libro/">Ver y pedir el libro</a></article>
-<article id="martes-domingo"><p class="label">03 · Entrada reservada</p><h2>Martes de dominó</h2><p>En preparación.</p></article>
-<article id="laboratorio-digital-cria"><p class="label">04 · Laboratorio</p><h2>Laboratorio Digital CRIA</h2><p>Un espacio para las aplicaciones y herramientas del CRIA.</p><a class="button" href="./laboratorio-digital-cria/">Entrar al laboratorio</a></article>
+<script src="./mi-mundo-traffic.js?v=portada-mapa-1" defer></script>
+</head>
+<body class="llegando">
+
+<canvas id="cielo" aria-hidden="true"></canvas>
+
+<div class="hud izq">
+  <div class="marca">MI MUNDO</div>
+  <div>Carta de navegación</div>
+  <div>Héctor Herrera · Obra y proyectos</div>
+</div>
+<div class="hud der">
+  <div class="linea" id="parada">Parada 01 / 05</div>
+  <div class="destino">Destino <b id="destino">Entrada</b></div>
+  <div class="linea"><a href="./estadisticas/" data-espacio>Estadísticas · acceso privado</a></div>
+</div>
+
+<div id="nodos"></div>
+
+<section class="ficha" id="ficha" aria-live="polite">
+  <p class="etiqueta" id="etiqueta"></p>
+  <div id="titulo"></div>
+  <p class="texto" id="texto"></p>
+  <button class="boton" id="entrar" type="button"></button>
 </section>
-</main>
-<footer>Héctor Herrera · <a href="./estadisticas/">Estadísticas · acceso privado</a></footer>
+
+<div class="medidor" id="medidor" aria-hidden="true">
+  <div class="regla" id="regla"><div class="aguja" id="aguja"></div></div>
+  <div class="lecturas"><span>Lateral <b id="mX">0</b></span><span>Profundidad <b id="mZ">0</b></span><span>Alcance <b id="mA">1.0×</b></span></div>
+</div>
+<p class="ayuda">Arrastra para moverte · usa el scroll para ir al fondo · toca un mundo para entrar</p>
+
+<div class="viaje" id="viaje">
+  <div class="lugar" id="lugar"></div>
+  <button type="button" id="saltar">Saltar →</button>
+</div>
+<div class="final" id="final" hidden>
+  <a class="boton" id="abrir" href="#" target="_blank" rel="noopener">Abrir la página</a>
+  <button class="boton" id="alLab" type="button" hidden>Volver al laboratorio</button>
+  <button class="boton" id="volver" type="button">Volver al mapa</button>
+</div>
+<div class="menus" id="menus" hidden>
+  <button class="menu" id="m3d" type="button" aria-disabled="true"><span><span class="etiqueta">Bambu Lab H2D</span><b>Impresiones 3D</b><em>Próximamente</em></span></button>
+  <button class="menu" id="mGiclee" type="button"><span><span class="etiqueta">Epson SureColor P20000</span><b>Cotizar impresión Giclée</b><em>Abrir el cotizador →</em></span></button>
+</div>
+
+<script>
+(()=>{
+const BASE=""; // en el sitio publicado: al terminar el viaje se abre la página real. En la vista previa va "https://mundo.cositasdeh.mx/"
+/* ---------- Profundidad de los mundos ----------
+   Para traer un mundo al frente o mandarlo al fondo, cámbiale el "plano":
+   1 = al frente · 2 = en medio · 3 = al fondo, lejos. "x" lo mueve a la izquierda (−) o derecha (+).
+   El orden de la ruta y los números de las etiquetas se acomodan solos según el plano. */
+const PLANOS=[0,-450,-1250,-4300];
+const NODOS=[
+  {id:"entrada",nombre:"Entrada",etiqueta:"Obra y proyectos",titulo:"Mi mundo",h1:true,
+   texto:"Un espacio para compartir lo que hago y los proyectos que están tomando forma.",accion:"Comenzar el recorrido",plano:0,x:0,y:0},
+  {id:"subasta",nombre:"Subasta",tipo:"Público",titulo:"Subasta",plano:1,x:440,y:80,
+   texto:"Las obras, las fechas y la forma de participar se anunciarán aquí.",accion:"Entrar a la subasta",
+   href:"subasta/",espacio:"subasta",paleta:{neb1:[86,44,26],neb2:[54,40,38],estrella:[248,232,212],fondo:[8,5,4]},lugar:"Sala de subasta",captura:"subasta"},
+  {id:"laboratorio",nombre:"Laboratorio",tipo:"Laboratorio",titulo:"Laboratorio Digital CRIA",plano:1,x:-420,y:100,
+   texto:"Un espacio para las aplicaciones y herramientas del CRIA.",accion:"Entrar al laboratorio",
+   href:"laboratorio-digital-cria/",espacio:"laboratorio",paleta:{neb1:[28,62,58],neb2:[24,38,54],estrella:[212,236,230],fondo:[3,6,6]},lugar:"Laboratorio",captura:"laboratorio-entrada"},
+  {id:"libro",nombre:"Librería",tipo:"Librería",titulo:"Librería",plano:2,x:60,y:30,
+   texto:"Explora el libro y elige tu portada. $2,950 MXN con envío incluido.",accion:"Ver y pedir el libro",
+   href:"libro/",espacio:"biblioteca",paleta:{neb1:[70,58,32],neb2:[42,42,38],estrella:[242,236,216],fondo:[6,6,4]},lugar:"Librería",captura:"libro"},
+  {id:"domino",nombre:"Dominó",tipo:"Entrada reservada",titulo:"Martes de dominó",plano:3,x:-120,y:-20,
+   texto:"En preparación.",accion:"Entrar",href:"martes-domingo/",espacio:"domino",paleta:{neb1:[62,46,22],neb2:[18,20,32],estrella:[252,228,186],fondo:[4,4,6]},
+   lugar:"La mesa",captura:"domino"}
+];
+NODOS.sort((a,b)=>a.plano-b.plano||(a.orden||0)-(b.orden||0));
+NODOS.forEach((n,i)=>{n.pos=[n.x,n.y,PLANOS[n.plano]];if(n.tipo)n.etiqueta=String(i).padStart(2,"0")+" · "+n.tipo});
+const FONDO_Z=Math.min(...NODOS.map(n=>n.pos[2]))-250;
+const calma=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const cv=document.getElementById("cielo"),cx=cv.getContext("2d");
+let W=0,H=0,DPR=1,movil=false,F0=600;
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2, suave=t=>t*t*(3-2*t), clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t, lerp3=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];
+const TINTES=["243,238,236","240,185,198","214,222,240"];
+
+/* ---------- Estrellas: son también los puntos de cada espacio ---------- */
+let S=[];
+function crearEstrellas(){
+  const n=movil?8000:15000,np=movil?6000:12000;S=[];
+  const nueva=(x,y,z,ni,b,sz,br,t)=>S.push({x,y,z,b,s:sz,br,t,
+      f:rnd(.3,1.5),ph:rnd(0,6.28),vx:0,vy:0,dx:0,dy:0,tz:0,sx:0,sy:0,px:NaN,py:NaN,vis:false,va:0,vs:1,fx:0,fy:0,tx:0,ty:0,ta:0,fa:0,k:rnd(.02,.06),gi:-1,f3:null});
+  for(let i=0;i<n;i++){
+    let x,y,z,ni=-1;const r0=Math.random();
+    if(r0<.45){const r=3400*Math.cbrt(Math.random()),th=Math.random()*6.283,ph=Math.acos(2*Math.random()-1);
+      x=r*Math.sin(ph)*Math.cos(th);y=r*Math.cos(ph)*.75+150;z=r*Math.sin(ph)*Math.sin(th)-1500}
+    else if(r0<.85){const s=rnd(-1,1)*3400;x=s*.86+gauss()*170;y=s*.3+gauss()*100+460;z=-2400+s*.38+gauss()*340}
+    else{ni=(Math.random()*NODOS.length)|0;const n0=NODOS[ni].pos;x=n0[0]+gauss()*180;y=n0[1]+gauss()*120+40;z=n0[2]+gauss()*180}
+    const br=Math.random()<.01;
+    nueva(x,y,z,ni,br?1:rnd(.35,.95),br?rnd(1.8,2.6):rnd(.6,1.6),br,ni>=0?3+ni:Math.random()<.22?1:Math.random()<.12?2:0)
+  }
+  // polvo de la banda: muchas estrellas finitas y tenues, muy al fondo, que llenan el cielo como una vía láctea
+  for(let i=0;i<np;i++){
+    const u=rnd(-1,1),s=u*4200,anc=Math.random()<.65?120:300;
+    const x=s*.86+gauss()*anc*1.2,y=s*.3+gauss()*anc*.7+520,z=-3200+s*.38+gauss()*anc*1.6;
+    nueva(x,y,z,-1,rnd(.12,.42)*(1-Math.abs(u)*.45),rnd(.45,.95),false,Math.random()<.3?1:Math.random()<.2?2:0)
+  }
+}
+function curva(){
+  const pts=[],P=NODOS.map(n=>n.pos);
+  for(let i=0;i<P.length-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(P.length-1,i+2)];
+    for(let k=0;k<48;k++){const t=k/48,t2=t*t,t3=t2*t;
+      pts.push([0,1,2].map(j=>.5*((2*p1[j])+(-p0[j]+p2[j])*t+(2*p0[j]-5*p1[j]+4*p2[j]-p3[j])*t2+(-p0[j]+3*p1[j]-3*p2[j]+p3[j])*t3)))}}
+  pts.push(P[P.length-1]);return pts
+}
+const RUTA=curva();
+
+/* ---------- Cámara libre: te mueves con el dedo por el mapa ---------- */
+let actual=0,cercano=-1,reloj=0,camA=null,guia=null,arrastre=null,arrastrado=false;
+const foco=[0,0],velF=[0,0];let yaw=.1,dist=580,distObj=580;
+function camLibre(t){const a=yaw+Math.sin(t*.05)*.06,h=Math.sin(t*.07)*20,y0=40;
+  return{pos:[foco[0]+Math.sin(a)*dist,y0+dist*.41+h,foco[1]+Math.cos(a)*dist],tgt:[foco[0],y0-40,foco[1]-420],F:F0}}
+const camAhora=()=>camLibre(reloj),camPara=()=>camLibre(reloj);
+function moverCamara(){
+  if(guia){foco[0]+=(guia[0]-foco[0])*.045;foco[1]+=(guia[1]-foco[1])*.045;if(Math.hypot(guia[0]-foco[0],guia[1]-foco[1])<1.5)guia=null}
+  else if(!arrastre){foco[0]+=velF[0];foco[1]+=velF[1];velF[0]*=.93;velF[1]*=.93}
+  foco[0]=clamp(foco[0],-1000,1000);foco[1]=clamp(foco[1],FONDO_Z,600);dist+=(distObj-dist)*.12;
+  let mejor=-1,md=1e9;NODOS.forEach((n,i)=>{const d=Math.hypot(n.pos[0]-foco[0],n.pos[2]-foco[1]);if(d<md){md=d;mejor=i}});
+  const c=md<240*dist/580?mejor:-1;
+  if(c!==cercano){cercano=c;if(c>=0){actual=c;try{history.replaceState(null,"","#"+NODOS[c].id)}catch(_){}}pintarFicha()}
+}
+function baseCam(c){
+  const f=[c.tgt[0]-c.pos[0],c.tgt[1]-c.pos[1],c.tgt[2]-c.pos[2]],lf=Math.hypot(...f);f[0]/=lf;f[1]/=lf;f[2]/=lf;
+  let r=[-f[2],0,f[0]];const lr=Math.hypot(...r)||1;r=[r[0]/lr,0,r[2]/lr];
+  return{c:c.pos,f,r,u:[r[1]*f[2]-r[2]*f[1],r[2]*f[0]-r[0]*f[2],r[0]*f[1]-r[1]*f[0]],F:c.F}
+}
+function proj(B,x,y,z,near){
+  const dx=x-B.c[0],dy=y-B.c[1],dz=z-B.c[2],zz=dx*B.f[0]+dy*B.f[1]+dz*B.f[2];if(zz<(near||6))return null;
+  return[W/2+(dx*B.r[0]+dy*B.r[1]+dz*B.r[2])*B.F/zz,H/2-(dx*B.u[0]+dy*B.u[1]+dz*B.u[2])*B.F/zz,zz]
+}
+function irA(i){if(modo!=="mapa")return;i=(i+NODOS.length)%NODOS.length;guia=[NODOS[i].pos[0],NODOS[i].pos[2]];velF[0]=velF[1]=0}
+
+/* ---------- Fondo: nebulosa rosada, retícula suave y la ruta apenas visible ---------- */
+let fondo=[4,3,5];
+const PAL0={neb1:[70,20,34],neb2:[40,36,60],fondo:[4,3,5]};let pal={neb1:PAL0.neb1,neb2:PAL0.neb2},tintesAct=[];
+const mezcla=(a,b,c)=>a.map((v,j)=>Math.round(lerp(v,b[j],c)));
+const NT=3+NODOS.length,TB=TINTES.map(t=>t.split(",").map(Number)).concat(NODOS.map(n=>mezcla([243,238,236],n.paleta?n.paleta.estrella:[243,238,236],.9)));
+let PA={neb1:PAL0.neb1.slice(),neb2:PAL0.neb2.slice(),fondo:PAL0.fondo.slice(),estrella:[243,238,236],c:0};
+// la atmósfera se mueve suave hacia la del mundo en que estás (c: qué tanto)
+function seguirPaleta(d,c,rate){
+  for(const key of["neb1","neb2","fondo","estrella"]){const o=key==="estrella"?[243,238,236]:PAL0[key],t=mezcla(o,d?d[key]:o,c);PA[key]=PA[key].map((v,j)=>v+(t[j]-v)*rate)}
+  PA.c+=((d?c:0)-PA.c)*rate;
+  pal.neb1=PA.neb1.map(Math.round);pal.neb2=PA.neb2.map(Math.round);fondo=PA.fondo.map(Math.round);
+  tintesAct=TB.map((t,i)=>mezcla(t,PA.estrella.map(Math.round),(i<3?.9:.35)*PA.c).join(","))}
+function mezclarPaleta(d,c){pal.neb1=mezcla(PAL0.neb1,d.neb1,c);pal.neb2=mezcla(PAL0.neb2,d.neb2,c);fondo=mezcla(PAL0.fondo,d.fondo,c);
+  tintesAct=TINTES.map(t=>mezcla(t.split(",").map(Number),d.estrella,c*.85).join(","))}
+function pintarFondo(B,tinta){
+  cx.fillStyle="rgb("+fondo.join(",")+")";cx.fillRect(0,0,W,H);
+  if(tinta<=0)return;
+  const n=proj(B,...NODOS[actual].pos),cxn=n?n[0]:W/2,cyn=n?n[1]:H/2;
+  let g=cx.createRadialGradient(cxn,cyn,0,cxn,cyn,Math.max(W,H)*.75);
+  const n1=pal.neb1.join(","),n5=pal.neb1.map(v=>v>>1).join(","),f0=fondo.join(",");g.addColorStop(0,"rgba("+n1+","+Math.min(1,.5*tinta)+")");g.addColorStop(.5,"rgba("+n5+","+Math.min(1,.25*tinta)+")");g.addColorStop(1,"rgba("+f0+",0)");
+  cx.fillStyle=g;cx.fillRect(0,0,W,H);
+  g=cx.createRadialGradient(W*.85,H*.15,0,W*.85,H*.15,Math.max(W,H)*.6);g.addColorStop(0,"rgba("+pal.neb2.join(",")+","+Math.min(1,.28*tinta)+")");g.addColorStop(1,"rgba("+f0+",0)");
+  cx.fillStyle=g;cx.fillRect(0,0,W,H)
+}
+function reticula(B,alfa){
+  if(alfa<=0)return;
+  const paths=[new Path2D(),new Path2D(),new Path2D()],ys=-80,paso=120,L=1800,z0=FONDO_Z-600,z1=900,seg=60;
+  const linea=(ax,az,bx,bz)=>{const n=Math.ceil(Math.hypot(bx-ax,bz-az)/seg);let prev=null;
+    for(let k=0;k<=n;k++){const p=proj(B,lerp(ax,bx,k/n),ys,lerp(az,bz,k/n));
+      if(p&&prev){const d=(p[2]+prev[2])/2,b=d<800?0:d<1600?1:2;paths[b].moveTo(prev[0],prev[1]);paths[b].lineTo(p[0],p[1])}prev=p}};
+  for(let x=-L;x<=L;x+=paso)linea(x,z0,x,z1);for(let z=z0;z<=z1;z+=paso)linea(-L,z,L,z);
+  cx.lineWidth=1;[.085,.05,.022].forEach((a,b)=>{cx.strokeStyle="rgba(230,214,218,"+(a*alfa)+")";cx.stroke(paths[b])})
+}
+const CHISPAS=Array.from({length:4},(_,j)=>{const v=rnd(.012,.04),w1=rnd(.15,.5),w2=rnd(.6,1.4); // el ritmo cambia pero nunca se regresan
+  return{f0:j/4,v,a1:rnd(.3,.55)*v/w1,w1,p1:rnd(0,6.28),a2:rnd(.15,.35)*v/w2,w2,p2:rnd(0,6.28)}});
+function rutaSuave(B,t,alfa){
+  if(alfa<=0)return;
+  const pts=RUTA.map((q,i)=>proj(B,q[0]+Math.sin(t*.4+i*.21)*6,q[1]+Math.sin(t*.5+i*.13)*8,q[2]));
+  const trazo=(w,a)=>{cx.lineWidth=w;cx.strokeStyle="rgba(224,80,92,"+(a*alfa)+")";cx.beginPath();let on=false;
+    for(const p of pts){if(p){on?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1]);on=true}else on=false}cx.stroke()};
+  cx.lineCap="round";trazo(5,.035);trazo(.8,.16);
+  // chispas que recorren la ruta: chicas y condensadas, cada una con su propio ritmo; de repente una acelera o se frena
+  for(const c of CHISPAS){const fase=(c.f0+c.v*t+c.a1*Math.sin(t*c.w1+c.p1)+c.a2*Math.sin(t*c.w2+c.p2))%1,u=(fase+1)%1;
+    const i=u*(pts.length-1),p0=pts[i|0],p1=pts[Math.min(pts.length-1,(i|0)+1)];if(!p0||!p1)continue;
+    const x=lerp(p0[0],p1[0],i%1),y=lerp(p0[1],p1[1],i%1),r=5,g=cx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,"rgba(255,190,190,"+(.95*alfa)+")");g.addColorStop(.35,"rgba(236,90,104,"+(.6*alfa)+")");g.addColorStop(1,"rgba(236,90,104,0)");
+    cx.fillStyle=g;cx.fillRect(x-r,y-r,r*2,r*2);cx.fillStyle="rgba(255,236,236,"+alfa+")";cx.fillRect(x-.8,y-.8,1.6,1.6)}
+}
+/* ---------- Al más allá: pasando el Dominó sigue una línea hacia el infinito, con su letrero de señalización ---------- */
+function masAlla(B,t,alfa){
+  const d=NODOS.find(n=>n.id==="domino");if(!d||alfa<=0)return;
+  const vis=alfa*suave(clamp((-foco[1]-(-d.pos[2]-1700))/1100,0,1));if(vis<=0)return;
+  const [x0,y0,z0]=d.pos,L=2600,N=70;
+  // la línea sigue en el mismo plano y con el mismo trazo que la ruta, ondulando apenas, y se desvanece al fondo
+  const pts=[];for(let k=0;k<=N;k++){const u=k/N;pts.push([proj(B,x0+Math.sin(u*2.4)*70+Math.sin(t*.4+u*9)*4,y0+Math.sin(t*.5+u*7)*5,z0-u*L),u])}
+  cx.lineCap="round";
+  for(const [w,a0] of[[5,.035],[.8,.16]])for(let k=1;k<pts.length;k++){const [p,u]=pts[k],q=pts[k-1][0];if(!p||!q)continue;
+    cx.strokeStyle="rgba(224,80,92,"+(a0*vis*Math.pow(1-u,1.3))+")";cx.lineWidth=w*(1-u*.6);cx.beginPath();cx.moveTo(q[0],q[1]);cx.lineTo(p[0],p[1]);cx.stroke()}
+  const uc=(t*.05)%1,pc=pts[Math.round(uc*N)][0];
+  if(pc){const r=4,g=cx.createRadialGradient(pc[0],pc[1],0,pc[0],pc[1],r),a=vis*(1-uc);g.addColorStop(0,"rgba(255,200,200,"+a+")");g.addColorStop(1,"rgba(236,90,104,0)");cx.fillStyle=g;cx.fillRect(pc[0]-r,pc[1]-r,r*2,r*2)}
+  // el letrero: un poste finito y una placa delgada, en el tono de los rótulos de la carta
+  const zs=z0-520,xs=x0+Math.sin(520/L*2.4)*70+110,pb=proj(B,xs,-80,zs),pt=proj(B,xs,y0+55,zs);if(!pb||!pt)return;
+  const e=clamp(700/pt[2],.6,1.3),fs=Math.max(9,Math.round(9.5*e));
+  cx.strokeStyle="rgba(243,238,236,"+(.22*vis)+")";cx.lineWidth=1;cx.beginPath();cx.moveTo(pb[0],pb[1]);cx.lineTo(pt[0],pt[1]);cx.stroke();
+  cx.font="300 "+fs+"px "+getComputedStyle(document.body).getPropertyValue("--mono");try{cx.letterSpacing=(fs*.24).toFixed(1)+"px"}catch(_){}
+  const txt="AL MÁS ALLÁ",tw=cx.measureText(txt).width,ar=fs*.9,gap=fs*.8,px=fs*.9,py=fs*.6,w=ar+gap+tw+px*2,h=fs+py*2,x=pt[0]-px-ar/2,y=pt[1]-h;
+  cx.strokeStyle="rgba(243,238,236,"+(.28*vis)+")";cx.fillStyle="rgba(4,3,5,"+(.45*vis)+")";cx.fillRect(x,y,w,h);cx.strokeRect(x+.5,y+.5,w-1,h-1);
+  const ax=x+px+ar/2,ay=y+h/2;cx.strokeStyle="rgba(240,185,198,"+(.8*vis)+")";cx.lineWidth=1;cx.beginPath();
+  cx.moveTo(ax,ay+fs*.45);cx.lineTo(ax,ay-fs*.45);cx.moveTo(ax-fs*.28,ay-fs*.17);cx.lineTo(ax,ay-fs*.47);cx.lineTo(ax+fs*.28,ay-fs*.17);cx.stroke();
+  cx.fillStyle="rgba(243,238,236,"+(.78*vis)+")";cx.textAlign="left";cx.textBaseline="middle";cx.fillText(txt,ax+ar/2+gap,ay+.5);
+  try{cx.letterSpacing="0px"}catch(_){}
+}
+function halos(B,alfa){ // cada mundo late como un pulsar: un halo que respira y dos haces que giran
+  if(alfa<=0)return;const t=reloj;
+  NODOS.forEach((n,i)=>{const p=proj(B,...n.pos);if(!p)return;const lej=clamp(1100/p[2],.28,1),alfa0=alfa;alfa=alfa0*lej;const esc=clamp(650/p[2],.25,1.8),pul=Math.pow(.5+.5*Math.sin(t*(1.6+i*.37)+i),6);
+    const r=(i===cercano?95:60)*esc*(1+.35*pul),hc=(n.paleta?n.paleta.neb1:[78,46,54]).map(v=>Math.min(255,Math.round(v*2.6))).join(",");
+    const g=cx.createRadialGradient(p[0],p[1],0,p[0],p[1],r);g.addColorStop(0,"rgba(246,226,230,"+Math.min(1,(.26+.3*pul)*alfa)+")");
+    g.addColorStop(.35,"rgba("+hc+","+Math.min(1,(.12+.12*pul)*alfa)+")");g.addColorStop(1,"rgba("+hc+",0)");cx.fillStyle=g;cx.fillRect(p[0]-r,p[1]-r,r*2,r*2);
+    const ang=t*(.5+i*.11)+i*1.3,L=(55+40*pul)*esc;cx.lineWidth=1;
+    for(const sg of[1,-1]){const ex=p[0]+Math.cos(ang)*L*sg,ey=p[1]+Math.sin(ang)*L*.45*sg,lg=cx.createLinearGradient(p[0],p[1],ex,ey);
+      lg.addColorStop(0,"rgba("+hc+","+Math.min(1,(.5+.4*pul)*alfa)+")");lg.addColorStop(1,"rgba("+hc+",0)");cx.strokeStyle=lg;cx.beginPath();cx.moveTo(p[0],p[1]);cx.lineTo(ex,ey);cx.stroke()}
+    alfa=alfa0})
+}
+
+/* ---------- Estrellas en el mapa: titilan, flotan y se estiran cuando la cámara acelera ---------- */
+const NA=6;
+function estrellasMapa(B,t,alfa){
+  const rect=[],lin=[];for(let k=0;k<NA*NT;k++){rect.push(new Path2D());lin.push(new Path2D())}
+  for(const s of S){
+    const p=proj(B,s.x,s.y,s.z);
+    if(!p){s.vis=false;s.px=NaN;continue}
+    const tw=s.br?1:.6+.4*Math.sin(t*s.f*1.7+s.ph);
+    let a=clamp(s.b*tw*clamp(2400/p[2],.16,1)*1.2,0,1);const sz=s.s*clamp(900/p[2],.6,2.6); // más lejos, más tenue
+    s.sx=p[0]+Math.sin(t*s.f+s.ph)*.7;s.sy=p[1]+Math.cos(t*s.f*.8+s.ph)*.7;
+    if(introK<1){const ki=suave(clamp(introK*1.6-s.ph/6.28*.6,0,1)),e=1-Math.pow(1-ki,3),dcx=s.sx-W/2,dcy=s.sy-H/2,dl=Math.hypot(dcx,dcy)||1,ro=Math.max(Math.hypot(W,H)*.62,dl*1.25);
+      s.sx=lerp(W/2+dcx/dl*ro,s.sx,e);s.sy=lerp(H/2+dcy/dl*ro,s.sy,e);a*=suave(clamp(ki*1.8,0,1))} // al abrir la página: de las orillas hacia su lugar
+    s.vis=s.sx>-40&&s.sx<W+40&&s.sy>-40&&s.sy<H+40;s.va=a;s.vs=sz;
+    if(!s.vis){s.px=s.sx;s.py=s.sy;continue}
+    const b=Math.min(NA-1,(a*NA)|0)+s.t*NA,dx=s.sx-s.px,dy=s.sy-s.py,m=Math.hypot(dx,dy);s.dx=isNaN(dx)?0:dx;s.dy=isNaN(dy)?0:dy;
+    rect[b].rect(s.sx-sz/2,s.sy-sz/2,sz,sz); // en el mapa siempre son puntos: al arrastrar no se barren
+    s.px=s.sx;s.py=s.sy
+  }
+  for(let k=0;k<NA*NT;k++){const a=((k%NA)+.5)/NA*alfa,c=tintesAct[(k/NA)|0];
+    cx.fillStyle="rgba("+c+","+a+")";cx.fill(rect[k]);cx.strokeStyle="rgba("+c+","+a+")";cx.lineWidth=1.1;cx.stroke(lin[k])}
+  cx.fillStyle="rgba(243,238,236,"+(.3*alfa)+")";
+  for(const s of S){if(!s.br||!s.vis)continue;const z=s.vs;cx.fillRect(s.sx-z*3,s.sy-.4,z*6,.8);cx.fillRect(s.sx-.4,s.sy-z*3,.8,z*6)}
+}
+
+/* ---------- Medidor de posición: aparece cuando te mueves y muestra dónde estás en la carta ---------- */
+const regla=document.getElementById("regla"),medEl=document.getElementById("medidor");
+// la regla mide la distancia recorrida sobre la ruta roja, de la Entrada al Dominó: cada mundo tiene su propia marca
+const RUTA_L=(()=>{const L=[0];for(let i=1;i<RUTA.length;i++)L.push(L[i-1]+Math.hypot(RUTA[i][0]-RUTA[i-1][0],RUTA[i][2]-RUTA[i-1][2]));return L})();
+const enRuta=(x,z)=>{let mi=0,md=1e12;for(let i=0;i<RUTA.length;i++){const d=(RUTA[i][0]-x)**2+(RUTA[i][2]-z)**2;if(d<md){md=d;mi=i}}return RUTA_L[mi]/RUTA_L[RUTA_L.length-1]};
+NODOS.forEach((n,i)=>{const m=document.createElement("span");m.className="marca"+(i%2?" alta":"")+(i===0?" inicio":"")+(i===NODOS.length-1?" final":"");
+  m.textContent=n.nombre;m.style.left=(RUTA_L[Math.min(RUTA.length-1,i*48)]/RUTA_L[RUTA_L.length-1]*100).toFixed(1)+"%";regla.appendChild(m)});
+let medUlt=null,medT=0;
+function medidor(){
+  const est=[foco[0],foco[1],dist];
+  if(medUlt&&Math.abs(est[0]-medUlt[0])+Math.abs(est[1]-medUlt[1])+Math.abs(est[2]-medUlt[2])>.6){medEl.classList.add("visible");clearTimeout(medT);medT=setTimeout(()=>medEl.classList.remove("visible"),1600)}
+  medUlt=est;
+  document.getElementById("aguja").style.left=(enRuta(foco[0],foco[1])*100).toFixed(2)+"%";
+  document.getElementById("mX").textContent=(foco[0]>=0?"+":"−")+Math.abs(Math.round(foco[0]));
+  document.getElementById("mZ").textContent=Math.max(0,Math.round(-foco[1])).toLocaleString("es-MX");
+  document.getElementById("mA").textContent=(580/dist).toFixed(1)+"×";
+}
+const nodosEl=document.getElementById("nodos");
+const botonesNodo=NODOS.map((n,i)=>{const b=document.createElement("button");b.className="nodo";b.type="button";
+  b.innerHTML="<i></i><span>"+n.nombre+"</span>";b.setAttribute("aria-label",n.nombre);
+  b.style.setProperty("--d",(i*.53)+"s");
+  b.addEventListener("click",ev=>{ev.stopPropagation();if(arrastrado||modo!=="mapa")return;if(!NODOS[i].espacio){irA(i);return}actual=i;entrar()});
+  nodosEl.appendChild(b);return b});
+function moverNodos(B){
+  NODOS.forEach((n,i)=>{const p=proj(B,...n.pos),b=botonesNodo[i];
+    if(!p||p[0]<-60||p[0]>W+60||p[1]<-60||p[1]>H+60){b.style.visibility="hidden";return}
+    b.style.visibility="visible";const e=clamp(900/p[2],.72,1.45);b.style.opacity=clamp(1300/p[2],.5,1).toFixed(2);b.style.transform="translate("+p[0].toFixed(1)+"px,"+(p[1]-3.5).toFixed(1)+"px) scale("+e.toFixed(3)+")";b.style.zIndex=String(3+Math.round(e*10));b.classList.toggle("actual",i===cercano)})
+}
+
+/* ---------- Ficha y controles: arrastra para moverte, pellizca o usa la rueda para acercarte ---------- */
+const $=id=>document.getElementById(id);
+let fichaT=0;
+function pintarFicha(){
+  const f=$("ficha");f.classList.add("oculta");clearTimeout(fichaT);
+  if(cercano<0){$("parada").textContent="Mapa abierto";$("destino").textContent="—";return}
+  const n=NODOS[cercano];$("parada").textContent="Mundo "+String(cercano+1).padStart(2,"0")+" / "+String(NODOS.length).padStart(2,"0");$("destino").textContent=n.nombre;
+  fichaT=setTimeout(()=>{$("etiqueta").textContent=n.etiqueta;const h=document.createElement(n.h1?"h1":"h2");h.textContent=n.titulo;$("titulo").replaceChildren(h);
+    $("texto").textContent=n.texto;$("entrar").textContent=n.accion;f.classList.remove("oculta")},calma?0:450)
+}
+$("entrar").onclick=()=>{if(cercano<0)return;if(NODOS[cercano].espacio){actual=cercano;entrar()}else irA(1)};
+const toques=new Map();let pinch=0;
+addEventListener("pointerdown",e=>{if(modo!=="mapa"||e.target.closest("button,a"))return;toques.set(e.pointerId,[e.clientX,e.clientY]);
+  if(toques.size===1){arrastre={x:e.clientX,y:e.clientY};arrastrado=false;guia=null;velF[0]=velF[1]=0}
+  if(toques.size===2){const [a,b]=[...toques.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1])}});
+addEventListener("pointermove",e=>{if(!toques.has(e.pointerId)||modo!=="mapa")return;const prev=toques.get(e.pointerId);toques.set(e.pointerId,[e.clientX,e.clientY]);
+  if(toques.size===2){const [a,b]=[...toques.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pinch>0)distObj=clamp(distObj*pinch/d,240,1300);pinch=d;arrastrado=true;return}
+  const dx=e.clientX-prev[0],dy=e.clientY-prev[1];if(arrastre&&Math.hypot(e.clientX-arrastre.x,e.clientY-arrastre.y)>6)arrastrado=true;
+  const k=dist/F0*1.5,c=Math.cos(yaw),sn=Math.sin(yaw),mx=(-dx*c-dy*sn)*k,mz=(dx*sn-dy*c)*k;
+  foco[0]+=mx;foco[1]+=mz;velF[0]=mx;velF[1]=mz});
+const soltarToque=e=>{toques.delete(e.pointerId);if(toques.size<2)pinch=0;if(!toques.size){arrastre=null;setTimeout(()=>{arrastrado=false},0)}};
+addEventListener("pointerup",soltarToque);addEventListener("pointercancel",soltarToque);
+addEventListener("wheel",e=>{if(modo!=="mapa")return;e.preventDefault();
+  if(e.ctrlKey){distObj=clamp(distObj*Math.exp(e.deltaY*.0012),240,1300);return} // pellizco del trackpad: acercarse
+  guia=null;const paso=clamp((e.deltaMode===1?e.deltaY*16:e.deltaY),-120,120)*1.1;velF[1]=-paso*.18;
+  foco[1]-=paso;const zx=rutaX(foco[1]);foco[0]+=(zx-foco[0])*.06},{passive:false}); // scroll: caminar hacia el fondo siguiendo la ruta
+function rutaX(z){let m=RUTA[0],md=1e9;for(const q of RUTA){const d=Math.abs(q[2]-z);if(d<md){md=d;m=q}}return m[0]}
+addEventListener("keydown",e=>{if(modo!=="mapa")return;const c=Math.cos(yaw),sn=Math.sin(yaw),p=40;
+  if(e.key==="ArrowUp"){foco[0]-=sn*p;foco[1]-=c*p}if(e.key==="ArrowDown"){foco[0]+=sn*p;foco[1]+=c*p}
+  if(e.key==="ArrowRight"){foco[0]+=c*p;foco[1]-=sn*p}if(e.key==="ArrowLeft"){foco[0]-=c*p;foco[1]+=sn*p}
+  if(e.key==="Enter"&&cercano>0){actual=cercano;entrar()}guia=null});
+
+/* ---------- Espacios arquitectónicos hechos de estrellas ---------- */
+const imgs={};const cargar=src=>imgs[src]||(imgs[src]=new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src}));
+// Una imagen se vuelve n puntos: más puntos donde hay tinta, figura o borde; cada punto guarda el color real de su pixel
+function puntosDeImagen(img,n,cw){
+  cw=cw||260;const ch=Math.max(40,Math.round(cw*H/W)),o=document.createElement("canvas");o.width=cw;o.height=ch;
+  const c=o.getContext("2d",{willReadFrequently:true});
+  const s=Math.max(cw/img.width,ch/img.height),dw=img.width*s,dh=img.height*s;c.drawImage(img,(cw-dw)/2,(ch-dh)/2,dw,dh);
+  const d=c.getImageData(0,0,cw,ch).data,N=cw*ch,L=new Float32Array(N),E=new Float32Array(N),acc=new Float32Array(N);
+  let media=0;for(let k=0;k<N;k++){L[k]=(d[k*4]*.3+d[k*4+1]*.55+d[k*4+2]*.15)/255;media+=L[k]}media/=N;
+  if(media>.5)for(let k=0;k<N;k++)L[k]=1-L[k];
+  const ord=Float32Array.from(L).sort(),lo=ord[(N*.05)|0],hi=ord[(N*.98)|0]||1;let emax=1e-6,tot=0;
+  for(let y=1;y<ch-1;y++)for(let x=1;x<cw-1;x++){const k=y*cw+x,gx=L[k+1]-L[k-1],gy=L[k+cw]-L[k-cw];E[k]=Math.hypot(gx,gy);if(E[k]>emax)emax=E[k]}
+  for(let k=0;k<N;k++){const v=clamp((L[k]-lo)/(hi-lo+1e-6),0,1),e=Math.min(1,E[k]/(emax*.6));tot+=Math.pow(v,3)*.8+Math.pow(e,1.8)*.45+.004;acc[k]=tot}
+  const out=[];
+  for(let i=0;i<n;i++){const r=Math.random()*tot;let a=0,b=N-1;while(a<b){const m=(a+b)>>1;acc[m]<r?a=m+1:b=m}
+    const x=a%cw,y=(a/cw)|0;out.push({x:(x+Math.random())/cw*W,y:(y+Math.random())/ch*H,r:d[a*4],g:d[a*4+1],b:d[a*4+2]})}
+  const esq=[0,cw-1,(ch-1)*cw,N-1].map(k=>[d[k*4],d[k*4+1],d[k*4+2]]); // fondo de la página: el de sus esquinas
+  out.fondo=[0,1,2].map(j=>Math.round(esq.reduce((p,q)=>p+q[j],0)/4));out.claro=media>.5;return out
+}
+
+// Piezas de construcción: segmentos, cajas y rectángulos hechos de puntos (unidades: metros)
+const P3=(X,Y,Z,a)=>({X,Y,Z,a:a==null?1:a});
+const jit=(v,s)=>v+gauss()*(s==null?.006:s);
+const alAzar=a=>a[(Math.random()*a.length)|0];
+function enSeg(a,b,al,s){const t=Math.random();return P3(jit(lerp(a[0],b[0],t),s),jit(lerp(a[1],b[1],t),s),jit(lerp(a[2],b[2],t),s),al)}
+const ARISTAS=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+function caja(x0,y0,z0,x1,y1,z1,al){const v=[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]],e=alAzar(ARISTAS);return enSeg(v[e[0]],v[e[1]],al)}
+function rect(o,u,v,al,relleno){
+  let s=Math.random(),t=Math.random(),dentro=Math.random()<(relleno||0);
+  if(!dentro){const l=(Math.random()*4)|0;if(l===0)t=0;else if(l===1)t=1;else if(l===2)s=0;else s=1}
+  return P3(jit(o[0]+u[0]*s+v[0]*t,.003),jit(o[1]+u[1]*s+v[1]*t,.003),jit(o[2]+u[2]*s+v[2]*t,.003),dentro?al*.42:al)
+}
+function cuarto(X,Hh,z0,z1,al){const e=[[[-X,0,z0],[-X,0,z1]],[[X,0,z0],[X,0,z1]],[[-X,Hh,z0],[-X,Hh,z1]],[[X,Hh,z0],[X,Hh,z1]],
+  [[-X,0,z1],[X,0,z1]],[[-X,Hh,z1],[X,Hh,z1]],[[-X,0,z1],[-X,Hh,z1]],[[X,0,z1],[X,Hh,z1]]];const s=alAzar(e);return enSeg(s[0],s[1],al)}
+function piso(X,z0,z1,paso,al){return Math.random()<.5?P3(rnd(-X,X),0,jit(z0-paso*((Math.random()*((z0-z1)/paso+1))|0),.008),al):P3(jit(-X+paso*((Math.random()*(2*X/paso+1))|0),.008),0,rnd(z1,z0),al)}
+function crearEscena(lista,n){const tot=lista.reduce((p,q)=>p+q[0],0),out=[];
+  for(let i=0;i<n;i++){let r=Math.random()*tot,f=lista[0][1];for(const [w,g] of lista){if(r<w){f=g;break}r-=w}out.push(f())}return out}
+
+// El libro del atril (metros): lomo abajo en O, H sube por la hoja inclinada, S es el ancho de cada hoja. 30 × 30 cm a escala de la sala.
+const LB={O:[0,1.06,-24.15],H:[0,.26,-.31],S:.4};LB.N=(()=>{const l=Math.hypot(LB.H[1],LB.H[2]);return[0,-LB.H[2]/l,LB.H[1]/l]})(); // N: hacia el lector
+function puntoDeHoja(){const r=Math.random();
+  if(r<.3){const l=(Math.random()*4)|0;return{u:l===0?0:l===1?1:Math.random(),w:l===2?-.5:l===3?.5:Math.random()-.5,a:1}}
+  if(r<.85){const fila=(Math.random()*16)|0;return{u:rnd(.12,.88),w:.38-fila*.05+gauss()*.004,a:.66}}return{u:Math.random(),w:Math.random()-.5,a:.24}}
+// Biblioteca: pasillo de libreros bajo arcos; al fondo, un libro abierto en su atril
+function escBiblioteca(){
+  const L=[],libros=[];
+  for(const lado of[-1,1]){let z=-.5;while(z>-26){const w=rnd(.05,.14);for(let f=0;f<7;f++)libros.push([lado*2.25,z,z-w,f*.62+.06,rnd(.34,.54)]);z-=w+rnd(0,.02)}}
+  L.push([44,()=>{const [x,z0,z1,y0,h]=alAzar(libros),b=Math.random()<.7,z=b?(Math.random()<.5?z0:z1):rnd(z1,z0);return P3(jit(x,.03),y0+Math.random()*h,jit(z,.003),b?1:.45)}]);
+  L.push([14,()=>{const lado=Math.random()<.5?-1:1,f=(Math.random()*8)|0;return P3(lado*rnd(2.05,2.5),f*.62+.02,rnd(-26,-.5),1)}]);
+  L.push([11,()=>{const z=-.5-3.6*((Math.random()*8)|0),a=Math.random()*Math.PI;return P3(Math.cos(a)*2.4,4.4+Math.sin(a)*2,jit(z,.015),.9)}]);
+  L.push([4,()=>{const a=((Math.random()*7)|0)/6*Math.PI;return P3(Math.cos(a)*2.4,4.4+Math.sin(a)*2,rnd(-26,-.5),.45)}]);
+  L.push([7,()=>piso(2.2,0,-26,.8,.3)]);
+  L.push([3,()=>caja(-.48,0,-24.6,.48,1.02,-24.0,.85)]);
+  L.push([32,()=>{const h=puntoDeHoja(),lado=Math.random()<.5?-1:1,q=P3(LB.O[0]+lado*h.u*LB.S,LB.O[1]+LB.H[1]*(h.w+.5),LB.O[2]+LB.H[2]*(h.w+.5),h.a);q.libro=1;q.lu=lado*h.u;q.lw=h.w;return q}]);
+  L.push([5,()=>{const r=Math.sqrt(Math.random())*1.2,a=Math.random()*6.283;return P3(Math.cos(a)*r*.6,lerp(4.2,1.1,Math.random()),-24.3+Math.sin(a)*r*.3,.18)}]);
+  L.push([3,()=>P3(rnd(-2,2),rnd(0,5),rnd(-26,2),.3)]);
+  return{L,dur:5600,cam:k=>{const z=lerp(3.5,-23.45,k);return{pos:[Math.sin(k*3.1)*.12,lerp(1.75,1.66,k),z],tgt:lerp3([0,1.75,z-6],[0,1.19,-24.3],k*k)}}}
+}
+// Sala de subasta: muros con obra colgada, filas de sillas, el atril y la obra principal iluminada al fondo
+function escSubasta(){
+  const L=[],X=7,Hh=5,Z1=-30,cuadros=[],sillas=[];
+  for(const lado of[-1,1])for(let z=-3;z>-26;z-=4.6){const w=rnd(1.4,2.4),h=rnd(1.2,2);cuadros.push([lado*X*.99,z,z-w,2.3-h/2,h])}
+  for(let f=0;f<6;f++)for(let c=-4;c<=4;c++)if(c)sillas.push([c*.75,-9-f*1.3]);
+  L.push([10,()=>cuarto(X,Hh,2,Z1,.8)]);
+  L.push([26,()=>{const [x,z0,z1,y0,h]=alAzar(cuadros);return rect([x,y0,z0],[0,0,z1-z0],[0,h,0],1,.45)}]);
+  L.push([18,()=>{const r=Math.random();
+    if(r<.28)return rect([-2,.9,Z1+.02],[4,0,0],[0,3.2,0],1,0);
+    if(r<.58){const a=Math.random()*6.283,rr=Math.sqrt(Math.random())*.75;return P3(Math.cos(a)*rr,3+Math.sin(a)*rr,Z1+.03,1)}
+    const x=rnd(-1.9,1.9);return P3(x,1.6+Math.sin(x*1.3)*.25+rnd(-.35,.15),Z1+.03,.7)}]);
+  L.push([6,()=>{const t=Math.pow(Math.random(),.7),a=Math.random()*6.283,r=t*1.4;return P3(Math.cos(a)*r*.9,lerp(Hh,2.5,t),lerp(Z1+4,Z1+.2,t)+Math.sin(a)*r*.3,.22)}]);
+  L.push([18,()=>{const [x,z]=alAzar(sillas),r=Math.random();
+    if(r<.5)return caja(x-.22,.44,z-.22,x+.22,.48,z+.22,.75);
+    if(r<.75)return rect([x-.22,.48,z+.22],[.44,0,0],[0,.48,0],.75,0);
+    const lx=x+(Math.random()<.5?-.2:.2),lz=z+(Math.random()<.5?-.2:.2);return enSeg([lx,0,lz],[lx,.44,lz],.6)}]);
+  L.push([4,()=>caja(3.2,0,-25.5,4,1.15,-24.9,.9)]);
+  L.push([6,()=>piso(X,2,Z1,2,.3)]);
+  L.push([3,()=>P3(rnd(-X,X),rnd(0,Hh),rnd(Z1,2),.3)]);
+  return{L,dur:5600,cam:k=>{const z=lerp(4,-27.4,k);return{pos:[Math.sin(k*2.2)*.6,lerp(2.4,2.6,k),z],tgt:lerp3([0,2.4,z-8],[0,2.5,Z1],k*k)}}}
+}
+// Martes de dominó: el cuarto de la foto, de noche, visto desde el mismo ángulo: hacia la esquina, con la ventana a la izquierda,
+// los cuadros junto a la esquina, la puerta de vidrio a la derecha y la mesa de frente con la lámpara encima.
+// La mesa y sus sillas se arman en coordenadas propias y luego se giran para quedar de frente a la cámara.
+// La luz sale de la lámpara: los puntos brillan más mientras más cerca están de ella.
+function escDomino(){
+  const L=[],T=.77,TC=[-.75,-.88],A0=0,cA=Math.cos(A0),sA=Math.sin(A0),LP=[TC[0],2.0,TC[1]];
+  const hacia=[-.66,.75]; // de la mesa hacia la cámara: se ve la mesa en diagonal, con una punta hacia la puerta
+  const luz=q=>{const d2=(q.X-LP[0])**2+((q.Y-LP[1])*.8)**2+(q.Z-LP[2])**2;return clamp(.09+1.3/(1+d2*.6),0,1)};
+  const G=q=>{const X=q.X*cA-q.Z*sA,Z=q.X*sA+q.Z*cA;q.X=X+TC[0];q.Z=Z+TC[1];return q};
+  const add=(w,f,propia,grupo)=>L.push([w,()=>{let q=f();if(grupo)G(q);if(!propia)q.a*=luz(q);return q}]);
+  const enMesa=(w,f,propia)=>add(w,f,propia,true);
+  // fichas: la línea del juego, algunas sueltas y las de cada jugador paradas frente a él
+  const fichas=[],paradas=[];
+  for(let i=0;i<13;i++){const x=-.62+i*.104,z=i<9?.05:.05-(i-8)*.104;fichas.push([i<9?x:-.62+8*.104,z,i<9?0:Math.PI/2])}
+  for(let i=0;i<8;i++)fichas.push([rnd(-.6,.6),rnd(-.62,.62),rnd(0,3.14)]);
+  for(const [px,pz,an] of[[0,.64,0],[0,-.64,0],[-.64,0,Math.PI/2],[.64,0,Math.PI/2]])for(let i=-3;i<=3;i++)paradas.push([px+Math.cos(an)*i*.06,pz+Math.sin(an)*i*.06,an]);
+  const pips=n=>({0:[],1:[[0,0]],2:[[-1,-1],[1,1]],3:[[-1,-1],[0,0],[1,1]],4:[[-1,-1],[1,-1],[-1,1],[1,1]],5:[[-1,-1],[1,-1],[0,0],[-1,1],[1,1]],6:[[-1,-1],[1,-1],[-1,0],[1,0],[-1,1],[1,1]]})[n];
+  const caras=fichas.map(()=>[pips((Math.random()*7)|0),pips((Math.random()*7)|0)]);
+  enMesa(20,()=>{const i=(Math.random()*fichas.length)|0,[x,z,an]=fichas[i],r=Math.random(),c=Math.cos(an),sn=Math.sin(an);let u,v,al=1;
+    if(r<.5){u=rnd(-.05,.05);v=Math.random()<.5?-.025:.025;if(Math.random()<.4){u=Math.random()<.5?-.05:.05;v=rnd(-.025,.025)}}
+    else if(r<.62){u=0;v=rnd(-.025,.025);al=.7}
+    else{const lado=Math.random()<.5?0:1,ps=caras[i][lado];if(!ps.length)return P3(x,T+.012,z,.25);const pp=alAzar(ps);u=(lado?.025:-.025)+pp[0]*.013+gauss()*.002;v=pp[1]*.013+gauss()*.002}
+    return P3(x+u*c-v*sn,T+.012,z+u*sn+v*c,al)},true);
+  enMesa(6,()=>{const [x,z,an]=alAzar(paradas),c=Math.cos(an),sn=Math.sin(an);return rect([x-c*.025,T,z-sn*.025],[c*.05,0,sn*.05],[0,.1,0],1,.15)},true);
+  // mesa: cubierta de vidrio (bordes nítidos, el centro casi transparente), patas de madera, base en cruz y pies en L
+  enMesa(12,()=>Math.random()<.85?rect([-.75,T,-.75],[1.5,0,0],[0,0,1.5],1,.07):rect([-.75,T-.02,-.75],[1.5,0,0],[0,0,1.5],.6,0));
+  const patas=[[-.58,-.58],[.58,-.58],[.58,.58],[-.58,.58]];
+  enMesa(7,()=>{const [x,z]=alAzar(patas),r=Math.random();
+    if(r<.6)return caja(x-.035,0,z-.035,x+.035,T-.03,z+.035,.85);
+    if(r<.8){const sx=Math.sign(x);return caja(Math.min(x,x+sx*.16),0,z-.035,Math.max(x,x+sx*.16),.06,z+.035,.7)}
+    const o=Math.random()<.5;return enSeg([-.58,T-.06,o?-.58:.58],[.58,T-.06,o?.58:-.58],.8,.018)});
+  // sillas: dos de bejuco con tubo cromado a la izquierda, dos de madera de tablitas a la derecha
+  const sillas=[[-.98,.12,Math.PI/2,"bejuco"],[-.1,-.98,Math.PI,"bejuco"],[.98,-.15,-Math.PI/2,"madera"],[.15,.98,0,"madera"]];
+  enMesa(16,()=>{const [sx,sz,an,tipo]=alAzar(sillas),c=Math.cos(an),sn=Math.sin(an),r=Math.random();let q;
+    if(tipo==="bejuco"){
+      if(r<.3)q=rect([-.21,.46,-.22],[.42,0,0],[0,0,.44],1,.5);
+      else if(r<.55)q=rect([-.21,.52,.23],[.42,0,0],[0,.36,.03],1,.5);
+      else{const lx=Math.random()<.5?-.215:.215,e=Math.random();
+        q=e<.3?enSeg([lx,.45,-.22],[lx,.03,-.26],.9):e<.6?enSeg([lx,0,-.26],[lx,0,.27],.9):e<.8?enSeg([lx,.46,.22],[lx,.92,.26],.9):enSeg([-.215,0,.27],[.215,0,.27],.9)}}
+    else{
+      if(r<.3){const k=(Math.random()*5)|0;q=rect([-.22,.45,-.22+k*.09],[.44,0,0],[0,0,.07],.9,.3)}
+      else if(r<.55){const lx=Math.random()<.5?-.2:.2,lz=Math.random()<.5?-.2:.2;q=enSeg([lx,0,lz],[lx,lz>0?.98:.45,lz],.85)}
+      else if(r<.8){const t=Math.random()<.5;q=enSeg([-.2,t?.55:.92,.2],[.2,t?.92:.55,.2],.8)}
+      else q=rect([-.2,.88,.2],[.4,0,0],[0,.1,0],.85,.2)}
+    return P3(sx+q.X*c-q.Z*sn,q.Y,sz+q.X*sn+q.Z*c,q.a)});
+  // lámpara de domo: casco oscuro por fuera, borde dorado encendido, foco y el cono de luz que baja a la mesa
+  add(5,()=>{const th=Math.random()*Math.PI/2,ph=Math.random()*6.283,R=.3;return P3(LP[0]+R*Math.sin(th)*Math.cos(ph),LP[1]+R*Math.cos(th)*.85,LP[2]+R*Math.sin(th)*Math.sin(ph),.5)},true);
+  add(4,()=>{const ph=Math.random()*6.283,R=jit(.3,.004);return P3(LP[0]+R*Math.cos(ph),LP[1],LP[2]+R*Math.sin(ph),1)},true);
+  add(4,()=>{const r=Math.sqrt(Math.random())*.22,ph=Math.random()*6.283;return P3(LP[0]+r*Math.cos(ph),LP[1]+.03+Math.random()*.12,LP[2]+r*Math.sin(ph),1)},true);
+  add(1,()=>enSeg([LP[0],LP[1]+.26,LP[2]],[LP[0],3.8,LP[2]],.45),true);
+  add(5,()=>{const t=Math.random(),R=lerp(.3,1.05,t)*Math.sqrt(Math.random()),ph=Math.random()*6.283;return P3(LP[0]+R*Math.cos(ph),lerp(LP[1],T+.02,t),LP[2]+R*Math.sin(ph),.13)},true);
+  // el cuarto: muro del fondo (ventana, cuadro grande y un cuadro junto a la esquina), la esquina, y el muro derecho (un cuadro y la puerta de vidrio)
+  const ZW=-2.2,XD=1.6;
+  add(8,()=>{const r=Math.pow(Math.random(),.7)*3.4,ph=Math.random()*6.283;return P3(clamp(TC[0]+r*Math.cos(ph),-3.4,XD),0,clamp(TC[1]+r*Math.sin(ph),ZW,2.6),.5)});
+  add(7,()=>Math.random()<.6?P3(rnd(-3.4,XD),rnd(0,3.8),ZW,.32):P3(XD,rnd(0,3.8),rnd(ZW,2.6),.3));
+  add(3,()=>{const r=Math.random();if(r<.35)return enSeg([-3.4,0,ZW],[XD,0,ZW],.8);if(r<.7)return enSeg([XD,0,ZW],[XD,3.8,ZW],.85);return enSeg([XD,0,ZW],[XD,0,2.6],.7)});
+  const cuadros=[[-2.45,1.45,.85,.8],[.82,1.5,.5,.62]];
+  add(5,()=>{const [x,y,w,h]=alAzar(cuadros);return Math.random()<.6?rect([x,y,ZW+.01],[w,0,0],[0,h,0],1,.25):rect([x+w*.2,y+h*.2,ZW+.012],[w*.6,0,0],[0,h*.6,0],.75,.35)});
+  add(3,()=>Math.random()<.6?rect([XD-.01,1.52,-1.95],[0,0,.7],[0,.6,0],1,.25):rect([XD-.012,1.64,-1.81],[0,0,.42],[0,.36,0],.75,.35));
+  add(4,()=>{const r=Math.random();if(r<.55)return rect([-1.35,1.02,ZW],[1.25,0,0],[0,1.1,0],1,0);if(r<.75)return rect([-1.35,1.02,ZW],[1.25,0,0],[0,0,.14],.8,.2);
+    const lean=[[-1.29,.22,.32],[-1.01,.2,.24],[-.75,.26,.4],[-.43,.24,.42]][(Math.random()*4)|0];return rect([lean[0],1.03,ZW+.11],[lean[1],0,0],[0,lean[2],-.08],.85,.2)});
+  add(2,()=>P3(rnd(-1.3,-.15),rnd(1.1,2.05),ZW-rnd(.2,1.6),.25)); // afuera de la ventana, apenas
+  add(5,()=>{const r=Math.random();if(r<.5)return rect([XD-.01,0,-.95],[0,0,1.85],[0,3.2,0],1,0);if(r<.8)return rect([XD,0,.9],[.6,0,.55],[0,3.15,0],.75,.06);
+    return P3(rnd(XD+.2,4.2),0,rnd(-.9,2.2),.22)});
+  // plantas en maceta: la de la izquierda junto al muro de la ventana y la de la esquina
+  const plantas=[[-1.95,-1.72,.55,2.2],[.55,-1.85,0,1.75]].map(([x,z,maceta,alto])=>({x,z,maceta,alto,hojas:Array.from({length:70},()=>({a:Math.random()*6.283,l:rnd(.3,.55),y:alto-rnd(0,.9),c:rnd(.15,.4)}))}));
+  add(8,()=>{const pl=alAzar(plantas),r=Math.random();
+    if(pl.maceta&&r<.25){const t=Math.random(),ph=Math.random()*6.283,R=lerp(.24,.34,t);return P3(pl.x+R*Math.cos(ph),t*pl.maceta,pl.z+R*Math.sin(ph),.7)}
+    if(r<.4)return enSeg([pl.x+rnd(-.05,.05),pl.maceta,pl.z],[pl.x+rnd(-.12,.12),pl.alto-.3,pl.z+rnd(-.1,.1)],.6);
+    const h=alAzar(pl.hojas),t=Math.random();return P3(pl.x+Math.cos(h.a)*h.l*t,h.y+Math.sin(t*Math.PI)*.08-t*t*h.c,pl.z+Math.sin(h.a)*h.l*t,.85)});
+  add(2,()=>P3(rnd(-3.4,XD),rnd(0,3.8),rnd(ZW,2.6),.2));
+  // cámara: entra por la diagonal y se asienta en el ángulo de la foto, de pie frente a la mesa, viendo hacia la esquina
+  const pFin=[TC[0]+hacia[0]*3.4-.1,1.42,TC[1]+hacia[1]*3.4+.1],pIni=[TC[0]+hacia[0]*6.5,2.1,TC[1]+hacia[1]*6.5];
+  const tFin=[TC[0]-hacia[0]*1.3+.25,1.2,TC[1]-hacia[1]*1.3],tIni=[TC[0]-hacia[0]*.6,1.4,TC[1]-hacia[1]*.6];
+  return{L,dur:6000,cam:k=>{const e=ease(k);return{pos:lerp3(pIni,pFin,e),tgt:lerp3(tIni,tFin,e)}}}
+}
+// Laboratorio: sin sala. Los rayos del viaje se doblan directo hacia los puntos de la foto (ver puntosDeFoto).
+// Es un plano frente a la cámara: cada punto cae justo en su pixel de la imagen.
+const PLANO_FOTO=10;
+function escLaboratorio(){return{L:[[1,()=>P3(rnd(-1,1),rnd(-1,1),-PLANO_FOTO,.8)]],dur:1400,foto:true,cam:()=>({pos:[0,0,0],tgt:[0,0,-1]})}}
+function puntosDeFoto(v){const F=Math.min(W,H)*(movil?1.05:.95),D=PLANO_FOTO;
+  S.forEach((s,i)=>{const p=v.capPts[i];s.f3=P3((p.x-W/2)*D/F,-(p.y-H/2)*D/F,-D,.85)})}
+const ESCENAS={biblioteca:escBiblioteca,subasta:escSubasta,domino:escDomino,laboratorio:escLaboratorio};
+function proyectarEscena(E,k){const c=E.cam(k),B=baseCam({pos:c.pos,tgt:c.tgt,F:Math.min(W,H)*(movil?1.05:.95)});
+  for(const s of S){const q=s.f3;if(!q)continue;const p=proj(B,q.X,q.Y,q.Z,.05);
+    if(!p){s.ta=0;s.tx+=(s.tx-W/2)*.08;s.ty+=(s.ty-H/2)*.08;continue}
+    s.tx=p[0];s.ty=p[1];s.ta=q.a*clamp(24/p[2],.38,1);s.tz=clamp(.8+1.6/p[2],.8,2.8)}}
+
+/* ---------- El viaje: un solo movimiento continuo ---------- */
+let modo="mapa",viaje=null,grupos=null,estela=2.4;const LUZ=2000; // ms que tarda en abrirse la luz
+function rotulo(a,b){const l=$("lugar");l.textContent=a;if(b){const e=document.createElement("b");e.textContent=b;l.appendChild(e)}}
+const capturaDe=n=>"recorrido/"+n.captura+(movil?"-movil.jpg":"-ancho.jpg");
+
+/* ---------- Efectos de imagen ----------
+   MiMundoEfectos.lines(imagen, opciones) dibuja una imagen con renglones de líneas que suben con la luz.
+   Opciones: tinta (color de la línea), modo ("lineas" o "relieve": en relieve cada renglón tapa a los de atrás),
+   espaciado (px entre renglones), amplitud (px que sube la línea donde la imagen es blanca), grosor (px de la línea),
+   fondo (color entre renglones en modo relieve), ancho (px del resultado) y escala (multiplica espaciado, amplitud y grosor).
+   Devuelve un lienzo del mismo ancho; arriba lleva un margen (lienzo.margen) para las líneas que suben. */
+const MiMundoEfectos={
+  lines(img,o){o=o||{};
+    const k=o.escala||1,esp=(o.espaciado||6)*k,amp=(o.amplitud==null?20:o.amplitud)*k,gros=(o.grosor||1)*k,relieve=o.modo==="relieve";
+    const w=Math.max(1,Math.round(o.ancho||img.width)),h=Math.max(1,Math.round(w*img.height/img.width)),m=Math.ceil(amp)+2;
+    const src=document.createElement("canvas");src.width=w;src.height=h;const sc=src.getContext("2d",{willReadFrequently:true});sc.drawImage(img,0,0,w,h);
+    const d=sc.getImageData(0,0,w,h).data,out=document.createElement("canvas");out.width=w;out.height=h+m;out.margen=m;
+    const g=out.getContext("2d");g.lineJoin="round";g.lineCap="round";g.lineWidth=gros;g.strokeStyle=o.tinta||"#e0a458";g.fillStyle=o.fondo||"rgba(5,4,3,.93)";
+    const paso=Math.max(1,Math.round(k*1.5));
+    for(let y=esp/2;y<h;y+=esp){const yi=Math.min(h-1,y|0);let tramo=[];
+      const cerrar=()=>{if(tramo.length>1){
+        if(relieve){g.beginPath();g.moveTo(tramo[0][0],tramo[0][1]);for(const p of tramo)g.lineTo(p[0],p[1]);
+          g.lineTo(tramo[tramo.length-1][0],m+y+esp);g.lineTo(tramo[0][0],m+y+esp);g.closePath();g.fill()}
+        g.beginPath();g.moveTo(tramo[0][0],tramo[0][1]);for(const p of tramo)g.lineTo(p[0],p[1]);g.stroke()}tramo=[]};
+      for(let x=0;x<w;x+=paso){const i=(yi*w+x)*4,a=d[i+3]/255;
+        if(a<.5){cerrar();continue}
+        const L=(d[i]*.3+d[i+1]*.55+d[i+2]*.15)/255;tramo.push([x,m+y-amp*L])}
+      cerrar()}
+    return out}
+};
+window.MiMundoEfectos=MiMundoEfectos;
+
+/* ---------- Laboratorio: de los puntos del viaje sale la foto, subiendo con la línea de la pantalla ----------
+   La línea de TV sube de abajo hacia arriba: debajo de ella ya está la foto a color, arriba siguen los puntos.
+   Al llegar arriba se queda la foto y la línea sigue pasando, una vez cada LINEA.dur ms.
+   Ajustes en LINEA: duración de cada subida, ancho de la franja, brillo, filo y desfase de los renglones. */
+const LINEA={dur:4000,ancho:.045,brillo:.55,filo:.55,desfase:6};
+const yLinea=(v,now)=>H*(1.15-1.3*(((now-v.tL)%LINEA.dur)/LINEA.dur));
+function aSubida(v,now){v.fase="subida";v.tL=now;
+  const mk=v.mascara.getContext("2d");v.gm=mk}
+function lineaTV(lz,yb,now){
+  const an=H*LINEA.ancho,y0=Math.max(0,Math.floor(yb-an*3)),y1=Math.min(H,Math.ceil(yb+an*3)),tt=now/1000;
+  for(let y=y0;y<y1;y+=2){const b=Math.exp(-(((y-yb)/an)**2));if(b<.02)continue;const dx=b*(LINEA.desfase*Math.sin(y*.9+tt*10)+4);
+    cx.drawImage(lz,0,y*DPR,W*DPR,2*DPR,dx,y,W,2);
+    cx.globalCompositeOperation="lighter";cx.globalAlpha=LINEA.brillo*b;cx.drawImage(lz,0,y*DPR,W*DPR,2*DPR,dx,y,W,2);cx.globalCompositeOperation="source-over";cx.globalAlpha=1}
+  const yf=yb-H*.05;if(yf>-4&&yf<H+4){const g=cx.createLinearGradient(0,yf-3,0,yf+3);g.addColorStop(0,"rgba(217,242,230,0)");g.addColorStop(.5,"rgba(217,242,230,"+LINEA.filo+")");g.addColorStop(1,"rgba(217,242,230,0)");cx.fillStyle=g;cx.fillRect(0,yf-3,W,6)}}
+function dibujarSubida(v,now,t){
+  const lz=v.lienzo,k=(now-v.tL)/LINEA.dur,yb=H*(1.15-1.3*Math.min(k,1)),an=H*LINEA.ancho;
+  // los puntos que la línea todavía no alcanza siguen siendo luz
+  const pt=new Path2D();for(const s of S){s.fx=s.sx;s.fy=s.sy;if(s.sy<yb+an){const x=s.sx+Math.sin(t*s.f+s.ph)*.4,y=s.sy+Math.cos(t*s.f*.8+s.ph)*.4;pt.rect(x-.6,y-.6,1.2,1.2)}}
+  cx.fillStyle="rgba("+PA.estrella.map(Math.round).join(",")+",.8)";cx.fill(pt);
+  // debajo de la línea ya está la foto a color
+  const top=Math.max(0,yb);if(top<H)cx.drawImage(lz,0,top*DPR,W*DPR,(H-top)*DPR,0,top,W,H-top);
+  lineaTV(lz,yb,now);
+  const lg=$("lugar");lg.style.opacity=(1-suave(clamp(k*2,0,1))).toFixed(3);
+  if(k>=1){S.forEach(s=>{s.fx=s.tx;s.fy=s.ty;s.fa=.5});terminar()}
+}
+// La foto ya armada: la línea de TV sigue subiendo, una vez cada LINEA.dur ms
+function dibujarLinea(v,now){cx.drawImage(v.lienzo,0,0,W,H);lineaTV(v.lienzo,yLinea(v,now),now)}
+
+function entrar(){
+  if(modo!=="mapa")return;const n=NODOS[actual];if(!n.espacio){irA(1);return}
+  const destino=BASE?BASE+n.href:"./"+n.href;
+  if(calma){location.href=destino;return}
+  modo="viaje";document.body.classList.add("viajando");$("final").hidden=true;$("viaje").classList.remove("claro");$("lugar").style.opacity="";rotulo("Rumbo a",n.nombre);
+  const now=performance.now(),cam0=camAhora(now);camA=null;
+  const v0=[cam0.pos[0]-n.pos[0],cam0.pos[1]-n.pos[1],cam0.pos[2]-n.pos[2]],lv=Math.hypot(...v0);
+  const v={t0:now,n,cam0,destino,fase:"viaje",c:0,E:ESCENAS[n.espacio](),pCap:cargar(capturaDe(n)),
+    cerca:[n.pos[0]+v0[0]/lv*40,n.pos[1]+v0[1]/lv*40,n.pos[2]+v0[2]/lv*40]};
+  const pts=crearEscena(v.E.L,S.length);S.forEach((s,i)=>{s.f3=pts[i];s.o=Math.random();s.ua=Math.random()*6.283;s.ur=.25+Math.pow(Math.random(),.6)*5;s.uz=rnd(3,75);s.fot=Math.random()<.38});
+  viaje=v;v.pCap.then(im=>{v.capImg=im;if(im){v.capPts=puntosDeImagen(im,S.length);if(v.E.foto)puntosDeFoto(v)}v.capListo=true});
+  if(n.id==="libro")Promise.all([cargar(LIBRO.portada),cargar(LIBRO.otra)]).then(([a,b])=>{v.libroImg=a;v.otraImg=b;v.libroListo=true});
+}
+// Cada estrella está a la vez en el mapa y en el espacio; w la lleva de un lugar al otro sin cortes
+function dibujarMezcla(Bm,Bs,g,t){
+  const rect=[],lin=[];for(let k=0;k<NA*NT;k++){rect.push(new Path2D());lin.push(new Path2D())}
+  for(const s of S){
+    const w=suave(clamp((g-s.o*.55)/.45,0,1)),q=s.f3;
+    const p=w<1?proj(Bm,s.x,s.y,s.z):null,r=w>0?proj(Bs,q.X,q.Y,q.Z,.05):null;
+    let mx,my,ma=0,mz=1,ex,ey,ea=0,ez=1;
+    if(r){ex=r[0];ey=r[1];ea=q.a*clamp(24/r[2],.38,1);ez=clamp(.8+1.6/r[2],.8,2.8)}
+    if(p){mx=p[0];my=p[1];ma=clamp(s.b*clamp(4200/p[2],.35,1)*1.15,0,1);mz=s.s*clamp(900/p[2],.75,2.6)}
+    if(!p&&!r){s.px=NaN;s.va=0;continue}
+    if(!p){mx=W/2+(ex-W/2)*4;my=H/2+(ey-H/2)*4;mz=ez}       // llega desde fuera, como si pasara junto a ti
+    if(!r){ex=mx+(mx-W/2)*1.5;ey=my+(my-H/2)*1.5;ez=mz}      // se va hacia los bordes
+    const x=lerp(mx,ex,w)+Math.sin(t*s.f+s.ph)*.6,y=lerp(my,ey,w)+Math.cos(t*s.f*.8+s.ph)*.6;
+    const a=lerp(ma,ea,w)*(.68+.32*Math.sin(t*s.f*1.7+s.ph)),sz=lerp(mz,ez,w);
+    s.sx=x;s.sy=y;s.va=a;s.tz=sz;
+    if(a<.02||!(x>-60&&x<W+60&&y>-60&&y<H+60)){s.px=x;s.py=y;continue}
+    const b=Math.min(NA-1,(a*NA)|0)+s.t*NA,dx=x-s.px,dy=y-s.py,m=Math.hypot(dx,dy),L=Math.min(estela*(1-w),180/(m+1));
+    if(L>.4&&m>1.4&&m<900){lin[b].moveTo(x-dx*L,y-dy*L);lin[b].lineTo(x,y)}else rect[b].rect(x-sz/2,y-sz/2,sz,sz);
+    s.px=x;s.py=y
+  }
+  for(let k=0;k<NA*NT;k++){const a=((k%NA)+.5)/NA,c=tintesAct[(k/NA)|0];
+    cx.fillStyle="rgba("+c+","+a+")";cx.fill(rect[k]);cx.strokeStyle="rgba("+c+","+a+")";cx.lineWidth=1.1;cx.stroke(lin[k])}
+}
+// Túnel: cada estrella es un fotón que viene del fondo y pasa junto a ti.
+// Al frenar, ese mismo rayo se dobla hacia su lugar en el espacio y se va acortando hasta quedar como punto: los rayos arman la figura.
+function dibujarTunel(Bm,Bs,wt,g,dz,renacer,t,ap){ap=ap==null?1:ap;
+  const Ft=Math.min(W,H)*.9,Re=Math.hypot(W,H)*.62,rect=[],lin=[];for(let k=0;k<NA*NT;k++){rect.push(new Path2D());lin.push(new Path2D())}
+  const raya=(b,x,y,px,py,L,sz)=>{const dx=x-px,dy=y-py,m=Math.hypot(dx,dy);if(m>1.2&&m<1400&&L>.25){lin[b].moveTo(x-dx*L,y-dy*L);lin[b].lineTo(x,y)}else rect[b].rect(x-sz/2,y-sz/2,sz,sz)};
+  for(const s of S){
+    const w=suave(clamp((g-s.o*.55)/.45,0,1));
+    if(w<=0){
+      s.uz-=dz;let salto=false;
+      if(s.uz<.25&&renacer){s.uz+=rnd(55,75);salto=true}
+      const enT=s.uz>=.25;
+      let x=W/2+Math.cos(s.ua)*W*2,y=H/2+Math.sin(s.ua)*H*2,a=0,sz=1;
+      if(enT){x=W/2+Math.cos(s.ua)*s.ur*Ft/s.uz;y=H/2+Math.sin(s.ua)*s.ur*Ft/s.uz;a=clamp(3.6/s.uz,.04,.8)*(.5+.5*s.b)*(s.fot?1:0)*ap;sz=clamp(.6+3/s.uz,.6,2.4)}
+      x+=Math.sin(t*s.f+s.ph)*.5;y+=Math.cos(t*s.f*.8+s.ph)*.5;
+      if(salto)s.px=NaN;
+      if(a>=.02&&x>-80&&x<W+80&&y>-80&&y<H+80)raya(Math.min(NA-1,(a*NA)|0)+s.t*NA,x,y,s.px,s.py,Math.min(1.7,170/(Math.hypot(x-s.px,y-s.py)+1)),sz);
+      s.px=x;s.py=y;s.sx=x;s.sy=y;s.va=a;s.tz=sz;s.a0=null;continue
+    }
+    // su lugar en el espacio
+    const q=s.f3,r=proj(Bs,q.X,q.Y,q.Z,.05);if(!r){s.va=0;continue}
+    const ex=r[0],ey=r[1],ea=q.a*clamp(24/r[2],.38,1),ez=clamp(.8+1.6/r[2],.8,2.8);
+    if(!s.a0){ // arranca desde donde iba el rayo; si no se veía, entra desde la orilla
+      const vis=s.va>=.02&&s.sx>-80&&s.sx<W+80&&s.sy>-80&&s.sy<H+80;
+      if(vis)s.a0=[s.sx,s.sy,s.va];else{const dcx=ex-W/2,dcy=ey-H/2,dl=Math.hypot(dcx,dcy)||1,ro=Math.max(Re,dl*1.25);s.a0=[W/2+dcx/dl*ro,H/2+dcy/dl*ro,0]}}
+    const k=1-Math.pow(1-w,3),ax=lerp(s.a0[0],ex,k)+Math.sin(t*s.f+s.ph)*.5,ay=lerp(s.a0[1],ey,k)+Math.cos(t*s.f*.8+s.ph)*.5;
+    const aa=lerp(s.a0[2],ea,suave(clamp(w*1.4,0,1)))*(.8+.2*Math.sin(t*s.f*1.7+s.ph)),sz=lerp(s.tz||1,ez,w);
+    if(aa>=.02&&ax>-80&&ax<W+80&&ay>-80&&ay<H+80)raya(Math.min(NA-1,(aa*NA)|0)+s.t*NA,ax,ay,s.px,s.py,1.6*(1-w),sz);
+    s.px=ax;s.py=ay;s.sx=ax;s.sy=ay;s.va=aa;s.tz=sz
+  }
+  for(let k=0;k<NA*NT;k++){const al=((k%NA)+.5)/NA,c=tintesAct[(k/NA)|0];
+    cx.fillStyle="rgba("+c+","+al+")";cx.fill(rect[k]);cx.strokeStyle="rgba("+c+","+al+")";cx.lineWidth=.6+(k%NA)/NA*1.1;cx.stroke(lin[k])}
+}
+function aLaPagina(v,now){S.forEach(s=>{s.fx=s.sx;s.fy=s.sy;s.fa=s.va;s.vx=s.vy=0;s.f3=null});aPagina(v,now)}
+function aPagina(v,now){
+  const P=v.capPts,cols=new Map();grupos=[];
+  S.forEach((s,i)=>{const p=P[i];s.tx=p.x;s.ty=p.y;s.ta=P.claro?.95:1;s.f3=null;s.k=rnd(.025,.07);
+    s.p0=[s.fx,s.fy,s.fa];s.px=s.fx;s.py=s.fy;s.dl=clamp(p.y/H,0,1)*.6+Math.random()*.4; // cada punto sale de donde estaba en la sala; los de arriba salen primero
+    const key=(p.r&0xf0)+","+(p.g&0xf0)+","+(p.b&0xf0);if(!cols.has(key)){cols.set(key,grupos.length);grupos.push("rgb("+key+")")}s.gi=cols.get(key)});
+  // la captura, ya ajustada a la pantalla, para irla revelando detrás del frente de impresión
+  const lz=document.createElement("canvas");lz.width=W*DPR;lz.height=H*DPR;const g=lz.getContext("2d");g.setTransform(DPR,0,0,DPR,0,0);
+  const sc=Math.max(W/v.capImg.width,H/v.capImg.height),iw=v.capImg.width*sc,ih=v.capImg.height*sc;g.drawImage(v.capImg,(W-iw)/2,(H-ih)/2,iw,ih);
+  const mk=document.createElement("canvas");mk.width=lz.width;mk.height=lz.height;v.lienzo=lz;v.mascara=mk;
+  v.fondo0=fondo.slice();v.fondo1=P.fondo;v.fase="pagina";v.tP=now;
+  if(v.n.id==="laboratorio")aSubida(v,now)
+}
+// La página se materializa: los puntos vuelan a su lugar y un frente de impresión baja de arriba a abajo
+// dejando detrás la página a color, como cuando sale una impresión del plotter.
+const PG={esc:900,vuelo:1200,frente:1500,dur:1800,banda:.16};
+function dibujarPagina(v,now,t){
+  const m=now-v.tP,P=v.capPts,band=H*PG.banda,kf=clamp((m-PG.frente)/PG.dur,0,1),yf=lerp(-band,H+band*.3,kf);
+  // 1) lo que ya pasó el frente: la página a color, con orilla suave
+  if(kf>0){const g=v.mascara.getContext("2d");g.setTransform(1,0,0,1,0,0);g.globalCompositeOperation="copy";g.drawImage(v.lienzo,0,0);
+    g.globalCompositeOperation="destination-in";const y1=Math.max(0,yf)*DPR,y0=Math.max(0,yf-band)*DPR,gr=g.createLinearGradient(0,y0,0,Math.max(y0+1,y1));
+    gr.addColorStop(0,"rgba(0,0,0,1)");gr.addColorStop(1,"rgba(0,0,0,0)");g.fillStyle=gr;g.fillRect(0,0,v.mascara.width,v.mascara.height);g.globalCompositeOperation="source-over";
+    cx.drawImage(v.mascara,0,0,W,H)}
+  // 2) los puntos: en vuelo y esperando son luz; justo en el frente toman el color real de la página
+  const rect=[],lin=[];for(let k=0;k<NA*NT;k++){rect.push(new Path2D());lin.push(new Path2D())}
+  const col=grupos.map(()=>new Path2D()),sz=movil?1.2:1.35;
+  for(const s of S){
+    const e=ease(clamp((m-s.dl*PG.esc)/PG.vuelo,0,1)),dr=(1-e)*.6;
+    const x=lerp(s.p0[0],s.tx,e)+Math.sin(t*s.f+s.ph)*dr,y=lerp(s.p0[1],s.ty,e)+Math.cos(t*s.f*.8+s.ph)*dr;
+    s.fx=x;s.fy=y;
+    if(s.ty<yf-band){s.fa=.55;s.px=x;s.py=y;continue}           // ya impreso: lo cubre la foto
+    if(s.ty<=yf){col[s.gi].rect(x-sz/2,y-sz/2,sz,sz);s.fa=.9;s.px=x;s.py=y;continue}
+    const a=lerp(s.p0[2],.8,e)*(.5+.5*e)*(.75+.25*Math.sin(t*s.f*1.7+s.ph));s.fa=a;
+    if(a>=.02&&x>-60&&x<W+60&&y>-60&&y<H+60){const b=Math.min(NA-1,(a*NA)|0)+s.t*NA,dx=x-s.px,dy=y-s.py,mm=Math.hypot(dx,dy);
+      if(e<1&&mm>1.4&&mm<900){const L=Math.min(.45,40/(mm+1));lin[b].moveTo(x-dx*L,y-dy*L);lin[b].lineTo(x,y)}else rect[b].rect(x-sz/2,y-sz/2,sz,sz)}
+    s.px=x;s.py=y}
+  for(let k=0;k<NA*NT;k++){const al=((k%NA)+.5)/NA,c=tintesAct[(k/NA)|0];cx.fillStyle="rgba("+c+","+al+")";cx.fill(rect[k]);cx.strokeStyle="rgba("+c+","+al+")";cx.lineWidth=1;cx.stroke(lin[k])}
+  cx.globalAlpha=.9;grupos.forEach((g,i)=>{cx.fillStyle=g;cx.fill(col[i])});cx.globalAlpha=1;
+  // el frente: una línea de luz muy tenue, como el cabezal
+  if(kf>0&&kf<1){cx.fillStyle="rgba("+PA.estrella.map(Math.round).join(",")+","+(.35*Math.sin(kf*Math.PI))+")";cx.fillRect(0,yf-.5,W,1)}
+  // el rótulo del lugar se despide cuando empieza a salir la página
+  const lg=$("lugar");lg.style.opacity=(1-suave(clamp((m-PG.frente)/600,0,1))).toFixed(3);
+  if(P.claro&&yf>H*.5)$("viaje").classList.add("claro");
+  if(kf>=1&&m>PG.frente+PG.dur+250)terminar()
+}
+// Si la página no tiene captura en recorrido/, el viaje se queda en el espacio y ofrece abrir la página o volver al mapa
+function sinCaptura(v){S.forEach(s=>{s.fx=s.sx;s.fy=s.sy;s.fa=s.va;s.tx=s.sx;s.ty=s.sy;s.ta=s.va;s.vx=s.vy=0;s.f3=null});
+  if(!BASE){location.href=v.destino;return}v.fase="quieto";$("final").hidden=false;$("abrir").href=v.destino}
+// El Laboratorio se queda en la foto con sus menús; los demás mundos abren su página (en la vista previa, con botones)
+function terminar(){const v=viaje;if(!v)return;const lab=v.n.id==="laboratorio";if(BASE||lab){v.fase="final";$("final").hidden=false;$("abrir").href=v.destino;if(lab)mostrarMenus()}else location.href=v.destino}
+// Laboratorio: al quedar la foto aparecen los dos menús; el de Giclée abre el cotizador ahí mismo, sobre la foto
+// dónde van los menús, en fracciones de la foto: el centro de la pared libre entre las ventanas rojas y la impresora
+const MENUS_EN={x:.59,y:.38};
+function colocarMenus(){const v=viaje,m=$("menus");if(!v||!v.capImg)return;const im=v.capImg,sc=Math.max(W/im.width,H/im.height),ox=(W-im.width*sc)/2,oy=(H-im.height*sc)/2;
+  const w=m.offsetWidth||360,x=clamp(ox+MENUS_EN.x*im.width*sc,w/2+16,W-w/2-16),y=oy+MENUS_EN.y*im.height*sc;m.style.left=x+"px";m.style.top=y+"px"}
+function mostrarMenus(){const m=$("menus");m.hidden=false;colocarMenus();requestAnimationFrame(()=>requestAnimationFrame(()=>m.classList.add("visible")))}
+function ocultarMenus(){const m=$("menus");m.classList.remove("visible");m.hidden=true}
+const COTIZADOR="laboratorio-digital-cria/cotizador-giclees/";
+$("mGiclee").onclick=()=>{const v=viaje;if(!v||v.pagina)return;
+  const caja=document.createElement("div");caja.className="pagina-libro";caja.style.transition="opacity .6s";caja.style.background="#080c0b";
+  const fr=document.createElement("iframe");fr.src=(BASE||"./")+COTIZADOR;fr.title="Cotizador de Gicleés";caja.appendChild(fr);document.body.appendChild(caja);v.pagina=caja;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{caja.style.opacity="1";caja.style.pointerEvents="auto"}));
+  ocultarMenus();$("final").classList.add("sobre-pagina");$("alLab").hidden=false;$("abrir").hidden=true;$("viaje").style.opacity="0";$("viaje").style.pointerEvents="none"};
+$("alLab").onclick=()=>{const v=viaje;if(!v||!v.pagina)return;const fr=v.pagina;v.pagina=null;fr.style.opacity="0";fr.style.pointerEvents="none";setTimeout(()=>fr.remove(),600);
+  $("final").classList.remove("sobre-pagina");$("alLab").hidden=true;$("abrir").hidden=false;$("viaje").style.opacity="";$("viaje").style.pointerEvents="";mostrarMenus()};
+$("saltar").onclick=()=>{if(!viaje)return;if(!BASE&&viaje.n.id!=="laboratorio"){location.href=viaje.destino;return}viaje.salto=true};
+$("volver").onclick=()=>{if(!viaje)return;const vv=viaje;ocultarMenus();$("alLab").hidden=true;$("abrir").hidden=false;$("final").classList.remove("sobre-pagina");if(vv.ajuste)clearInterval(vv.ajuste);if(vv.pagina){const fr=vv.pagina;fr.style.transition="opacity .5s";fr.style.opacity="0";fr.style.pointerEvents="none";setTimeout(()=>fr.remove(),600)}$("viaje").style.opacity="";$("viaje").style.pointerEvents="";if(vv.fase==="libroFin"||vv.fase==="libro"){const rs=[vv.rectTapa,vv.rectOtra].filter(Boolean);
+    S.forEach(q=>{const r=rs.length?alAzar(rs):[W/2-50,H/2-50,100];q.fx=r[0]+Math.random()*r[2];q.fy=r[1]+Math.random()*r[2];q.fa=.55;q.s=q.s||1})}
+  $("lugar").style.opacity="";viaje.regreso=performance.now();viaje.fase="regreso";S.forEach(q=>{q.r0=null});$("final").hidden=true;$("viaje").classList.remove("claro")};
+
+function estrellasLibres(t,c,deriva){
+  const rect=[];for(let k=0;k<NA*NT;k++)rect.push(new Path2D());
+  const col=grupos?grupos.map(()=>new Path2D()):null;
+  for(const s of S){
+    s.vx*=.91;s.vy*=.91;s.fx+=s.vx+(s.tx-s.fx)*s.k;s.fy+=s.vy+(s.ty-s.fy)*s.k;s.fa+=(s.ta-s.fa)*.05;
+    if(s.fa<.02)continue;
+    const tw=.7+.3*Math.sin(t*s.f*1.7+s.ph),x=s.fx+Math.sin(t*s.f+s.ph)*deriva,y=s.fy+Math.cos(t*s.f*.8+s.ph)*deriva,sz=lerp(s.tz||s.s,1.7,c);
+    if(c<1)rect[Math.min(NA-1,(s.fa*tw*NA)|0)+s.t*NA].rect(x,y,sz,sz);
+    if(col&&s.gi>=0&&c>0)col[s.gi].rect(x,y,sz,sz)
+  }
+  for(let k=0;k<NA*NT;k++){const a=((k%NA)+.5)/NA*(1-c);if(a<=0)continue;cx.fillStyle="rgba("+tintesAct[(k/NA)|0]+","+a+")";cx.fill(rect[k])}
+  if(col&&c>0){cx.globalAlpha=Math.min(1,c*1.15);grupos.forEach((g,i)=>{cx.fillStyle=g;cx.fill(col[i])});cx.globalAlpha=1}
+}
+function cubrir(img){const s=Math.max(W/img.width,H/img.height),w=img.width*s,h=img.height*s;cx.drawImage(img,(W-w)/2,(H-h)/2,w,h)}
+
+/* ---------- Librería: al llegar al libro, los puntos forman un libro abierto que se hojea hasta cerrarse ----------
+   La portada queda hecha de puntos de color, luego se materializa la foto y se acomoda junto a la otra portada, como en la página. */
+const LIBRO={portada:"recorrido/libro-portada.jpg",otra:"libro/cover_arboles.jpg",ancla:"#coverToggle",
+  textos:["Mujer entre los árboles","Niña con el coyote"]};
+const LT={verPuntos:1200,entra:600,hoja:560,durHoja:1050,hojas:5,durTapa:1250,centra:1300,foto:1300,pausa:700,mueve:1200,fin:900};
+function muestrearPortada(img,n){ // la portada en blanco y negro: más puntos donde hay luz y donde hay bordes
+  const C=240,c=document.createElement("canvas");c.width=c.height=C;const g=c.getContext("2d",{willReadFrequently:true});g.drawImage(img,0,0,C,C);
+  const d=g.getImageData(0,0,C,C).data,N=C*C,Lm=new Float32Array(N),acc=new Float32Array(N);
+  for(let k=0;k<N;k++)Lm[k]=(d[k*4]*.3+d[k*4+1]*.55+d[k*4+2]*.15)/255;
+  {const o=Float32Array.from(Lm).sort(),lo=o[(N*.04)|0],hi=o[(N*.97)|0];for(let k=0;k<N;k++)Lm[k]=clamp((Lm[k]-lo)/(hi-lo+1e-6),0,1)} // más contraste: que se lea la figura
+  let tot=0;for(let k=0;k<N;k++){const x=k%C,y=(k/C)|0,e=(x>0&&x<C-1&&y>0&&y<C-1)?Math.hypot(Lm[k+1]-Lm[k-1],Lm[k+C]-Lm[k-C]):0;tot+=.3+Math.pow(Lm[k],1.2)+e*3.2;acc[k]=tot}
+  const out=[];for(let i=0;i<n;i++){const r=Math.random()*tot;let a=0,b=N-1;while(a<b){const m=(a+b)>>1;acc[m]<r?a=m+1:b=m}
+    out.push({u:((a%C)+Math.random())/C,v:.5-(((a/C)|0)+Math.random())/C,l:Lm[a]})}
+  return out}
+function iniciarLibro(v,now){
+  const libro=S.filter(s=>s.f3&&s.f3.libro),meta=Math.round(15000*S.length/27000);
+  // puntos extra para la portada: los de la sala que quedaron detrás de la cámara (fuera de cuadro); llegarán desde las orillas
+  const extra=S.filter(s=>s.f3&&!s.f3.libro&&s.f3.Z>-21).sort(()=>Math.random()-.5).slice(0,Math.max(0,meta-libro.length));
+  const pts=muestrearPortada(v.libroImg,libro.length+extra.length);grupos=[];
+  const c1=v.E.cam(1);v.L={t0:now,c1};
+  S.forEach(s=>{s.lb=null;s.gi=-1;s.fx=s.sx;s.fy=s.sy;s.fa=s.va});
+  let i=0;
+  for(const s of libro){const q=s.f3,u=Math.abs(q.lu),izq=q.lu<0,r=Math.random();
+    s.lb=izq?(r<.7?{tipo:"tapa",u,w:q.lw,a:q.a}:{tipo:"hoja",j:(Math.random()*LT.hojas)|0,u,w:q.lw,a:q.a}):{tipo:"base",u,w:q.lw,a:q.a,cap:(Math.random()*8)|0};
+    const c=pts[i++];s.lb.cu=c.u;s.lb.cw=c.v;s.lb.ca=.06+.94*Math.pow(c.l,1.6)}
+  for(const s of extra){const c=pts[i++];s.lb={tipo:"extra",cu:c.u,cw:c.v,ca:.06+.94*Math.pow(c.l,1.6)}}
+  // la página de venta del libro se va cargando por detrás, para empalmar las portadas con ella
+  if(!v.pagina){
+    const caja=document.createElement("div");caja.className="pagina-libro";const fr=document.createElement("iframe");
+    fr.src="libro/index.html";fr.title="Conflictos, sueños y procesos";fr.setAttribute("scrolling","no");caja.appendChild(fr);document.body.appendChild(caja);v.pagina=caja;
+    // el iframe toma la altura completa de la página y la caja es la que se desplaza: así funciona igual en el iPhone
+    const ajustar=()=>{try{const d=fr.contentDocument;fr.style.height=Math.max(H,d.documentElement.scrollHeight)+"px"}catch(_){}};
+    fr.addEventListener("load",()=>{try{ajustar();const d=fr.contentDocument,t=d.getElementById("coverToggle");if(!t)return;
+      const rt=t.getBoundingClientRect();caja.scrollTop=Math.max(0,rt.top+rt.height/2-H/2);
+      const ims=[...t.querySelectorAll("img")].map(im=>{const r=im.getBoundingClientRect();return[r.left,r.top-caja.scrollTop,r.width]});if(ims.length>=2)v.slots=ims;
+      v.ajuste=setInterval(ajustar,700)}catch(_){}})}
+  v.fase="libro";$("viaje").classList.remove("claro");
+}
+// ángulo de cada elemento: θ=π a la izquierda, θ=0 a la derecha (la tapa termina encima, mostrando la portada)
+function anguloLibro(lb,m){
+  if(lb.tipo==="base")return .002+lb.cap*.0016;
+  if(lb.tipo==="hoja"){const t0=LT.entra+lb.j*LT.hoja,k=ease(clamp((m-t0)/LT.durHoja,0,1));return lerp(Math.PI-.004-(LT.hojas-lb.j)*.0016,.016+lb.j*.0016,k)}
+  if(lb.tipo==="tapa"){const t0=LT.entra+LT.hojas*LT.hoja,k=ease(clamp((m-t0)/LT.durTapa,0,1));return lerp(Math.PI,.03,k)}
+  return 0}
+const tamLibro=()=>Math.min(W*.36,H*.56);
+function puestosPortadas(v){if(v&&v.slots)return v.slots;const sl=Math.min(W*.36,H*.46,420),gap=sl*.14,y=H/2-sl/2-18;return[[W/2-gap/2-sl,y,sl],[W/2+gap/2,y,sl]]}
+// punto de una hoja en la sala: (X,Z) en el plano que gira alrededor del lomo, w a lo alto de la hoja, dx corre el libro sobre el atril
+function enAtril(X,Z,w,dx){const k=w+.5;return[LB.O[0]+X*LB.S+dx,LB.O[1]+LB.H[1]*k+LB.N[1]*Z*LB.S,LB.O[2]+LB.H[2]*k+LB.N[2]*Z*LB.S]}
+function cuadroLibro(v,now,t){
+  const L=v.L,m=now-L.t0,tCierra=LT.entra+LT.hojas*LT.hoja+LT.durTapa,tCentro=tCierra+LT.centra,tFoto=tCentro+LT.verPuntos+LT.foto,tMueve=tFoto+LT.pausa,tFin=tMueve+LT.mueve;
+  const kc=suave(clamp((m-tCierra)/LT.centra,0,1)),kf=suave(clamp((m-tCentro-LT.verPuntos)/LT.foto,0,1)),km=ease(clamp((m-tMueve)/LT.mueve,0,1));
+  // ya cerrado, el libro se recorre al centro del atril y la cámara se acomoda de frente a la portada
+  const dx=-LB.S*.5*kc,Fs=Math.min(W,H)*(movil?1.05:.95),E=tamLibro(),C=enAtril(.5,.012,0,-LB.S*.5),dC=LB.S*Fs/E;
+  const pC=[C[0]+LB.N[0]*dC,C[1]+LB.N[1]*dC,C[2]+LB.N[2]*dC],ek=ease(kc);
+  const B=baseCam({pos:lerp3(L.c1.pos,pC,ek),tgt:lerp3(L.c1.tgt,C,ek),F:Fs});
+  const tenue=[],blanco=[];for(let k=0;k<NA*NT;k++)tenue.push(new Path2D());for(let k=0;k<NA;k++)blanco.push(new Path2D());
+  const sala=(1-.45*kc)*(1-.5*kf)*(1-km);
+  for(const s of S){
+    const lb=s.lb;let x,y,a,z;
+    if(lb&&lb.tipo==="extra"){
+      const kp=suave(clamp((m-(LT.entra+LT.hojas*LT.hoja)-300-s.o*500)/(LT.durTapa+300),0,1));
+      if(kp<=0){const q=s.f3,r=q&&proj(B,q.X,q.Y,q.Z,.05);if(!r)continue;x=r[0];y=r[1];z=clamp(.8+1.6/r[2],.8,2.8);a=q.a*clamp(24/r[2],.38,1)*sala}
+      else{const c3=enAtril(lb.cu,.016,lb.cw,dx),rc=proj(B,c3[0],c3[1],c3[2],.05);if(!rc)continue;const ro=Math.hypot(W,H)*.6;
+        const sx0=W/2+Math.cos(s.ua)*ro,sy0=H/2+Math.sin(s.ua)*ro,e=1-Math.pow(1-kp,3);x=lerp(sx0,rc[0],e);y=lerp(sy0,rc[1],e);z=clamp(.7+.8/rc[2],.8,2.0);a=lb.ca*suave(clamp(kp*1.5,0,1))*(1-kf)*(1-km)}
+      x+=Math.sin(t*s.f+s.ph)*.3;y+=Math.cos(t*s.f*.8+s.ph)*.3;s.sx=x;s.sy=y;s.va=a;
+      if(a>=.02&&x>-40&&x<W+40&&y>-40&&y<H+40)(kp>0?blanco[Math.min(NA-1,(a*NA)|0)]:tenue[Math.min(NA-1,(a*NA)|0)+s.t*NA]).rect(x-z/2,y-z/2,z,z);continue}
+    if(lb){
+      const th=anguloLibro(lb,m),cv=lb.tipo==="hoja"?1.05*Math.sin(th):lb.tipo==="tapa"?.16*Math.sin(th):0;let X=0,Z=0;const nq=6,du=lb.u/nq;
+      for(let q=0;q<nq;q++){const ph=th+cv*Math.pow((q+.5)*du,1.4);X+=Math.cos(ph)*du;Z+=Math.sin(ph)*du}
+      const tTapa=LT.entra+LT.hojas*LT.hoja,kt=suave(clamp((m-tTapa)/LT.durTapa,0,1));let kp,w3;
+      if(lb.tipo==="tapa"){ // la tapa reacomoda sus puntos sobre su propia cara mientras gira: al caer, ya es la portada en puntos
+        const uu=lerp(lb.u,lb.cu,kt),ww=lerp(lb.w,lb.cw,kt);X=0;Z=0;const du2=uu/nq;for(let q=0;q<nq;q++){const ph=th+cv*Math.pow((q+.5)*du2,1.4);X+=Math.cos(ph)*du2;Z+=Math.sin(ph)*du2}
+        w3=enAtril(X,Z,ww,dx);kp=kt}
+      else{w3=enAtril(X,Z,lb.w,dx);kp=kt; // la hoja derecha se vuelve la imagen debajo de la tapa que va cayendo
+        if(kp>0){const c3=enAtril(lb.cu,.014+lb.cu*.03,lb.cw,dx);w3=lerp3(w3,c3,kp)}}
+      const r=proj(B,w3[0],w3[1],w3[2],.05);if(!r)continue;
+      x=r[0];y=r[1];z=clamp(.8+.9/r[2],1,2.3);
+      a=Math.min(1,lerp(lb.a,lb.ca*1.15,kp));
+      a*=(1-kf)*(1-km)}
+    else{
+      const q=s.f3;if(!q)continue;const r=proj(B,q.X,q.Y,q.Z,.05);if(!r)continue;
+      x=r[0];y=r[1];z=clamp(.8+1.6/r[2],.8,2.8);a=q.a*clamp(24/r[2],.38,1)*sala*(.8+.2*Math.sin(t*s.f*1.7+s.ph))}
+    x+=Math.sin(t*s.f+s.ph)*.3;y+=Math.cos(t*s.f*.8+s.ph)*.3;s.sx=x;s.sy=y;s.va=a;
+    if(a<.02||x<-40||x>W+40||y<-40||y>H+40)continue;
+    if(lb)blanco[Math.min(NA-1,(a*NA)|0)].rect(x-z/2,y-z/2,z,z);else tenue[Math.min(NA-1,(a*NA)|0)+s.t*NA].rect(x-z/2,y-z/2,z,z)}
+  for(let k=0;k<NA*NT;k++){cx.fillStyle="rgba("+tintesAct[(k/NA)|0]+","+(((k%NA)+.5)/NA)+")";cx.fill(tenue[k])}
+  for(let k=0;k<NA;k++){cx.fillStyle="rgba(246,243,238,"+((k+.5)/NA)+")";cx.fill(blanco[k])} // el libro en puntos blancos: el color llega con la foto
+  // la foto se materializa justo sobre la portada del atril y luego se va con la otra portada, como en la página
+  const r0=[W/2-E/2,H/2-E/2,E],[pa,pb]=puestosPortadas(v);
+  if(kf>0){const r=[lerp(r0[0],pb[0],km),lerp(r0[1],pb[1],km),lerp(r0[2],pb[2],km)];cx.globalAlpha=kf;cx.drawImage(v.libroImg,r[0],r[1],r[2],r[2]);cx.globalAlpha=1;v.rectTapa=r}
+  if(km>0&&v.otraImg){const r=[pa[0]-(1-km)*pa[2]*.3,pa[1],pa[2]];cx.globalAlpha=km;cx.drawImage(v.otraImg,r[0],r[1],r[2],r[2]);cx.globalAlpha=1;v.rectOtra=r}
+  if(v.slots&&km>0){const kp2=suave(clamp((m-tFin)/LT.fin,0,1));v.pagina.style.opacity=kp2.toFixed(3);if(kp2>=1&&!v.empalmada){v.empalmada=true;v.pagina.style.pointerEvents="auto";$("final").classList.add("sobre-pagina");$("viaje").style.opacity="0";$("viaje").style.pointerEvents="none"}}
+  if(km>.4&&!v.slots){cx.globalAlpha=suave((km-.4)/.6);cx.fillStyle="rgb(243,238,236)";cx.font="300 "+Math.round(clamp(pa[2]*.07,15,24))+"px "+getComputedStyle(document.body).getPropertyValue("--display");cx.textAlign="center";cx.textBaseline="top";
+    cx.fillText(LIBRO.textos[0],pa[0]+pa[2]/2,pa[1]+pa[2]+14);cx.fillText(LIBRO.textos[1],pb[0]+pb[2]/2,pb[1]+pb[2]+14);cx.globalAlpha=1}
+  if(m>=tFin+LT.fin&&v.fase==="libro"){const url=v.destino+LIBRO.ancla;if(!BASE&&!v.slots){location.href=url;return}v.fase="libroFin";$("final").hidden=false;$("abrir").href=url;
+    if(!BASE)try{history.pushState({mm:"libro"},"",url)}catch(_){}} // en el sitio, la dirección ya es la de la página del libro
+}
+function cuadroViaje(now,t){
+  const v=viaje,n=v.n;
+  if(v.salto&&v.fase==="viaje"){v.t0=now-(LUZ+3300+v.E.dur+2200);v.salto=false}
+  // Un solo movimiento: se abre la luz, entras a toda velocidad entre fotones y, al frenar, esos mismos puntos arman el espacio
+  if(v.fase==="viaje"){
+    const ms=now-v.t0,dt=Math.min(.05,(now-(v.last||now))/1000);v.last=now;
+    seguirPaleta(n.paleta,1,.07);
+    const luz=PA.estrella.map(Math.round).join(","),R=Math.max(W,H);
+    // 1) se abre la luz desde el mundo que tocaste; el mapa se queda quieto y se apaga debajo
+    if(ms<LUZ){
+      const k=ms/LUZ,kc=suave(clamp(k/.62,0,1)),B=baseCam({pos:lerp3(v.cam0.pos,v.cerca,.45*kc*kc),tgt:lerp3(v.cam0.tgt,n.pos,kc),F:F0}),
+        q=1-suave(clamp((k-.3)/.7,0,1)),pn=proj(B,...n.pos),ox=pn?pn[0]:W/2,oy=pn?pn[1]:H/2; // la cámara voltea y se acerca hasta tener el mundo al centro
+      pintarFondo(B,1);reticula(B,q);rutaSuave(B,t,q);halos(B,q*1.5);estrellasMapa(B,t,q);
+      const kl=clamp((k-.15)/.85,0,1),rr=R*(.04+1.5*Math.pow(suave(kl),1.6)),gr=cx.createRadialGradient(ox,oy,0,ox,oy,rr);
+      gr.addColorStop(0,"rgba("+luz+","+Math.min(1,.3+.7*kl)+")");gr.addColorStop(.45,"rgba("+luz+","+(.55*kl)+")");gr.addColorStop(1,"rgba("+luz+",0)");
+      cx.fillStyle=gr;cx.fillRect(0,0,W,H);
+      const velo=suave(clamp((k-.72)/.28,0,1));if(velo>0){cx.fillStyle="rgba("+luz+","+(.92*velo)+")";cx.fillRect(0,0,W,H)}
+      return
+    }
+    // 2) de la luz llegan los rayos interestelares; al frenar, esos mismos puntos arman el espacio
+    const T=ms-LUZ;
+    const vel=suave(clamp((T-150)/1900,0,1))*(1-suave(clamp((T-3300)/1800,0,1)));
+    const g=clamp((T-3100)/4400,0,1),kc=clamp((T-3300)/(v.E.dur+2200),0,1); // los rayos tardan más en volverse el lugar
+    const cs=v.E.cam(suave(kc)*.6+Math.pow(kc,3)*.4),Bs=baseCam({pos:cs.pos,tgt:cs.tgt,F:Math.min(W,H)*(movil?1.05:.95)});
+    const n1=pal.neb1.join(","),f0=fondo.join(",");
+    cx.fillStyle="rgb("+f0+")";cx.fillRect(0,0,W,H);
+    const gr=cx.createRadialGradient(W/2,H/2,0,W/2,H/2,R*.7);
+    gr.addColorStop(0,"rgba("+n1+","+Math.min(1,(.35+.5*vel)*(1-g*.4))+")");gr.addColorStop(.6,"rgba("+n1+","+(.12*(1+vel))+")");gr.addColorStop(1,"rgba("+f0+",0)");
+    cx.fillStyle=gr;cx.fillRect(0,0,W,H);
+    dibujarTunel(null,Bs,1,g,vel*46*dt,T<3500,t,suave(clamp(T/700,0,1)));
+    const velo=.92*(1-suave(clamp(T/900,0,1)));if(velo>0){cx.fillStyle="rgba("+luz+","+velo+")";cx.fillRect(0,0,W,H)} // la luz se disuelve y quedan los rayos
+    if(g>.45&&!v.rotulado){v.rotulado=true;rotulo(n.lugar,n.titulo)}
+    if(kc>=1&&n.id==="libro"&&v.libroListo){if(v.libroImg){iniciarLibro(v,now);return}sinCaptura(v);return}
+    if(n.id!=="libro"){if(kc>=1&&v.capPts)aLaPagina(v,now);else if(kc>=1&&v.capListo)sinCaptura(v)}
+    return
+  }
+  if(v.fase==="libro"||v.fase==="libroFin"){pintarFondo(baseCam(camPara(actual,reloj)),.5);cuadroLibro(v,now,t);return}
+  pintarFondo(baseCam(camPara(actual,reloj)),(1-v.c)*.8);
+  // 2) al llegar, las mismas estrellas se frenan y arman el espacio; la cámara entra y se acerca al objeto
+  if(v.fase==="espacio"){
+    const m=now-v.tA,kc=clamp((m-900)/v.E.dur,0,1);proyectarEscena(v.E,suave(kc)*.6+Math.pow(kc,3)*.4);
+    if(m>1500)for(const s of S)if(s.k<.2)s.k*=1.03;
+    if(kc>=1&&v.capPts)aPagina(v,now);
+    estrellasLibres(t,0,.5);return
+  }
+  // 3) las estrellas se acomodan como la página y se llenan de su color y su saturación
+  if(v.fase==="pagina"){dibujarPagina(v,now,t);return}
+  if(v.fase==="subida"){dibujarSubida(v,now,t);return}
+  if(v.fase==="final"){if(v.n.id==="laboratorio"&&v.lienzo){dibujarLinea(v,now);return}if(v.capImg)cubrir(v.capImg);return}
+  if(v.fase==="quieto"){estrellasLibres(t,0,.5);return} // sin captura: se queda en el espacio con los botones
+  // de regreso al mapa: el color se va y las estrellas vuelven a su lugar en el cielo
+  if(v.fase==="regreso"){
+    // un solo movimiento con los mismos puntos: el lugar se desintegra hacia las orillas y desde ahí vuelven a armar el mapa
+    const k=clamp((now-v.regreso)/2200,0,1),Re=Math.hypot(W,H)*.66,B=baseCam(camAhora(now)),ia=suave(clamp((k-.7)/.3,0,1));
+    seguirPaleta(cercano>=0?NODOS[cercano].paleta:null,.45*ia,.05);
+    if(ia>0){reticula(B,ia);rutaSuave(B,t,ia);halos(B,ia)}
+    const rect=[],lin=[];for(let j=0;j<NA*NT;j++){rect.push(new Path2D());lin.push(new Path2D())}
+    for(const s of S){
+      if(s.r0==null){s.r0=[s.fx,s.fy,s.fa];s.px=s.fx;s.py=s.fy}
+      const pm=proj(B,s.x,s.y,s.z);let mx,my,ma=0;
+      if(pm){mx=pm[0]+Math.sin(t*s.f+s.ph)*.7;my=pm[1]+Math.cos(t*s.f*.8+s.ph)*.7;ma=clamp(s.b*(.6+.4*Math.sin(t*s.f*1.7+s.ph))*clamp(2400/pm[2],.16,1)*1.2,0,1)}
+      const k1=clamp(k/.42,0,1),k2=suave(clamp((k-.36-s.ph/6.28*.16)/.46,0,1));let x,y,a;
+      if(k2<=0){const dcx=s.r0[0]-W/2,dcy=s.r0[1]-H/2,dl=Math.hypot(dcx,dcy)||1,ro=Math.max(Re,dl*1.3),e=k1*k1;
+        x=lerp(s.r0[0],W/2+dcx/dl*ro,e);y=lerp(s.r0[1],H/2+dcy/dl*ro,e);a=s.r0[2]*.7*(1-.5*k1)}
+      else if(pm){const dcx=mx-W/2,dcy=my-H/2,dl=Math.hypot(dcx,dcy)||1,ro=Math.max(Re,dl*1.3),e=1-Math.pow(1-k2,3);
+        x=lerp(W/2+dcx/dl*ro,mx,e);y=lerp(H/2+dcy/dl*ro,my,e);a=ma*suave(clamp(k2*1.6,0,1))}
+      else{s.px=NaN;continue}
+      if(a>=.02&&x>-60&&x<W+60&&y>-60&&y<H+60){const b=Math.min(NA-1,(a*NA)|0)+s.t*NA,dx=x-s.px,dy=y-s.py,m=Math.hypot(dx,dy),L=Math.min(.8,50/(m+1))*(1-k2);
+        if(m>1.4&&m<900&&L>.2){lin[b].moveTo(x-dx*L,y-dy*L);lin[b].lineTo(x,y)}else{const z=pm?s.s*clamp(900/pm[2],.6,2.6):1.2;rect[b].rect(x-z/2,y-z/2,z,z)}}
+      s.px=x;s.py=y}
+    for(let j=0;j<NA*NT;j++){const al=((j%NA)+.5)/NA,c=tintesAct[(j/NA)|0];cx.fillStyle="rgba("+c+","+al+")";cx.fill(rect[j]);cx.strokeStyle="rgba("+c+","+al+")";cx.lineWidth=1;cx.stroke(lin[j])}
+    if(k>=1){camA=null;grupos=null;S.forEach(s=>{s.gi=-1;s.px=NaN;s.r0=null;s.f3=null});viaje=null;modo="mapa";
+      introT0=now-INTRO;document.body.classList.remove("viajando");pintarFicha()}
+  }
+}
+
+/* ---------- Bucle ---------- */
+let introT0=null,introK=0;const INTRO=2800; // ms que tardan las estrellas en armar el mapa al abrir
+function cuadro(now){
+  reloj=now/1000;const t=reloj;
+  if(modo==="mapa"){if(introT0==null)introT0=now;introK=calma?1:clamp((now-introT0)/INTRO,0,1);const ia=suave(clamp((introK-.55)/.45,0,1));
+    if(introK>=.7&&document.body.classList.contains("llegando"))document.body.classList.remove("llegando");
+    moverCamara();seguirPaleta(cercano>=0?NODOS[cercano].paleta:null,.45,.025);const B=baseCam(camAhora(now));pintarFondo(B,.3+.7*ia);reticula(B,ia);rutaSuave(B,t,ia);halos(B,ia);masAlla(B,t,ia);estrellasMapa(B,t,1);moverNodos(B);medidor()}
+  else if(viaje)cuadroViaje(now,t);
+  requestAnimationFrame(cuadro)
+}
+function medir(){DPR=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;movil=W<=700;F0=Math.min(W,H)*(movil?1.15:1.05);
+  cv.width=W*DPR;cv.height=H*DPR;cx.setTransform(DPR,0,0,DPR,0,0);crearEstrellas()}
+let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{if(modo==="mapa")medir()},150)});
+addEventListener("hashchange",()=>{const i=NODOS.findIndex(n=>"#"+n.id===location.hash);if(i>=0&&i!==cercano)irA(i)});
+document.querySelectorAll("[data-espacio]").forEach(a=>{if(BASE)a.href=BASE+a.getAttribute("href").replace("./","")});
+medir();
+const i0=NODOS.findIndex(n=>"#"+n.id===location.hash);actual=i0>=0?i0:0;foco[0]=NODOS[actual].pos[0];foco[1]=NODOS[actual].pos[2];
+NODOS.forEach(n=>{if(n.captura)cargar(capturaDe(n))});
+requestAnimationFrame(cuadro);
+})();
+</script>
 </body>
 </html>
