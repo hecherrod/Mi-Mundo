@@ -220,7 +220,7 @@ const NODOS=[
    href:"subasta/",espacio:"subasta",paleta:{neb1:[86,44,26],neb2:[54,40,38],estrella:[248,232,212],fondo:[8,5,4]},lugar:"Sala de subasta",captura:"subasta"},
   {id:"laboratorio",nombre:"Laboratorio",tipo:"Laboratorio",titulo:"Laboratorio Digital CRIA",plano:1,x:-420,y:100,
    texto:"Un espacio para las aplicaciones y herramientas del CRIA.",accion:"Entrar al laboratorio",
-   href:"laboratorio-digital-cria/",espacio:"laboratorio",paleta:{neb1:[28,62,58],neb2:[24,38,54],estrella:[212,236,230],fondo:[3,6,6]},lugar:"Laboratorio",captura:"laboratorio-entrada"},
+   href:"laboratorio-digital-cria/cotizador-giclees/",espacio:"laboratorio",paleta:{neb1:[28,62,58],neb2:[24,38,54],estrella:[212,236,230],fondo:[3,6,6]},lugar:"Laboratorio",captura:"laboratorio-entrada"},
   {id:"libro",nombre:"Librería",tipo:"Librería",titulo:"Librería",plano:2,x:60,y:30,
    texto:"Explora el libro y elige tu portada. $2,950 MXN con envío incluido.",accion:"Ver y pedir el libro",
    href:"libro/",espacio:"biblioteca",paleta:{neb1:[70,58,32],neb2:[42,42,38],estrella:[242,236,216],fondo:[6,6,4]},lugar:"Librería",captura:"libro"},
@@ -810,7 +810,7 @@ function dibujarPagina(v,now,t){
 function sinCaptura(v){S.forEach(s=>{s.fx=s.sx;s.fy=s.sy;s.fa=s.va;s.tx=s.sx;s.ty=s.sy;s.ta=s.va;s.vx=s.vy=0;s.f3=null});
   if(!BASE){location.href=v.destino;return}v.fase="quieto";$("final").hidden=false;$("abrir").href=v.destino}
 // El Laboratorio se queda en la foto con sus menús; los demás mundos abren su página (en la vista previa, con botones)
-function terminar(){const v=viaje;if(!v)return;const lab=v.n.id==="laboratorio";if(BASE||lab){v.fase="final";$("final").hidden=false;$("abrir").href=v.destino;if(lab)mostrarMenus()}else location.href=v.destino}
+function terminar(){const v=viaje;if(!v)return;const lab=v.n.id==="laboratorio";if(BASE||lab){v.fase="final";$("final").hidden=false;$("abrir").href=v.destino;$("abrir").hidden=lab;if(lab)mostrarMenus()}else location.href=v.destino}
 // Laboratorio: al quedar la foto aparecen los dos menús; el de Giclée abre el cotizador ahí mismo, sobre la foto
 // dónde van los menús, en fracciones de la foto: el centro de la pared libre entre las ventanas rojas y la impresora
 const MENUS_EN={x:.59,y:.38};
@@ -825,7 +825,7 @@ $("mGiclee").onclick=()=>{const v=viaje;if(!v||v.pagina)return;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{caja.style.opacity="1";caja.style.pointerEvents="auto"}));
   ocultarMenus();$("final").classList.add("sobre-pagina");$("alLab").hidden=false;$("abrir").hidden=true;$("viaje").style.opacity="0";$("viaje").style.pointerEvents="none"};
 $("alLab").onclick=()=>{const v=viaje;if(!v||!v.pagina)return;const fr=v.pagina;v.pagina=null;fr.style.opacity="0";fr.style.pointerEvents="none";setTimeout(()=>fr.remove(),600);
-  $("final").classList.remove("sobre-pagina");$("alLab").hidden=true;$("abrir").hidden=false;$("viaje").style.opacity="";$("viaje").style.pointerEvents="";mostrarMenus()};
+  $("final").classList.remove("sobre-pagina");$("alLab").hidden=true;$("viaje").style.opacity="";$("viaje").style.pointerEvents="";mostrarMenus()};
 $("saltar").onclick=()=>{if(!viaje)return;if(!BASE&&viaje.n.id!=="laboratorio"){location.href=viaje.destino;return}viaje.salto=true};
 $("volver").onclick=()=>{if(!viaje)return;const vv=viaje;ocultarMenus();$("alLab").hidden=true;$("abrir").hidden=false;$("final").classList.remove("sobre-pagina");if(vv.ajuste)clearInterval(vv.ajuste);if(vv.pagina){const fr=vv.pagina;fr.style.transition="opacity .5s";fr.style.opacity="0";fr.style.pointerEvents="none";setTimeout(()=>fr.remove(),600)}$("viaje").style.opacity="";$("viaje").style.pointerEvents="";if(vv.fase==="libroFin"||vv.fase==="libro"){const rs=[vv.rectTapa,vv.rectOtra].filter(Boolean);
     S.forEach(q=>{const r=rs.length?alAzar(rs):[W/2-50,H/2-50,100];q.fx=r[0]+Math.random()*r[2];q.fy=r[1]+Math.random()*r[2];q.fa=.55;q.s=q.s||1})}
