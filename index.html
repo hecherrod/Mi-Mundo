@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <style>*{box-sizing:border-box}html,body{margin:0}</style>
 <title>Mi mundo · Héctor Herrera</title>
+<meta name="description" content="Un espacio para compartir lo que hago y los proyectos que están tomando forma.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Mi mundo · Héctor Herrera">
+<meta property="og:title" content="Mi mundo · Héctor Herrera">
+<meta property="og:description" content="Un espacio para compartir lo que hago y los proyectos que están tomando forma.">
+<meta property="og:url" content="https://mundo.cositasdeh.mx/">
+<meta property="og:image" content="https://mundo.cositasdeh.mx/compartir.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Carta de navegación de Mi mundo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mundo.cositasdeh.mx/compartir.jpg">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=IBM+Plex+Mono:wght@300;400;500&display=swap">
@@ -1013,6 +1025,7 @@ function cuadro(now){
   reloj=now/1000;const t=reloj;
   if(modo==="mapa"){if(introT0==null)introT0=now;introK=calma?1:clamp((now-introT0)/INTRO,0,1);const ia=suave(clamp((introK-.55)/.45,0,1));
     if(introK>=.7&&document.body.classList.contains("llegando"))document.body.classList.remove("llegando");
+    if(IR&&introK>=1){const i=NODOS.findIndex(n=>n.id===IR);IR=null;if(i>0){actual=i;entrar()}}
     moverCamara();seguirPaleta(cercano>=0?NODOS[cercano].paleta:null,.45,.025);const B=baseCam(camAhora(now));pintarFondo(B,.3+.7*ia);reticula(B,ia);rutaSuave(B,t,ia);halos(B,ia);masAlla(B,t,ia);estrellasMapa(B,t,1);moverNodos(B);medidor()}
   else if(viaje)cuadroViaje(now,t);
   requestAnimationFrame(cuadro)
@@ -1023,6 +1036,9 @@ let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{if(mod
 addEventListener("hashchange",()=>{const i=NODOS.findIndex(n=>"#"+n.id===location.hash);if(i>=0&&i!==cercano)irA(i)});
 document.querySelectorAll("[data-espacio]").forEach(a=>{if(BASE)a.href=BASE+a.getAttribute("href").replace("./","")});
 medir();
+// Ligas directas: ?ir=libreria o ?ir=laboratorio abren la carta y, al terminar de armarse, hacen solas el viaje a ese mundo
+const IR_ALIAS={libreria:"libro",librería:"libro",libro:"libro",laboratorio:"laboratorio",lab:"laboratorio"};
+let IR=(()=>{try{const q=(new URLSearchParams(location.search).get("ir")||"").toLowerCase();return IR_ALIAS[q]||null}catch(_){return null}})();
 const i0=NODOS.findIndex(n=>"#"+n.id===location.hash);actual=i0>=0?i0:0;foco[0]=NODOS[actual].pos[0];foco[1]=NODOS[actual].pos[2];
 NODOS.forEach(n=>{if(n.captura)cargar(capturaDe(n))});
 requestAnimationFrame(cuadro);
