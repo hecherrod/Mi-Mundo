@@ -157,7 +157,7 @@ button{font:inherit;color:inherit}
   <div>Héctor Herrera · Obra y proyectos</div>
 </div>
 <div class="hud der">
-  <div class="linea" id="parada">Parada 01 / 05</div>
+  <div class="linea" id="parada">Parada 01 / 04</div>
   <div class="destino">Destino <b id="destino">Entrada</b></div>
   <div class="linea"><a href="./estadisticas/" data-espacio>Estadísticas · acceso privado</a></div>
 </div>
@@ -202,7 +202,8 @@ const PLANOS=[0,-450,-1250,-4300];
 const NODOS=[
   {id:"entrada",nombre:"Entrada",etiqueta:"Obra y proyectos",titulo:"Mi mundo",h1:true,
    texto:"Un espacio para compartir lo que hago y los proyectos que están tomando forma.",accion:"Comenzar el recorrido",plano:0,x:0,y:0},
-  {id:"subasta",nombre:"Subasta",tipo:"Público",titulo:"Subasta",plano:1,x:440,y:80,
+  {id:"subasta",oculto:true,nombre:"Subasta",tipo:"Público",titulo:"Subasta",plano:1,x:440,y:80, // oculto: no sale en el mapa; para volver a mostrarlo, borra "oculto:true,"
+  
    texto:"Las obras, las fechas y la forma de participar se anunciarán aquí.",accion:"Entrar a la subasta",
    href:"subasta/",espacio:"subasta",paleta:{neb1:[86,44,26],neb2:[54,40,38],estrella:[248,232,212],fondo:[8,5,4]},lugar:"Sala de subasta",captura:"subasta"},
   {id:"laboratorio",nombre:"Laboratorio",tipo:"Laboratorio",titulo:"Laboratorio Digital CRIA",plano:1,x:-420,y:100,
@@ -215,6 +216,7 @@ const NODOS=[
    texto:"En preparación.",accion:"Entrar",href:"martes-domingo/",espacio:"domino",paleta:{neb1:[62,46,22],neb2:[18,20,32],estrella:[252,228,186],fondo:[4,4,6]},
    lugar:"La mesa",captura:"domino"}
 ];
+for(let i=NODOS.length-1;i>=0;i--)if(NODOS[i].oculto)NODOS.splice(i,1); // los mundos ocultos no salen en el mapa ni en la ruta
 NODOS.sort((a,b)=>a.plano-b.plano||(a.orden||0)-(b.orden||0));
 NODOS.forEach((n,i)=>{n.pos=[n.x,n.y,PLANOS[n.plano]];if(n.tipo)n.etiqueta=String(i).padStart(2,"0")+" · "+n.tipo});
 const FONDO_Z=Math.min(...NODOS.map(n=>n.pos[2]))-250;
