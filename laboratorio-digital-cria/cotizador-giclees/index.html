@@ -6,17 +6,24 @@
 <title>Cotizador de Gicleés · Laboratorio Digital CRIA</title>
 <meta name="description" content="Cotiza tus impresiones de arte con el Cotizador de Gicleés del Laboratorio Digital CRIA.">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#080c0b;color:#f5f0e6;font:1rem/1.6 system-ui,sans-serif}.wrap{max-width:1280px;margin:auto;padding-inline:clamp(16px,4vw,48px)}a{color:#b7d6c3;text-underline-offset:.25em}header{border-bottom:1px solid #33443b;padding-block:22px}header .wrap{display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}.intro{padding-block:32px}.eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#b7d6c3}h1{font:400 clamp(2.2rem,5vw,3.8rem)/1.1 Georgia,serif;margin:12px 0 18px}.intro p{max-width:64ch;color:#c4ccc5}.alternate{display:inline-block;padding:10px 16px;border:1px solid #6e8b75;border-radius:4px;text-decoration:none}.alternate:hover{background:#193223}a:focus-visible{outline:3px solid #83bea0;outline-offset:5px}.app{background:#fff;overflow:hidden;border:1px solid #33443b;border-radius:8px;margin-bottom:28px}iframe{display:block;width:100%;min-height:1600px;border:0;background:#fff}footer{padding-block:22px;border-top:1px solid #33443b;font-size:.85rem;color:#a7b8ab}@media(max-width:600px){header .wrap{align-items:start;flex-direction:column;gap:8px}.intro{padding-block:22px}}
+/* La página ocupa justo el alto de la pantalla y el cotizador llena el resto: así solo se mueve el cotizador y nunca se atora el scroll */
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:#080c0b;color:#f5f0e6;font:1rem/1.5 system-ui,sans-serif;display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+.wrap{width:100%;max-width:1280px;margin:auto;padding-inline:max(16px,env(safe-area-inset-left,0px))}a{color:#b7d6c3;text-underline-offset:.25em}a:focus-visible{outline:3px solid #83bea0;outline-offset:5px}
+header{flex:none;border-bottom:1px solid #33443b;padding-block:12px}header .wrap{display:flex;gap:16px;align-items:baseline;justify-content:space-between;flex-wrap:wrap}
+.titulo{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}.eyebrow{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:#b7d6c3}h1{font:400 clamp(1.4rem,3vw,2rem)/1.1 Georgia,serif;margin:0}
+main{flex:1;min-height:0;display:flex;padding-block:12px}main .wrap{flex:1;margin:0 auto;display:flex;flex-direction:column;min-height:0}
+.app{flex:1;min-height:0;background:#fff;overflow:hidden;border:1px solid #33443b;border-radius:8px}
+iframe{display:block;width:100%;height:100%;border:0;background:#fff}
+/* Abierto dentro de la portada (Laboratorio): arriba ya flotan "Volver al laboratorio" y "Volver al mapa" */
+.dentro header{display:none}.dentro main{padding-top:calc(env(safe-area-inset-top,0px) + 52px)}
+@media(max-width:600px){header .wrap{gap:4px}.eyebrow{display:none}main{padding-block:8px}main .wrap{padding-inline:8px}.app{border-radius:6px}}
 </style>
+<script>try{if(window.self!==window.top)document.documentElement.classList.add("dentro")}catch(e){document.documentElement.classList.add("dentro")}</script>
 <script src="../../mi-mundo-traffic.js?v=laboratorio-cria-1" defer></script>
 </head>
 <body>
-<header><div class="wrap"><a href="../">← Laboratorio Digital CRIA</a><a href="../../">Mi Mundo</a></div></header>
-<main class="wrap">
-<section class="intro" aria-labelledby="title"><p class="eyebrow">Laboratorio Digital CRIA · Impresión de arte</p><h1 id="title">Cotizador de Gicleés</h1><p>Elige el papel, las medidas y la cantidad de tus impresiones para preparar tu cotización.</p></section>
-<section class="app" aria-label="Aplicación de cotización"><iframe src="https://script.google.com/macros/s/AKfycbzR5PA5cahySrqUcPO8IDmC81hmjXY-KkPqgJsM7Q0XhANzwdDxJBhH7vW1WOlh7jQPcQ/exec" title="Cotizador de Gicleés · CRIA" allow="clipboard-write" loading="lazy"></iframe></section>
-<noscript><p>Abre el cotizador con el botón de arriba y activa JavaScript para utilizarlo.</p></noscript>
-</main>
-<footer><div class="wrap"><a href="../">Volver al Laboratorio Digital CRIA</a></div></footer>
+<header><div class="wrap"><div class="titulo"><h1 id="title">Cotizador de Gicleés</h1><span class="eyebrow">Laboratorio Digital CRIA · Impresión de arte</span></div><a href="../../laboratorio/">← Laboratorio</a></div></header>
+<main><div class="wrap"><section class="app" aria-labelledby="title"><iframe src="https://script.google.com/macros/s/AKfycbzR5PA5cahySrqUcPO8IDmC81hmjXY-KkPqgJsM7Q0XhANzwdDxJBhH7vW1WOlh7jQPcQ/exec" title="Cotizador de Gicleés · CRIA" allow="clipboard-write"></iframe></section>
+<noscript><p>Activa JavaScript para usar el cotizador.</p></noscript></div></main>
 </body>
 </html>
