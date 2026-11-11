@@ -217,10 +217,10 @@ const NODOS=[
   {id:"subasta",oculto:true,nombre:"Subasta",tipo:"Público",titulo:"Subasta",plano:1,x:440,y:80, // oculto: no sale en el mapa; para volver a mostrarlo, borra "oculto:true,"
   
    texto:"Las obras, las fechas y la forma de participar se anunciarán aquí.",accion:"Entrar a la subasta",
-   href:"subasta/",espacio:"subasta",paleta:{neb1:[86,44,26],neb2:[54,40,38],estrella:[248,232,212],fondo:[8,5,4]},lugar:"Sala de subasta",captura:"subasta"},
+   href:"subasta/",espacio:"subasta",paleta:{neb1:[86,44,26],neb2:[54,40,38],estrella:[248,232,212],fondo:[8,5,4]},lugar:"Sala de subasta",captura:"subasta",transporte:"martillo"},
   {id:"laboratorio",nombre:"Laboratorio",tipo:"Laboratorio",titulo:"Laboratorio Digital CRIA",plano:1,x:-420,y:100,
    texto:"Un espacio para las aplicaciones y herramientas del CRIA.",accion:"Entrar al laboratorio",
-   href:"laboratorio-digital-cria/cotizador-giclees/",espacio:"laboratorio",paleta:{neb1:[28,62,58],neb2:[24,38,54],estrella:[212,236,230],fondo:[3,6,6]},lugar:"Laboratorio",captura:"laboratorio-entrada"},
+   href:"laboratorio-digital-cria/cotizador-giclees/",espacio:"laboratorio",paleta:{neb1:[28,62,58],neb2:[24,38,54],estrella:[212,236,230],fondo:[3,6,6]},lugar:"Laboratorio",captura:"laboratorio-entrada",transporte:"plotter"},
   {id:"libro",nombre:"Librería",tipo:"Librería",titulo:"Librería",plano:2,x:60,y:30,
    texto:"Explora el libro y elige tu portada. $2,950 MXN con envío incluido.",accion:"Ver y pedir el libro",
    href:"libro/",espacio:"biblioteca",paleta:{neb1:[70,58,32],neb2:[42,42,38],estrella:[242,236,216],fondo:[6,6,4]},lugar:"Librería",captura:"libro"},
@@ -729,6 +729,48 @@ function dibujarMezcla(Bm,Bs,g,t){
   for(let k=0;k<NA*NT;k++){const a=((k%NA)+.5)/NA,c=tintesAct[(k/NA)|0];
     cx.fillStyle="rgba("+c+","+a+")";cx.fill(rect[k]);cx.strokeStyle="rgba("+c+","+a+")";cx.lineWidth=1.1;cx.stroke(lin[k])}
 }
+/* ---------- Transportes propios: cada mundo llega de otra manera ----------
+   Todos duran lo mismo que el hiperespacio (hasta ~3.1 s después de la luz) y luego el armado del lugar es el de siempre. */
+const frac=x=>x-Math.floor(x);
+const EFECTOS={
+  // Subasta · martillazo: cada golpe del martillo manda un anillo de puntos que late; viajas entre los anillos hacia la sala
+  martillo(T,t){
+    const GOLPE=640,ult=Math.max(0,Math.floor((T-120)/GOLPE)),tg=T-120-ult*GOLPE,lat=T<120?0:Math.exp(-tg/150),Fm=Math.min(W,H)*.9,N=9;
+    return{
+      punto(s){
+        const k=(s.o*N)|0,z=frac(k/N-T*.00034)*6+.35,r=.34+gauss()*.006;
+        if(frac(s.o*37.3)>.7)return null;
+        const pul=1+.2*lat*Math.exp(-(z-.2)*.5),R=r*pul*Fm/z,ang=s.ua+k*.37;
+        const a=clamp(3.4/z,.12,1)*(.6+.4*s.b)*clamp(T/500,0,1)*(.7+.3*lat)*clamp((6.35-z)/1.2,0,1);
+        return[W/2+Math.cos(ang)*R,H/2+Math.sin(ang)*R*.92,a,clamp(.7+1.6/z,.7,2.6),.35]},
+      encima(g){if(T<120||g>.5)return;const a=.55*lat*(1-g*2),rr=Math.min(W,H)*(.12+.5*(1-lat)),gr=cx.createRadialGradient(W/2,H/2,0,W/2,H/2,rr);
+        gr.addColorStop(0,"rgba(255,214,160,"+a+")");gr.addColorStop(1,"rgba(255,180,110,0)");cx.fillStyle=gr;cx.fillRect(0,0,W,H)}}},
+  // Laboratorio · cabezal de plotter: un cabezal de luz va de lado a lado y, renglón por renglón, deja impresa la foto en puntos
+  plotter(T,t,Bs){
+    const FIL=11,PASO=255,T0=150,hR=H/FIL,fila=Math.min(FIL-1,Math.max(0,Math.floor((T-T0)/PASO))),kf=clamp((T-T0-fila*PASO)/PASO,0,1),izq=fila%2===0,hx=(izq?kf:1-kf)*W;
+    return{
+      punto(s){
+        const q=s.f3,r=q&&proj(Bs,q.X,q.Y,q.Z,.05);if(!r)return null;
+        const ex=r[0],ey=r[1],ea=q.a*clamp(24/r[2],.38,1),f=clamp(Math.floor(ey/hR),0,FIL-1),xf=clamp(ex/W,0,1),tp=T0+f*PASO+(f%2===0?xf:1-xf)*PASO,k=clamp((T-tp)/140,0,1);
+        if(k<=0)return null;const e=1-Math.pow(1-k,2);
+        return[ex,lerp(f*hR,ey,e),ea*.9*suave(k),clamp(.8+1.6/r[2],.8,2.8),0]},
+      encima(g){if(T<T0||T>T0+FIL*PASO+120)return;const y=fila*hR,gl=cx.createLinearGradient(hx-60,0,hx+60,0);
+        gl.addColorStop(0,"rgba(150,235,225,0)");gl.addColorStop(.5,"rgba(170,245,235,.35)");gl.addColorStop(1,"rgba(150,235,225,0)");cx.fillStyle=gl;cx.fillRect(hx-60,y,120,hR);
+        cx.fillStyle="rgba(235,255,250,.95)";cx.fillRect(hx-1,y,2,hR);cx.fillStyle="rgba(170,245,235,.5)";cx.fillRect(0,y+hR-1,W,1)}}},
+  // Librería · páginas al vuelo: hojas hechas de puntos vienen del fondo hojeándose y pasan junto a ti
+  paginas(T,t){
+    const Fp=Math.min(W,H)*.9,N=11,Wp=.5,Hp=.66;
+    return{
+      punto(s){
+        if(frac(s.o*31.7)>.8)return null;
+        const k=(s.o*N)|0,z=6-frac(T*.00028+k/N)*6;if(z<.3)return null;
+        const ang=k*2.399,rad=.28+.85*frac(k*.618),cxp=Math.cos(ang)*rad,cyp=Math.sin(ang)*rad*.7;
+        const th=.75+.6*Math.sin(T*.0026+k*1.7),tipo=frac(s.o*13.7);let u=frac(s.o*97.31),v=frac(s.o*57.13)-.5;
+        if(tipo<.42){if(frac(s.o*7.1)<.5)u=frac(s.o*7.1)<.25?0:1;else v=frac(s.o*5.3)<.5?-.5:.5}else if(tipo<.9){v=.42-Math.floor((v+.5)*14)/14*.84;u=.1+u*.8}
+        const X=cxp+u*Math.cos(th)*Wp*(frac(k*.5)<.5?1:-1),Y=cyp+v*Hp,Z=z-u*Math.sin(th)*Wp;if(Z<.25)return null;
+        const a=clamp(3/Z,.1,1)*(tipo<.42?1:tipo<.9?.6:.22)*clamp(T/500,0,1)*clamp((6-z)/1.2,0,1);
+        return[W/2+X*Fp/Z,H/2-Y*Fp/Z,a,clamp(.7+1.4/Z,.7,2.4),.25]}}}
+};
 /* ---------- Transporte del Dominó: efecto dominó y fichas revueltas ----------
    1) De la luz sale una fila de fichas hechas de puntos, flotando en lo oscuro rumbo a la mesa. Caen en cadena y la cámara sigue la caída.
    2) La última cae sobre la mesa; todos los puntos se revuelven en remolino sobre la mesa, como cuando se mezclan las fichas.
@@ -797,11 +839,16 @@ function viajeFichas(v,T,t,luz){
 }
 // Túnel: cada estrella es un fotón que viene del fondo y pasa junto a ti.
 // Al frenar, ese mismo rayo se dobla hacia su lugar en el espacio y se va acortando hasta quedar como punto: los rayos arman la figura.
-function dibujarTunel(Bm,Bs,wt,g,dz,renacer,t,ap){ap=ap==null?1:ap;
+function dibujarTunel(Bm,Bs,wt,g,dz,renacer,t,ap,ef){ap=ap==null?1:ap;
   const Ft=Math.min(W,H)*.9,Re=Math.hypot(W,H)*.62,rect=[],lin=[];for(let k=0;k<NA*NT;k++){rect.push(new Path2D());lin.push(new Path2D())}
   const raya=(b,x,y,px,py,L,sz)=>{const dx=x-px,dy=y-py,m=Math.hypot(dx,dy);if(m>1.2&&m<1400&&L>.25){lin[b].moveTo(x-dx*L,y-dy*L);lin[b].lineTo(x,y)}else rect[b].rect(x-sz/2,y-sz/2,sz,sz)};
   for(const s of S){
     const w=suave(clamp((g-s.o*.55)/.45,0,1));
+    if(w<=0&&ef){ // transporte propio del mundo: cada efecto dice dónde va el punto, qué tan brillante y cuánta estela deja
+      const e=ef(s);if(!e){s.va=0;s.px=NaN;s.a0=null;continue}
+      const [x,y,a,sz,L]=e;
+      if(a>=.02&&x>-80&&x<W+80&&y>-80&&y<H+80)raya(Math.min(NA-1,(a*NA)|0)+s.t*NA,x,y,s.px,s.py,L,sz);
+      s.px=x;s.py=y;s.sx=x;s.sy=y;s.va=a;s.tz=sz;s.a0=null;continue}
     if(w<=0){
       s.uz-=dz;let salto=false;
       if(s.uz<.25&&renacer){s.uz+=rnd(55,75);salto=true}
@@ -1039,7 +1086,9 @@ function cuadroViaje(now,t){
     const gr=cx.createRadialGradient(W/2,H/2,0,W/2,H/2,R*.7);
     gr.addColorStop(0,"rgba("+n1+","+Math.min(1,(.35+.5*vel)*(1-g*.4))+")");gr.addColorStop(.6,"rgba("+n1+","+(.12*(1+vel))+")");gr.addColorStop(1,"rgba("+f0+",0)");
     cx.fillStyle=gr;cx.fillRect(0,0,W,H);
-    dibujarTunel(null,Bs,1,g,vel*46*dt,T<3500,t,suave(clamp(T/700,0,1)));
+    const ef=EFECTOS[n.transporte]?EFECTOS[n.transporte](T,t,Bs):null;
+    dibujarTunel(null,Bs,1,g,vel*46*dt,T<3500,t,suave(clamp(T/700,0,1)),ef&&ef.punto);
+    if(ef&&ef.encima)ef.encima(g);
     const velo=.92*(1-suave(clamp(T/900,0,1)));if(velo>0){cx.fillStyle="rgba("+luz+","+velo+")";cx.fillRect(0,0,W,H)} // la luz se disuelve y quedan los rayos
     if(g>.45&&!v.rotulado){v.rotulado=true;rotulo(n.lugar,n.titulo)}
     if(kc>=1&&n.id==="libro"&&v.libroListo){if(v.libroImg){iniciarLibro(v,now);return}sinCaptura(v);return}
