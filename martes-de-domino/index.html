@@ -46,22 +46,21 @@ td,th{border-color:var(--line)}
 <div class="domino-band" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg></div><div class="welcome-content">
 <div id="leaguePicker" hidden><h2>Elige tu liga</h2><div class="league-cards">
 <a href="?liga=ensenada"><img src="portada.jpg" alt=""><strong>Ensenada</strong></a>
-<a href="?liga=todos-santos"><img src="portada-todos-santos.jpg" alt=""><strong>Todos Santos</strong></a>
 </div></div>
 <div id="leagueAccess" hidden>
-<nav class="league-links" aria-label="Ligas"><a href="?liga=ensenada" id="linkEnsenada">Martes de Dominó / Ensenada</a><a href="?liga=todos-santos" id="linkTodos">Martes de Dominó / Todos Santos</a></nav><p><a class="league-back" href="./">Elegir otra liga</a></p>
+
 <h2 id="welcomeLeague"></h2>
 <p>Inicia sesión para entrar a la jornada. Si todavía no tienes cuenta, regístrate.</p>
 <div class="controls"><button id="showLogin">Iniciar sesión</button><button id="showSignup">Registrarme como participante</button></div>
 <form id="access" hidden style="margin-top:16px">
 <label id="playerField">Nombre para los juegos y la tabla<input name="player" autocomplete="name" required maxlength="80"></label>
-<label id="emailField">Correo electrónico<input name="email" type="email" autocomplete="username" placeholder="tu@correo.com" autocapitalize="none" required maxlength="254"></label>
+<label id="emailField">Tu número de WhatsApp<input name="email" type="text" inputmode="tel" autocomplete="username" placeholder="646 123 4567" autocapitalize="none" required maxlength="254"></label>
 <label>Contraseña (PIN)<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{6,8}" title="De 6 a 8 dígitos" required></label>
 <label id="whatsappField" hidden>Número de WhatsApp (10 dígitos)<input name="whatsapp" type="tel" autocomplete="tel" placeholder="646 123 4567" maxlength="30" disabled><small>Se usará para avisos de resultados de tu liga cuando se habilite el envío.</small></label>
 <button id="accessSubmit">Entrar</button>
 </form>
 
-<button id="showRecovery" type="button">Olvidé mi usuario o contraseña</button>
+<button id="showRecovery" type="button">Olvidé mi PIN</button>
 <form id="recovery" hidden><label>Correo de la cuenta<input name="email" type="email" autocomplete="email" required></label><button>Enviar enlace</button></form>
 <form id="resetPin" hidden><label>PIN nuevo<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{6,8}" required></label><button>Guardar PIN</button></form>
 <div id="confirmationNotice" role="status" hidden></div><small id="accessStatus" role="status"></small></div>
@@ -94,8 +93,8 @@ const leagues={
  'todos-santos':{label:'Todos Santos',suffix:'-todos-santos'}
 };
 const requestedLeague=new URLSearchParams(location.search).get('liga');
-const leagueId=['todos-santos','los-cabos'].includes(requestedLeague)?'todos-santos':'ensenada';
-const choosingLeague=!['ensenada','todos-santos','los-cabos'].includes(requestedLeague);
+const leagueId='ensenada'; // solo queda la liga de Ensenada; las ligas viejas (?liga=todos-santos) entran aquí también
+const choosingLeague=false;
 by('leaguePicker').hidden=!choosingLeague;
 by('leagueAccess').hidden=choosingLeague;
 const league=leagues[leagueId];
@@ -115,7 +114,6 @@ const title='Martes de Dominó / '+league.label;
 document.title=choosingLeague?'Martes de Dominó':title;
 by('welcomeLeague').textContent=title;
 document.querySelector('header h1').textContent=title;
-by(leagueId==='ensenada'?'linkEnsenada':'linkTodos').setAttribute('aria-current','page');
 const leagueDataKey=item=>item.suffix?'martes-domino-v2'+item.suffix:'martes-domino-v3-ensenada';
 const key=leagueDataKey(league);
 const data=JSON.parse(localStorage.getItem(key)||'{}');
@@ -394,7 +392,7 @@ let adminLeagues=[];
 let signup=false;
 const authClient=window.miMundoAuth;
 const returnUrl=new URL(location.pathname,location.origin);
-returnUrl.searchParams.set('liga',leagueId);
+returnUrl.searchParams.set('liga',leagueId);returnUrl.searchParams.delete('alta');
 function accessNotice(message,error=false){
  const status=by('accessStatus');
  status.textContent='';
@@ -402,6 +400,8 @@ function accessNotice(message,error=false){
  if(error){void status.offsetWidth;status.classList.add('access-error')}
  status.textContent=message;
 }
+const DOMINIO_TEL='@domino.cositasdeh.mx';
+function usuarioDe(valor){const v=String(valor||'').trim();if(v.includes('@'))return v.toLowerCase();const d=v.replace(/\D/g,'');return d.slice(-10)+DOMINIO_TEL}
 function showAccess(create){
  signup=create;
  const fields=by('access').elements;
@@ -410,6 +410,7 @@ function showAccess(create){
  fields.whatsapp.disabled=!create;
  fields.whatsapp.required=create;
  by('whatsappField').hidden=!create;
+ by('emailField').hidden=create;fields.email.disabled=create; // al dar de alta, el número de WhatsApp es el usuario
  by('recovery').hidden=true;
  by('resetPin').hidden=true;
  by('access').reset();
@@ -466,12 +467,17 @@ by('access').onsubmit=async event=>{
  accessNotice(creating?'Creando cuenta…':'Comprobando tus datos…');
  try{
   if(creating){
-   const email=fields.email.value.trim();
-   const whatsapp=fields.whatsapp.value.replace(/[\s().-]/g,'');
+   const whatsapp=fields.whatsapp.value.replace(/[\s().+-]/g,'').slice(-10);
+   const email=usuarioDe(whatsapp);
    if(!name||name.includes('@')||!/^\d{10}$/.test(whatsapp))throw Error('Escribe tu nombre para los juegos y un WhatsApp de 10 dígitos.');
-   const {error}=await authClient.auth.signUp({email,password:pin,
+   const {data:alta,error}=await authClient.auth.signUp({email,password:pin,
     options:{emailRedirectTo:returnUrl.href,data:{domino_username:name,domino_league:leagueId,domino_whatsapp:whatsapp}}});
-   if(error)throw Error(error.message);
+   if(error)throw Error(error.code==='signup_disabled'?'El registro está cerrado. Ábrelo un momento en Supabase para dar de alta a alguien nuevo.':error.message);
+   if(alta&&alta.session){
+    await authClient.auth.signOut(); // el nombre se aparta la primera vez que el jugador entra
+    showAccess(true);
+    accessNotice('Listo: '+name+' ya tiene cuenta. Entra con su número '+whatsapp+' y su PIN. Puedes dar de alta al siguiente.');
+    return}
    showAccess(false);
    by('access').hidden=true;
    const notice=by('confirmationNotice');
@@ -484,18 +490,15 @@ by('access').onsubmit=async event=>{
    notice.scrollIntoView({block:'center',behavior:'smooth'});
    notice.focus();
   }else{
-   const {error}=await authClient.auth.signInWithPassword({email:fields.email.value.trim(),password:pin});
-   if(error)throw Error(error.code==='email_not_confirmed'?'Confirma tu correo antes de entrar. Abre el enlace que te enviamos y revisa también spam.':error.code==='invalid_credentials'?'El correo o el PIN no coinciden.':error.message);
+   const {error}=await authClient.auth.signInWithPassword({email:usuarioDe(fields.email.value),password:pin});
+   if(error)throw Error(error.code==='email_not_confirmed'?'Confirma tu correo antes de entrar. Abre el enlace que te enviamos y revisa también spam.':error.code==='invalid_credentials'?'El número o el PIN no coinciden.':error.message);
    await enterVerified();
   }
  }catch(error){accessNotice(error.message||'No se pudo completar el acceso.',true)}
  finally{button.disabled=false}
 };
-by('showRecovery').onclick=()=>{
- by('access').hidden=true;
- by('resetPin').hidden=true;
- by('recovery').hidden=false;
- accessNotice('');
+by('showRecovery').onclick=()=>{ // las cuentas por número no reciben correo: el PIN lo cambia el organizador
+ accessNotice('Si olvidaste tu PIN, avísale a Héctor por WhatsApp y te da uno nuevo.');
 };
 by('recovery').onsubmit=async event=>{
  event.preventDefault();
@@ -574,7 +577,11 @@ by('checkIn').onclick=()=>{
  render();
  by('checkStatus').textContent=participant+' · llegada registrada para el '+date+(by('willPlay').value==='yes'?' · disponible para jugar.':' · hoy no juega.');
 };
-if(!choosingLeague)showAccess(false);
+// Registro cerrado: las cuentas las crea el organizador desde martes-de-domino/?alta
+const modoAlta=new URLSearchParams(location.search).has('alta');
+by('showSignup').hidden=!modoAlta;
+if(modoAlta){by('showSignup').textContent='Dar de alta a un jugador';by('showLogin').hidden=true}
+if(!choosingLeague)showAccess(modoAlta);
 render();
 restoreAccess();
 </script></html>
