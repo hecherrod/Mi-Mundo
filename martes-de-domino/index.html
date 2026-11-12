@@ -125,6 +125,7 @@ footer a,footer button{color:var(--gris);background:none;border:0;padding:0;curs
 .audios audio{width:100%}
 .audios figcaption{font-size:12px;color:var(--gris);margin-top:6px}
 .libreta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:14px;padding-bottom:48px}
+.hoja{padding:0;border:0;background:none;cursor:zoom-in;border-radius:10px}
 .libreta img{display:block;width:100%;aspect-ratio:2/3;object-fit:contain;background:#fff;border-radius:10px}
 
 dialog{width:min(92vw,400px);border:1px solid var(--raya);border-radius:18px;background:var(--hoja);color:var(--papel);padding:22px}
@@ -342,7 +343,7 @@ function pintarNoche(fecha){
 
   if (hojas.length) {
     h += '<section class="bloque gutter" aria-labelledby="t-libreta"><h2 id="t-libreta" style="font-size:32px">La libreta</h2><div class="libreta">' +
-      hojas.map(function(f){ return '<img src="' + esc(url(f.path)) + '" alt="Hoja de la libreta" loading="lazy">'; }).join('') + '</div></section>';
+      hojas.map(function(f){ return '<button type="button" class="hoja" data-foto="' + esc(url(f.path)) + '" aria-label="Ver la hoja en grande"><img src="' + esc(url(f.path)) + '" alt="Hoja de la libreta" loading="lazy"></button>'; }).join('') + '</div></section>';
   } else { h += '<div style="height:48px"></div>'; }
 
   cont.innerHTML = h;
@@ -353,7 +354,7 @@ function pintarNoche(fecha){
     try { await navigator.clipboard.writeText(liga); nota.textContent = 'Liga copiada'; }
     catch (_) { nota.textContent = liga; }
   };
-  cont.querySelectorAll('.mini').forEach(function(b){ b.onclick = function(){ by('grandeImg').src = b.getAttribute('data-foto'); var d = by('grande'); if (d.showModal) d.showModal(); else d.setAttribute('open',''); }; });
+  cont.querySelectorAll('[data-foto]').forEach(function(b){ b.onclick = function(){ by('grandeImg').src = b.getAttribute('data-foto'); var d = by('grande'); if (d.showModal) d.showModal(); else d.setAttribute('open',''); }; });
   by('subirFotos').onclick = function(){ conSesion(function(){ by('archivoFotos').click(); }); };
   by('subirAudio').onclick = function(){ conSesion(function(){ by('archivoAudio').click(); }); };
   var c = by('carrusel');
