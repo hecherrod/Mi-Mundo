@@ -90,6 +90,8 @@ footer a,footer button{color:var(--gris);background:none;border:0;padding:0;curs
 .foto{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in;border-radius:14px}
 .carrusel img{display:block;width:100%;height:min(110vw,420px);object-fit:cover;border-radius:14px;background:var(--hoja)}
 .carrusel figcaption{position:absolute;left:10px;bottom:10px;padding:5px 10px;background:rgba(15,15,14,.78);border-radius:999px;font-size:12px;color:var(--gris-2)}
+.borrar{position:absolute;right:10px;top:10px;min-height:36px;padding:0 12px;border:0;border-radius:999px;background:rgba(15,15,14,.78);color:var(--papel);font-size:12px;cursor:pointer}
+.borrar.seguro{background:var(--coral);color:var(--tinta);font-weight:600}
 .carrusel figcaption b{color:var(--papel);font-weight:600}
 .carrusel::after{content:"";flex:0 0 12px}
 .vacio{margin-top:20px;padding:22px;border:1px dashed var(--punteo);border-radius:14px;color:var(--gris);font-size:14px}
@@ -309,7 +311,8 @@ function pintarNoche(fecha){
 
   if (fotos.length) {
     h += '<div class="carrusel gutter" id="carrusel" aria-label="Fotos de la noche" tabindex="0">' + fotos.map(function(f){
-      return '<figure><button type="button" class="foto" data-foto="' + esc(url(f.path)) + '" aria-label="Ver la foto en grande"><img src="' + esc(url(f.path)) + '" alt="Foto de la noche" loading="lazy"></button>' + (f.subio_nombre ? '<figcaption>Subió <b>' + esc(f.subio_nombre) + '</b></figcaption>' : '') + '</figure>';
+      return '<figure><button type="button" class="foto" data-foto="' + esc(url(f.path)) + '" aria-label="Ver la foto en grande"><img src="' + esc(url(f.path)) + '" alt="Foto de la noche" loading="lazy"></button>' + (f.subio_nombre ? '<figcaption>Subió <b>' + esc(f.subio_nombre) + '</b></figcaption>' : '') +
+        (sesion && (esAdmin || f.subio_id === sesion.user.id) ? '<button type="button" class="borrar" data-borrar="' + esc(f.id) + '" aria-label="Borrar esta foto">Borrar</button>' : '') + '</figure>';
     }).join('') + '</div>' +
     '<div class="cuenta gutter"><span id="cuenta">1 de ' + fotos.length + (fotos.length > 1 ? ' · desliza' : '') + '</span><span class="puntos" id="puntos" aria-hidden="true">' + fotos.map(function(_,i){ return '<i' + (i === 0 ? ' class="on"' : '') + '></i>'; }).join('') + '</span></div>';
   } else {
@@ -356,6 +359,21 @@ function pintarNoche(fecha){
     catch (_) { nota.textContent = liga; }
   };
   cont.querySelectorAll('[data-foto]').forEach(function(b){ b.onclick = function(){ by('grandeImg').src = b.getAttribute('data-foto'); var d = by('grande'); if (d.showModal) d.showModal(); else d.setAttribute('open',''); }; });
+  cont.querySelectorAll('[data-borrar]').forEach(function(b){
+    b.onclick = async function(){
+      if (!b.classList.contains('seguro')) { b.classList.add('seguro'); b.textContent = '¿Borrar? Toca otra vez'; setTimeout(function(){ if (b.isConnected) { b.classList.remove('seguro'); b.textContent = 'Borrar'; } }, 4000); return; }
+      var f = datos.fotos.find(function(x){ return x.id === b.getAttribute('data-borrar'); });
+      var est = by('estadoFotos'); b.disabled = true; b.textContent = 'Borrando…';
+      try {
+        var r = await sb.from('domino_fotos').delete().eq('id', f.id).select('id');
+        if (r.error) throw r.error;
+        if (!r.data || !r.data.length) throw Error('no tienes permiso para borrar esa foto');
+        if (f.path.indexOf('subidas/') === 0) await sb.storage.from(BUCKET).remove([f.path]);
+        await cargar(); pintarPortada(); pintarNoche(n.fecha);
+        var e2 = by('estadoFotos'); if (e2) e2.textContent = 'Foto borrada.';
+      } catch (err) { est.textContent = 'No se pudo borrar: ' + (err.message || err); est.className = 'estado error'; b.disabled = false; b.textContent = 'Borrar'; }
+    };
+  });
   by('subirFotos').onclick = function(){ conSesion(function(){ by('archivoFotos').click(); }); };
   by('subirAudio').onclick = function(){ conSesion(function(){ by('archivoAudio').click(); }); };
   var c = by('carrusel');
