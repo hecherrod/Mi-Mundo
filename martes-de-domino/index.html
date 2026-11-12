@@ -324,7 +324,7 @@ function pintarNoche(fecha){
       (n.plato_fuerte ? '<div><div class="eyebrow">Plato fuerte</div><div class="nombre">' + esc(n.plato_fuerte) + '</div></div>' : '') + '</div>';
   }
   if (audios.length) {
-    h += '<div class="audios">' + audios.map(function(a){ return '<figure><audio controls preload="none" src="' + esc(url(a.path)) + '"></audio><figcaption>Grabó ' + esc(a.subio_nombre || '') + '</figcaption></figure>'; }).join('') + '</div>';
+    h += '<div class="audios">' + audios.map(function(a){ return '<figure><audio controls preload="none" src="' + esc(url(a.path)) + '"></audio>' + (a.subio_nombre ? '<figcaption>Subió ' + esc(a.subio_nombre) + '</figcaption>' : '') + '</figure>'; }).join('') + '</div>';
   }
   h += n.receta ? '<div class="receta">' + esc(n.receta) + '</div>' : '<p class="receta pendiente">La receta escrita aparece aquí cuando el chef la grabe.</p>';
   h += '<button class="accion" type="button" id="subirAudio">+ Subir el audio de la receta<small>' + (sesion ? 'Como ' + esc(nombreSesion()) : 'Con tu número y PIN') + '</small></button><div class="estado" id="estadoAudio" role="status"></div></section>';
