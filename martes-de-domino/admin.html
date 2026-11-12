@@ -1,0 +1,588 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Martes de Dominó</title>
+<meta property="og:type" content="website"><meta property="og:title" content="Martes de Dominó"><meta property="og:description" content="La jornada del club de dominó"><meta property="og:url" content="https://mundo.cositasdeh.mx/martes-de-domino/"><meta property="og:image" content="https://mundo.cositasdeh.mx/martes-de-domino/portada-general.jpg"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:secure_url" content="https://mundo.cositasdeh.mx/martes-de-domino/portada-general.jpg"><meta property="og:image:width" content="1206"><meta property="og:image:height" content="663"><meta property="og:image:alt" content="Fichas de dominó sobre la mesa"><meta name="twitter:image" content="https://mundo.cositasdeh.mx/martes-de-domino/portada-general.jpg"><meta name="twitter:card" content="summary_large_image">
+<style>
+*{box-sizing:border-box}body{margin:auto;max-width:900px;padding:24px;background:#f5f1e8;color:#192d28;font:16px system-ui}header{background:#163d32;color:#fff;border-radius:20px;padding:26px}h1{margin:0}section{background:white;border:1px solid #dedbd1;border-radius:16px;margin:16px 0;padding:20px}h2{margin-top:0}form,.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:end}label{display:grid;gap:4px}input,select,button{font:inherit;padding:8px;border:1px solid #82958d;border-radius:8px;max-width:100%}button{background:#24654f;color:white;cursor:pointer}li{margin:8px 0}table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:8px;border-bottom:1px solid #ddd}img{width:150px;height:110px;object-fit:cover;border-radius:8px}audio{max-width:100%}figure{display:inline-block;margin:8px}small{display:block;margin-top:8px}
+
+:root{color-scheme:dark;--neon:#65f8ea;--line:#214440}
+body{background:#000;color:#ebf7f5}
+header,section{background:#000;border:1px solid var(--line)}
+header{border-top:2px solid var(--neon)}
+h2,h3{color:#e9fffc}
+input,select{background:#000;color:inherit;border-color:#47736e;min-width:0}
+button{background:#000;color:var(--neon);border-color:#4ccabd}
+button:hover{background:#102a27}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--neon);outline-offset:3px}
+td,th{border-color:var(--line)}
+#welcome{overflow:hidden;padding:0;border-radius:18px;box-shadow:0 0 36px #65f8ea16}
+.cover{position:relative;display:grid;align-items:end;min-height:clamp(260px,55vw,475px);border-bottom:1px solid #4ccabd}
+.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 48%;border-radius:0}
+.cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,#000 100%)}
+.cover-title{z-index:1;padding:clamp(16px,5vw,40px)}
+.cover-title h1{font-size:clamp(2rem,7vw,4.5rem);line-height:1;letter-spacing:-.055em}
+.cover-label{display:block;margin-bottom:10px;color:var(--neon);font:700 .75rem ui-monospace,monospace;letter-spacing:.18em}
+.welcome-content{padding:clamp(16px,4vw,32px)}
+.welcome-content p{margin-top:0}
+@media(max-width:480px){body{padding:12px}.cover img{object-position:center}.welcome-content .controls button{width:100%}}
+.domino-band{display:flex;justify-content:space-evenly;align-items:center;gap:8px;padding:8px 12px;background:#000;color:var(--neon);border-block:1px solid var(--line)}
+.domino-band svg{width:clamp(16px,4vw,26px);flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.domino-band svg:nth-child(even){color:#85a7a3}
+@media(max-width:560px){.domino-band svg:nth-child(n+9){display:none}}
+
+.cover{min-height:0;padding-top:14px}
+.cover img{position:relative;display:block;inset:auto;width:100%;height:auto;object-fit:contain;transform:translateX(.4%) rotate(-.65deg);transform-origin:center}
+.cover-title{position:absolute;bottom:0;left:0;right:0}
+.cover::after{background:linear-gradient(180deg,transparent 52%,#000 100%)}
+#showRecovery{display:block;margin:22px 0 0;padding:5px 0;background:transparent;border:0;color:#9fb9b6;font-size:.875rem;text-decoration:underline;text-underline-offset:3px}
+#showRecovery:hover{background:transparent;color:var(--neon)}
+.league-links{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}.league-links a{color:var(--neon);border:1px solid var(--line);padding:8px 12px;border-radius:8px}.league-links a[aria-current]{background:#12332e}.admin-jornada{border-top:1px solid var(--line);padding:10px 0}#admin p{margin:6px 0}
+.league-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,8vw,72px);max-width:720px;margin-inline:auto}.league-cards a{overflow:hidden;border:1px solid var(--line);border-radius:12px;color:var(--neon);text-decoration:none}.league-cards a:hover,.league-cards a:focus-visible{border-color:var(--neon)}.league-cards img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:0}.league-cards a[href="?liga=ensenada"] img{object-fit:contain;background:#000}.league-cards strong{display:block;padding:12px}.league-back{color:var(--neon)}#leagueAccess .league-links{display:none}
+#accessStatus.access-error{color:#ff8b94;animation:access-alert .7s ease-out}
+@keyframes access-alert{from{background:#5e2028}to{background:transparent}}
+@media(prefers-reduced-motion:reduce){#accessStatus.access-error{animation:none}}
+#confirmationNotice{margin:18px 0;padding:18px;border:2px solid var(--neon);background:#10312c;line-height:1.6}#confirmationNotice button{display:block;margin-top:12px}
+</style><script src="../mi-mundo-traffic.js?v=laboratorio-cria-1" defer></script></head>
+<section id="welcome">
+<div class="cover"><img alt="Amigos reunidos alrededor de una mesa de dominó" src="portada.jpg"><div class="cover-title"><span class="cover-label">CLUB DE DOMINÓ</span><h1>Martes de Dominó</h1></div></div>
+<div class="domino-band" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg></div><div class="welcome-content">
+<div id="leaguePicker" hidden><h2>Elige tu liga</h2><div class="league-cards">
+<a href="?liga=ensenada"><img src="portada.jpg" alt=""><strong>Ensenada</strong></a>
+</div></div>
+<div id="leagueAccess" hidden>
+
+<h2 id="welcomeLeague"></h2>
+<p>Inicia sesión para entrar a la jornada. Si todavía no tienes cuenta, regístrate.</p>
+<div class="controls"><button id="showLogin">Iniciar sesión</button><button id="showSignup">Registrarme como participante</button></div>
+<form id="access" hidden style="margin-top:16px">
+<label id="playerField">Nombre para los juegos y la tabla<input name="player" autocomplete="name" required maxlength="80"></label>
+<label id="emailField">Tu número de WhatsApp<input name="email" type="text" inputmode="tel" autocomplete="username" placeholder="646 123 4567" autocapitalize="none" required maxlength="254"></label>
+<label>Contraseña (PIN)<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{6,8}" title="De 6 a 8 dígitos" required></label>
+<label id="whatsappField" hidden>Número de WhatsApp (10 dígitos)<input name="whatsapp" type="tel" autocomplete="tel" placeholder="646 123 4567" maxlength="30" disabled><small>Se usará para avisos de resultados de tu liga cuando se habilite el envío.</small></label>
+<button id="accessSubmit">Entrar</button>
+</form>
+
+<button id="showRecovery" type="button">Olvidé mi PIN</button>
+<form id="recovery" hidden><label>Correo de la cuenta<input name="email" type="email" autocomplete="email" required></label><button>Enviar enlace</button></form>
+<form id="resetPin" hidden><label>PIN nuevo<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{6,8}" required></label><button>Guardar PIN</button></form>
+<div id="confirmationNotice" role="status" hidden></div><small id="accessStatus" role="status"></small></div>
+</div><div class="domino-band" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg><svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M8 16h16"/><circle cx="16" cy="9" r="1"/><circle cx="13" cy="21" r="1"/><circle cx="19" cy="24" r="1"/></svg><svg viewBox="0 0 32 32"><path d="M9 4h14l1 7a8 8 0 0 1-16 0zM16 19v9m-5 0h10M9 12h14"/></svg><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="22" rx="3"/><path d="M3 13h26"/><rect x="8" y="17" width="16" height="7" rx="1"/><path d="M8 9h2m5 0h2m5 0h2"/></svg><svg viewBox="0 0 32 32"><path d="M13 3h6v8l4 5v11a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V16l4-5zM13 7h6M9 18h14m-14 6h14"/></svg></div>
+</section>
+<main id="app" hidden>
+<header><h1>Martes de Dominó</h1><p>Versión de prueba · Los datos de juego quedan en este navegador.</p><div class="controls"><label>Fecha de la jornada<input id="day" type="date" required></label><strong id="identity"></strong></div><div class="controls" style="margin-top:12px">
+<button id="adminOpen" hidden>Administración de ligas</button><button id="signOut">Volver a bienvenida</button>
+</div></header>
+<section><h2>1. Asistencia</h2><div class="controls">
+<label>¿Vas a jugar?<select id="willPlay"><option value="yes">Sí</option><option value="no">No</option></select></label><button id="checkIn">Registrar llegada</button></div><small id="checkStatus" role="status"></small><ul id="people"></ul></section>
+<section><h2>2. Sorteo con fichas</h2><p>Hagan el sorteo en la mesa y anoten aquí las parejas que salieron. Elige primero al capitán.</p><form id="pair"><label>Capitán<select name="captain" required></select></label><label>Compañero<select name="partner" required></select></label><button>Guardar pareja</button></form><ul id="pairs"></ul></section>
+<section><h2>3. Turnos y rondas</h2><label>Mesas disponibles<select id="tableCount"><option>1</option><option>2</option></select></label><div id="turns" aria-live="polite"></div><details><summary>Rol sugerido de juegos</summary><div id="bracket"></div><button id="followBracket" hidden>Usar este rol</button></details><button id="queueFinal" hidden>Agregar final con las parejas ganadoras</button><h3>Partidas y marcadores</h3><form id="game"><label>Pareja A<select name="a" required></select></label><label>Pareja B<select name="b" required></select></label><label>Ronda<select name="round"><option>Por puntos</option><option>Previa</option><option>Semifinal</option><option>Final</option></select></label><button>Anotar cruce</button></form><div id="games"></div></section>
+<section><h2>4. Tabla mensual individual</h2><label>Mes<input id="month" type="month"></label><p>Solo cuentan los marcadores confirmados. Cada ganador recibe 3 puntos si la otra pareja termina en 0, 2 entre 1 y 49, y 1 desde 50.</p><table><thead><tr><th>Jugador</th><th>Partidas confirmadas</th><th>Puntos</th></tr></thead><tbody id="standings"></tbody></table></section>
+<section><h2>5. Receta y fotos</h2><p>Graba la receta o adjunta un audio. Las fotos se agregan juntas.</p><div class="controls"><button id="record" type="button">Grabar receta</button><label>Adjuntar audio<input id="audio" type="file" accept="audio/*"></label><label>Fotos en general<input id="photos" type="file" accept="image/*" multiple></label></div><small id="mediaStatus" role="status"></small><div id="media"></div></section>
+</main>
+<section id="admin" hidden>
+<h1>Administración de ligas</h1><p>Registros y calendarios guardados en este navegador.</p>
+<div class="controls"><label>Mes del calendario<input id="adminMonth" type="month"></label><button id="adminClose">Volver a la jornada</button></div>
+<div id="adminLeagues"></div>
+</section>
+<style>[hidden]{display:none!important}</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script src="../mi-mundo-auth.js"></script>
+<script>
+'use strict';
+const by=id=>document.getElementById(id);
+const leagues={
+ ensenada:{label:'Ensenada',suffix:''},
+ 'todos-santos':{label:'Todos Santos',suffix:'-todos-santos'}
+};
+const requestedLeague=new URLSearchParams(location.search).get('liga');
+const leagueId='ensenada'; // solo queda la liga de Ensenada; las ligas viejas (?liga=todos-santos) entran aquí también
+const choosingLeague=false;
+by('leaguePicker').hidden=!choosingLeague;
+by('leagueAccess').hidden=choosingLeague;
+const league=leagues[leagueId];
+if(choosingLeague){
+ const cover=document.querySelector('.cover img');
+ cover.src='portada-general.jpg';
+ cover.alt='Fichas de dominó sobre la mesa';
+ cover.style.transform='none';
+}
+if(leagueId==='todos-santos'){
+ const cover=document.querySelector('.cover img');
+ cover.src='portada-todos-santos.jpg';
+ cover.alt='Mesas y sillones bajo los árboles en Todos Santos';
+ cover.style.transform='none';
+}
+const title='Martes de Dominó / '+league.label;
+document.title=choosingLeague?'Martes de Dominó':title;
+by('welcomeLeague').textContent=title;
+document.querySelector('header h1').textContent=title;
+const leagueDataKey=item=>item.suffix?'martes-domino-v2'+item.suffix:'martes-domino-v3-ensenada';
+const key=leagueDataKey(league);
+const data=JSON.parse(localStorage.getItem(key)||'{}');
+function localDate(){
+ const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Tijuana',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+ return ['year','month','day'].map(type=>parts.find(part=>part.type===type).value).join('-');
+}
+const today=localDate();
+by('day').value=today;
+by('month').value=today.slice(0,7);
+const session=()=>data[by('day').value]??={people:[],pairs:[],games:[]};
+function el(tag,value,parent){const node=document.createElement(tag);node.textContent=value;parent.append(node);return node}
+function options(select,items,placeholder){const current=select.value;select.replaceChildren();if(placeholder)select.add(new Option(placeholder,''));for(const [value,label] of items)select.add(new Option(label,value));if([...select.options].some(o=>o.value===current)&&current)select.value=current}
+function pairName(pair){return pair.join(' / ')}
+function points(score){const loser=Math.min(...score);return loser===0?3:loser<50?2:1}
+function save(){advanceTurns(session());localStorage.setItem(key,JSON.stringify(data));render()}
+function advanceTurns(s){
+ advanceBracket(s);
+ const active=s.games.filter(g=>g.table&&!g.confirmed);
+ const busy=new Set(active.flatMap(g=>[...s.pairs[g.a],...s.pairs[g.b]]));
+ for(let table=1;table<=(s.tables||1);table++){
+  if(active.some(g=>g.table===table))continue;
+  const next=s.games.find(g=>!g.confirmed&&!g.table&&!g.score&&
+   [...s.pairs[g.a],...s.pairs[g.b]].every(name=>!busy.has(name)&&s.people.some(p=>p.name===name&&p.plays)));
+  if(!next)continue;
+  next.table=table;
+  for(const name of [...s.pairs[next.a],...s.pairs[next.b]])busy.add(name);
+ }
+}
+function finalists(s){
+ const semis=s.games.filter(g=>g.round==='Semifinal'&&!g.bracket);
+ if(semis.length!==2||semis.some(g=>!g.confirmed)||s.games.some(g=>g.round==='Final'))return [];
+ return [...new Set(semis.map(g=>g.score[0]>g.score[1]?g.a:g.b))];
+}
+function bracketDraft(s){
+ const busy=new Set(s.games.filter(g=>!g.confirmed).flatMap(g=>[...s.pairs[g.a],...s.pairs[g.b]]));
+ const names=[...new Set(s.people.filter(p=>p.plays&&!busy.has(p.name)).map(p=>p.name))];
+ const pairs=[];
+ for(let i=0;i+1<names.length;i+=2)pairs.push(names.slice(i,i+2));
+ return {pairs,waiting:names.length%2?names.at(-1):null};
+}
+function bracketRound(s,slots){
+ const target=2**Math.floor(Math.log2(slots.length));
+ const count=slots.length===target?slots.length/2:slots.length-target;
+ const label=slots.length===2?'Final':slots.length===4?'Semifinal':'Ronda '+(s.bracket.rounds.length+1);
+ const games=[];
+ for(let i=0;i<count*2;i+=2){
+  games.push(s.games.length);
+  s.games.push({a:slots[i],b:slots[i+1],round:label,bracket:true,confirmed:false,approvals:[]});
+ }
+ s.bracket.rounds.push({label,games,waiting:slots.slice(count*2)});
+}
+function advanceBracket(s){
+ const round=s.bracket?.rounds.at(-1);
+ if(!round||s.bracket.winner!==undefined)return;
+ const games=round.games.map(i=>s.games[i]);
+ if(games.some(g=>!g.confirmed))return;
+ const winners=games.map(g=>g.score[0]>g.score[1]?g.a:g.b).concat(round.waiting);
+ if(winners.length===1)s.bracket.winner=winners[0];
+ else bracketRound(s,winners);
+}
+by('followBracket').onclick=()=>{
+ const s=session(),draft=bracketDraft(s);
+ if(!participant||s.bracket||draft.pairs.length<2)return;
+ const slots=draft.pairs.map(pair=>{
+  const existing=s.pairs.findIndex(p=>p.length===2&&pair.every(name=>p.includes(name)));
+  if(existing>=0)return existing;
+  s.pairs.push(pair);
+  return s.pairs.length-1;
+ });
+ s.bracket={rounds:[]};
+ bracketRound(s,slots);
+ save();
+};
+function renderBracket(s){
+ const panel=by('bracket');
+ panel.replaceChildren();
+ const draft=bracketDraft(s);
+ by('followBracket').hidden=!participant||!!s.bracket||draft.pairs.length<2;
+ if(!s.bracket){
+  el('p','Sugerencia según el orden de llegada. También pueden seguir armando cruces manualmente.',panel);
+  if(draft.pairs.length<2){el('p','Se necesitan cuatro jugadores disponibles.',panel);return}
+  const target=2**Math.floor(Math.log2(draft.pairs.length));
+  const count=draft.pairs.length===target?target/2:draft.pairs.length-target;
+  for(let i=0;i<count*2;i+=2)el('p',pairName(draft.pairs[i])+' contra '+pairName(draft.pairs[i+1]),panel);
+  for(const pair of draft.pairs.slice(count*2))el('p',pairName(pair)+' · pasa a la siguiente ronda',panel);
+  if(draft.waiting)el('p',draft.waiting+' · espera pareja',panel);
+  return;
+ }
+ for(const round of s.bracket.rounds){
+  el('h3',round.label,panel);
+  for(const i of round.games){
+   const g=s.games[i];
+   el('p',pairName(s.pairs[g.a])+' contra '+pairName(s.pairs[g.b])+(g.confirmed?' · '+g.score.join('–'):' · pendiente'),panel);
+  }
+ }
+ if(s.bracket.winner!==undefined)el('p','Campeones: '+pairName(s.pairs[s.bracket.winner]),panel);
+}
+function renderTurns(s){
+ renderBracket(s);
+ const board=by('turns');
+ board.replaceChildren();
+ const active=s.games.filter(g=>!g.confirmed&&g.table);
+ const queued=s.games.filter(g=>!g.confirmed&&!g.table&&!g.score);
+ const name=g=>pairName(s.pairs[g.a])+' contra '+pairName(s.pairs[g.b])+' · '+(g.round||'Por puntos');
+ el('p','En mesa: '+(active.map(g=>'Mesa '+g.table+' · '+name(g)).join(' / ')||'Sin partida en curso'),board);
+ el('p','Siguientes turnos: '+(queued.map(name).join(' / ')||'Sin cruces pendientes'),board);
+ const assigned=new Set([...active,...queued].flatMap(g=>[...s.pairs[g.a],...s.pairs[g.b]]));
+ const waiting=s.people.filter(p=>p.plays&&!assigned.has(p.name)).map(p=>p.name);
+ el('p','Disponibles sin turno: '+([...new Set(waiting)].join(', ')||'Nadie'),board);
+ const final=s.games.find(g=>g.round==='Final'&&g.confirmed);
+ if(final)el('p','Campeones: '+pairName(s.pairs[final.score[0]>final.score[1]?final.a:final.b]),board);
+ by('queueFinal').hidden=!participant||finalists(s).length!==2;
+}
+by('queueFinal').onclick=()=>{
+ const s=session(),[a,b]=finalists(s);
+ if(!participant||a===undefined||b===undefined)return;
+ s.games.push({a,b,round:'Final',confirmed:false,approvals:[]});save();
+};
+by('tableCount').onchange=()=>{
+ if(!participant)return;
+ const s=session(),count=Number(by('tableCount').value);
+ if(s.games.some(g=>!g.confirmed&&g.table>count)){render();return alert('Termina la partida de esa mesa antes de quitarla.')}
+ s.tables=count;save();
+};
+function render(){
+ advanceTurns(session());
+ const s=session(), uniquePeople=[...new Map(s.people.map(p=>[nameKey(p.name),p])).values()], players=uniquePeople.filter(p=>p.plays).map(p=>[p.name,p.name]);
+ by('identity').textContent=participant?'Sesión de '+participant:'Vista de invitado';
+ for(const field of ['captain','partner'])options(by('pair').elements[field],players,'Elige jugador');
+ for(const field of ['a','b'])options(by('game').elements[field],s.pairs.map((p,i)=>[String(i),pairName(p)]),'Elige pareja');
+ by('people').replaceChildren();for(const p of uniquePeople)el('li',p.name+' · '+(p.plays?'Juega':'No juega'),by('people'));
+ by('pairs').replaceChildren();for(const p of s.pairs)el('li',pairName(p),by('pairs'));
+ renderTurns(s);
+ by('games').replaceChildren();
+ s.games.forEach((g,i)=>{if(g.confirmed||g.table||g.score)renderGame(s,g,i)});
+ by('tableCount').value=String(s.tables||1);
+ by('tableCount').disabled=!participant;
+ renderStandings();
+}
+function renderGame(s,g,i){
+ const panel=el('article','',by('games'));
+ const a=s.pairs[g.a], b=s.pairs[g.b], captains=[a[0],b[0]];
+ el('h3',(i+1)+'. '+pairName(a)+' contra '+pairName(b),panel);
+ const actor=participant;
+ if(g.score)el('p',g.score.join(' – ')+' · '+(g.confirmed?'Confirmado · '+points(g.score)+' punto(s) por ganador':'Pendiente · '+g.approvals.length+'/2 capitanes'),panel);
+ if(g.confirmed||!actor)return;
+ if(g.score&&captains.includes(actor)&&!g.approvals.includes(actor)){
+  const approve=el('button','Confirmar este marcador',panel);
+  approve.onclick=()=>{g.approvals.push(actor);g.confirmed=captains.every(c=>g.approvals.includes(c));save()};
+ }
+ const form=el('form','',panel);
+ const inputs=[a,b].map(p=>{
+  const label=el('label',pairName(p),form),input=el('input','',label);
+  Object.assign(input,{type:'number',min:'0',step:'1',required:true});return input;
+ });
+ el('button',g.score?'Corregir marcador':'Anotar marcador',form);
+ form.onsubmit=e=>{
+  e.preventDefault();
+  if(!actor)return alert('Elige quién anota el marcador.');
+  const score=inputs.map(input=>input.valueAsNumber);
+  if(!score.every(Number.isSafeInteger)||score[0]===score[1])return alert('Ingresa dos marcadores distintos y válidos.');
+  const same=g.score?.every((value,index)=>value===score[index]);
+  g.approvals=same?g.approvals:[];
+  if(captains.includes(actor)&&!g.approvals.includes(actor))g.approvals.push(actor);
+  g.score=score;g.confirmed=captains.every(c=>g.approvals.includes(c));save();
+ };
+}
+function renderStandings(){
+ const totals=new Map();
+ for(const [date,s] of Object.entries(data)){
+  if(!date.startsWith(by('month').value)||!by('month').value)continue;
+  for(const p of s.people.filter(p=>p.plays))if(!totals.has(p.name))totals.set(p.name,{played:0,points:0});
+  for(const g of s.games.filter(g=>g.confirmed)){
+   const a=s.pairs[g.a],b=s.pairs[g.b];
+   for(const name of [...a,...b]){
+    if(!totals.has(name))totals.set(name,{played:0,points:0});
+    totals.get(name).played++;
+   }
+   for(const name of g.score[0]>g.score[1]?a:b)totals.get(name).points+=points(g.score);
+  }
+ }
+ const body=by('standings');body.replaceChildren();
+ for(const [name,total] of [...totals].sort((a,b)=>b[1].points-a[1].points||a[0].localeCompare(b[0],'es'))){
+  const row=el('tr','',body);for(const value of [name,total.played,total.points])el('td',value,row);
+ }
+}
+function registerArrival(name,plays){
+ const s=session();
+ const existing=s.people.find(p=>nameKey(p.name)===nameKey(name));
+ if(existing){
+  existing.plays=plays;
+  s.people=s.people.filter(p=>p===existing||nameKey(p.name)!==nameKey(name));
+ }else s.people.push({name,plays});
+ save();
+}
+by('pair').onsubmit=e=>{
+ e.preventDefault();const {captain,partner}=e.currentTarget.elements,s=session();
+ if(captain.value===partner.value)return alert('Elige dos jugadores distintos.');
+ if(s.pairs.some(p=>p.includes(captain.value)&&p.includes(partner.value)))return alert('Esta pareja ya está registrada.');
+ s.pairs.push([captain.value,partner.value]);save();
+};
+by('game').onsubmit=e=>{
+ e.preventDefault();const {a,b}=e.currentTarget.elements,s=session();
+ const left=Number(a.value),right=Number(b.value);
+ if(s.pairs[left].some(p=>s.pairs[right].includes(p)))return alert('Las parejas deben tener cuatro jugadores distintos.');
+ s.games.push({a:left,b:right,round:e.currentTarget.elements.round.value,confirmed:false,approvals:[]});save();
+};
+by('month').onchange=renderStandings;
+by('day').onchange=()=>{if(!by('day').value){by('day').value=today}by('month').value=by('day').value.slice(0,7);render();renderMedia()};
+const db=new Promise((resolve,reject)=>{
+ const request=indexedDB.open(league.suffix?'martes-domino-media-v2'+league.suffix:'martes-domino-media-v3-ensenada',1);
+ request.onupgradeneeded=()=>request.result.createObjectStore('files',{autoIncrement:true});
+ request.onsuccess=()=>resolve(request.result);
+ request.onerror=()=>reject(request.error);
+});
+async function putMedia(file,type,date){
+ const database=await db;
+ await new Promise((resolve,reject)=>{
+  const tx=database.transaction('files','readwrite');
+  tx.objectStore('files').add({file,type,date});
+  tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+ });
+ await renderMedia();
+}
+let urls=[];
+async function renderMedia(){
+ try{
+  const database=await db;
+  const date=by('day').value;
+  const files=await new Promise((resolve,reject)=>{
+   const request=database.transaction('files').objectStore('files').getAll();
+   request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);
+  });
+  if(date!==by('day').value)return;
+  urls.forEach(url=>URL.revokeObjectURL(url));urls=[];by('media').replaceChildren();
+  for(const {file,type} of files.filter(entry=>entry.date===date)){
+   const figure=el('figure','',by('media')), item=el(type==='audio'?'audio':'img','',figure);
+   item.src=URL.createObjectURL(file);urls.push(item.src);
+   if(type==='audio')item.controls=true;else item.alt=file.name||'Foto del martes';
+  }
+ }catch{by('mediaStatus').textContent='El almacenamiento de archivos no está disponible en este navegador.'}
+}
+for(const id of ['audio','photos'])by(id).onchange=async e=>{
+ const date=by('day').value, files=Array.from(e.target.files);e.target.value='';
+ try{for(const file of files)await putMedia(file,id,date)}
+ catch{by('mediaStatus').textContent='No se pudo guardar el archivo.'}
+};
+let recorder;
+by('record').onclick=async()=>{
+ if(recorder?.state==='recording'){recorder.stop();return}
+ const button=by('record'),date=by('day').value;
+ button.disabled=true;
+ let stream;
+ try{
+  stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  recorder=new MediaRecorder(stream);const chunks=[];
+  recorder.ondataavailable=e=>chunks.push(e.data);
+  recorder.onstop=async()=>{
+   stream.getTracks().forEach(track=>track.stop());
+   button.textContent='Grabar receta';
+   try{await putMedia(new Blob(chunks,{type:recorder.mimeType}),'audio',date);by('mediaStatus').textContent='Grabación guardada.'}
+   catch{by('mediaStatus').textContent='No se pudo guardar la grabación.'}
+  };
+  recorder.start();button.textContent='Detener y guardar';
+ }catch{
+  stream?.getTracks().forEach(track=>track.stop());
+  by('mediaStatus').textContent='No se pudo usar el micrófono. Puedes adjuntar una nota de voz.';
+ }finally{button.disabled=false}
+};
+
+const nameKey=name=>name.trim().normalize('NFC').toLocaleLowerCase('es');
+let participant=null;
+let canAdmin=false;
+let adminLeagues=[];
+let signup=false;
+const authClient=window.miMundoAuth;
+const returnUrl=new URL(location.pathname,location.origin);
+returnUrl.searchParams.set('liga',leagueId);returnUrl.searchParams.delete('alta');
+function accessNotice(message,error=false){
+ const status=by('accessStatus');
+ status.textContent='';
+ status.classList.remove('access-error');
+ if(error){void status.offsetWidth;status.classList.add('access-error')}
+ status.textContent=message;
+}
+const DOMINIO_TEL='@domino.cositasdeh.mx';
+function usuarioDe(valor){const v=String(valor||'').trim();if(v.includes('@'))return v.toLowerCase();const d=v.replace(/\D/g,'');return d.slice(-10)+DOMINIO_TEL}
+function showAccess(create){
+ signup=create;
+ const fields=by('access').elements;
+ fields.player.disabled=!create;
+ by('playerField').hidden=!create;
+ fields.whatsapp.disabled=!create;
+ fields.whatsapp.required=create;
+ by('whatsappField').hidden=!create;
+ by('emailField').hidden=create;fields.email.disabled=create; // al dar de alta, el número de WhatsApp es el usuario
+ by('recovery').hidden=true;
+ by('resetPin').hidden=true;
+ by('access').reset();
+ by('access').hidden=false;
+ by('accessSubmit').textContent=create?'Crear cuenta':'Entrar';
+ accessNotice(create?'Usa un PIN de 6 a 8 dígitos.':'');
+}
+function enter(name){
+ participant=name;
+ by('adminOpen').hidden=!canAdmin;
+ by('welcome').hidden=true;
+ by('app').hidden=false;
+ by('checkIn').hidden=!name;
+ by('checkIn').textContent='Registrar llegada';
+ by('willPlay').value='yes';
+ for(const id of ['pair','game','record','audio','photos'])by(id).hidden=!name;
+ by('checkStatus').textContent=name?'Hola, '+name+'. Marca tu asistencia cuando llegues.':'Estás viendo la jornada como invitado. Vuelve a bienvenida para registrarte y marcar tu asistencia.';
+ by('day').value=localDate();
+ by('day').onchange();
+ render();
+}
+
+async function enterVerified(){
+ const {data:{user},error}=await authClient.auth.getUser();
+ if(error||!user?.email_confirmed_at)throw Error('Primero confirma tu correo.');
+ const permissions=await authClient.rpc('mi_mundo_domino_admin_leagues');
+ adminLeagues=!permissions.error&&Array.isArray(permissions.data)?permissions.data:[];
+ canAdmin=adminLeagues.includes(leagueId);
+ const name=user.user_metadata.domino_username||user.user_metadata.name||user.user_metadata.full_name;
+ if(!name||(!canAdmin&&user.user_metadata.domino_league&&user.user_metadata.domino_league!==leagueId))throw Error('Esta cuenta está registrada en otra liga.');
+ const claimed=await authClient.rpc('mi_mundo_domino_claim_username',{p_league:leagueId,p_username:name});
+ if(claimed.error)throw Error('No se pudo activar el usuario. Vuelve a intentar.');
+ if(!claimed.data)throw Error('El nombre ya está en uso en esta liga.');
+ enter(name);
+}
+by('showLogin').onclick=()=>showAccess(false);
+by('showSignup').onclick=()=>showAccess(true);
+by('signOut').onclick=async()=>{
+ if(authClient)await authClient.auth.signOut({scope:'local'});
+ participant=null;
+ canAdmin=false;
+ adminLeagues=[];
+ by('app').hidden=true;
+ by('welcome').hidden=false;
+ showAccess(false);
+};
+by('access').onsubmit=async event=>{
+ event.preventDefault();
+ const fields=event.currentTarget.elements, name=fields.player.value.trim(), pin=fields.pin.value;
+ if(!authClient){accessNotice('No se pudo cargar el acceso. Recarga la página.',true);return}
+ const button=by('accessSubmit');
+ const creating=signup;
+ button.disabled=true;
+ accessNotice(creating?'Creando cuenta…':'Comprobando tus datos…');
+ try{
+  if(creating){
+   const whatsapp=fields.whatsapp.value.replace(/[\s().+-]/g,'').slice(-10);
+   const email=usuarioDe(whatsapp);
+   if(!name||name.includes('@')||!/^\d{10}$/.test(whatsapp))throw Error('Escribe tu nombre para los juegos y un WhatsApp de 10 dígitos.');
+   const {data:alta,error}=await authClient.auth.signUp({email,password:pin,
+    options:{emailRedirectTo:returnUrl.href,data:{domino_username:name,domino_league:leagueId,domino_whatsapp:whatsapp}}});
+   if(error)throw Error(error.code==='signup_disabled'?'El registro está cerrado. Ábrelo un momento en Supabase para dar de alta a alguien nuevo.':error.message);
+   if(alta&&alta.session){
+    await authClient.auth.signOut(); // el nombre se aparta la primera vez que el jugador entra
+    showAccess(true);
+    accessNotice('Listo: '+name+' ya tiene cuenta. Entra con su número '+whatsapp+' y su PIN. Puedes dar de alta al siguiente.');
+    return}
+   showAccess(false);
+   by('access').hidden=true;
+   const notice=by('confirmationNotice');
+   notice.replaceChildren();
+   el('strong','Confirma tu correo para poder entrar',notice);
+   el('p','Te enviamos un enlace a '+email+'. Abre tu correo, pulsa el enlace de confirmación y luego vuelve a iniciar sesión. Revisa también spam o correo no deseado.',notice);
+   const done=el('button','Ya confirmé mi correo · Iniciar sesión',notice);
+   done.onclick=()=>{notice.hidden=true;showAccess(false)};
+   notice.hidden=false;
+   notice.scrollIntoView({block:'center',behavior:'smooth'});
+   notice.focus();
+  }else{
+   const {error}=await authClient.auth.signInWithPassword({email:usuarioDe(fields.email.value),password:pin});
+   if(error)throw Error(error.code==='email_not_confirmed'?'Confirma tu correo antes de entrar. Abre el enlace que te enviamos y revisa también spam.':error.code==='invalid_credentials'?'El número o el PIN no coinciden.':error.message);
+   await enterVerified();
+  }
+ }catch(error){accessNotice(error.message||'No se pudo completar el acceso.',true)}
+ finally{button.disabled=false}
+};
+by('showRecovery').onclick=()=>{ // las cuentas por número no reciben correo: el PIN lo cambia el organizador
+ accessNotice('Si olvidaste tu PIN, avísale a Héctor por WhatsApp y te da uno nuevo.');
+};
+by('recovery').onsubmit=async event=>{
+ event.preventDefault();
+ if(!authClient){accessNotice('El servicio de acceso no está disponible.',true);return}
+ const redirect=new URL(returnUrl.href);
+ redirect.searchParams.set('recuperar','1');
+ const {error}=await authClient.auth.resetPasswordForEmail(event.currentTarget.elements.email.value.trim(),{redirectTo:redirect.href});
+ accessNotice(error?error.message:'Si el correo está registrado, te llegará un enlace para crear un PIN nuevo.',Boolean(error));
+};
+by('resetPin').onsubmit=async event=>{
+ event.preventDefault();
+ const {error}=await authClient.auth.updateUser({password:event.currentTarget.elements.pin.value});
+ if(error){accessNotice(error.message,true);return}
+ await authClient.auth.signOut({scope:'local'});
+ history.replaceState(null,'',returnUrl.href);
+ showAccess(false);
+ accessNotice('PIN actualizado. Ya puedes iniciar sesión.');
+};
+async function restoreAccess(){
+ if(!authClient||choosingLeague)return;
+ try{
+  const {data:{session},error}=await authClient.auth.getSession();
+  if(error)throw Error(error.message);
+  if(!session)return;
+  if(new URLSearchParams(location.hash.slice(1)).get('type')==='recovery'||new URLSearchParams(location.search).has('recuperar')){
+   by('access').hidden=true;
+   by('resetPin').hidden=false;
+   return;
+  }
+  await enterVerified();
+ }catch(error){accessNotice(error.message,true)}
+}
+function renderAdmin(){
+ const month=by('adminMonth').value;
+ const panel=by('adminLeagues');
+ panel.replaceChildren();
+ if(!month)return;
+ if(!canAdmin)return;
+ for(const [id,item] of Object.entries(leagues).filter(([id])=>adminLeagues.includes(id))){
+  const group=el('section','',panel);
+  el('h2',item.label,group);
+  const dates=JSON.parse(localStorage.getItem(leagueDataKey(item))||'{}');
+  const days=new Set(Object.keys(dates).filter(date=>date.startsWith(month+'-')));
+  for(let date=new Date(month+'-01T12:00:00Z');date.toISOString().startsWith(month+'-');date.setUTCDate(date.getUTCDate()+1)){
+   if(date.getUTCDay()===2)days.add(date.toISOString().slice(0,10));
+  }
+  for(const date of [...days].sort()){
+   const row=el('details','',group);
+   row.className='admin-jornada';
+   const entry=dates[date];
+   el('summary',date+' · '+(entry?entry.people.length+' asistentes · '+entry.games.length+' partidas':'Sin actividad registrada'),row);
+   if(!entry)continue;
+   el('p','Asistencia: '+(entry.people.map(p=>p.name+(p.plays?' (juega)':'')).join(', ')||'—'),row);
+   el('p','Parejas: '+(entry.pairs.map(pairName).join(', ')||'—'),row);
+   for(const g of entry.games){
+    el('p',pairName(entry.pairs[g.a])+' contra '+pairName(entry.pairs[g.b])+' · '+(g.score?g.score.join('–')+(g.confirmed?' confirmado':' pendiente'):'Sin marcador'),row);
+   }
+  }
+ }
+}
+by('adminOpen').onclick=()=>{
+ if(!canAdmin)return;
+ by('adminMonth').value=by('day').value.slice(0,7);
+ renderAdmin();
+ by('app').hidden=true;
+ by('admin').hidden=false;
+};
+by('adminClose').onclick=()=>{by('admin').hidden=true;by('app').hidden=false};
+by('adminMonth').onchange=renderAdmin;
+by('checkIn').onclick=()=>{
+ if(!participant)return;
+ const date=localDate();
+ if(by('day').value!==date){by('day').value=date;by('day').onchange()}
+ registerArrival(participant,by('willPlay').value==='yes');
+ by('checkIn').textContent='Actualizar llegada';
+ render();
+ by('checkStatus').textContent=participant+' · llegada registrada para el '+date+(by('willPlay').value==='yes'?' · disponible para jugar.':' · hoy no juega.');
+};
+// Registro cerrado: las cuentas las crea el organizador desde martes-de-domino/?alta
+const modoAlta=new URLSearchParams(location.search).has('alta');
+by('showSignup').hidden=!modoAlta;
+if(modoAlta){by('showSignup').textContent='Dar de alta a un jugador';by('showLogin').hidden=true}
+if(!choosingLeague)showAccess(modoAlta);
+render();
+restoreAccess();
+</script></html>
+
