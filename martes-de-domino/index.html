@@ -87,6 +87,7 @@ footer a,footer button{color:var(--gris);background:none;border:0;padding:0;curs
 .carrusel{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin-top:20px;padding-bottom:6px;scrollbar-width:none;scroll-padding-left:max(22px,env(safe-area-inset-left,0px))}
 .carrusel::-webkit-scrollbar{display:none}
 .carrusel figure{position:relative;flex:0 0 78%;max-width:340px;margin:0;scroll-snap-align:start}
+.foto{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in;border-radius:14px}
 .carrusel img{display:block;width:100%;height:min(110vw,420px);object-fit:cover;border-radius:14px;background:var(--hoja)}
 .carrusel figcaption{position:absolute;left:10px;bottom:10px;padding:5px 10px;background:rgba(15,15,14,.78);border-radius:999px;font-size:12px;color:var(--gris-2)}
 .carrusel figcaption b{color:var(--papel);font-weight:600}
@@ -308,7 +309,7 @@ function pintarNoche(fecha){
 
   if (fotos.length) {
     h += '<div class="carrusel gutter" id="carrusel" aria-label="Fotos de la noche" tabindex="0">' + fotos.map(function(f){
-      return '<figure><img src="' + esc(url(f.path)) + '" alt="Foto de la noche" loading="lazy">' + (f.subio_nombre ? '<figcaption>Subió <b>' + esc(f.subio_nombre) + '</b></figcaption>' : '') + '</figure>';
+      return '<figure><button type="button" class="foto" data-foto="' + esc(url(f.path)) + '" aria-label="Ver la foto en grande"><img src="' + esc(url(f.path)) + '" alt="Foto de la noche" loading="lazy"></button>' + (f.subio_nombre ? '<figcaption>Subió <b>' + esc(f.subio_nombre) + '</b></figcaption>' : '') + '</figure>';
     }).join('') + '</div>' +
     '<div class="cuenta gutter"><span id="cuenta">1 de ' + fotos.length + (fotos.length > 1 ? ' · desliza' : '') + '</span><span class="puntos" id="puntos" aria-hidden="true">' + fotos.map(function(_,i){ return '<i' + (i === 0 ? ' class="on"' : '') + '></i>'; }).join('') + '</span></div>';
   } else {
