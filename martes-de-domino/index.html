@@ -113,7 +113,7 @@ footer a,footer button{color:var(--gris);background:none;border:0;padding:0;curs
 .plato{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
 .mini{width:84px;height:84px;padding:0;border:0;border-radius:12px;overflow:hidden;cursor:zoom-in;background:var(--hoja)}
 .mini img{width:100%;height:100%;object-fit:cover;display:block}
-#grande{position:relative;width:min(94vw,640px);padding:0;background:var(--tinta);border:0}
+#grande{width:min(94vw,640px);max-height:92vh;overflow:hidden;margin:auto;padding:0;background:var(--tinta);border:0}
 #grande img{display:block;width:100%;max-height:80vh;object-fit:contain}
 #grande form{margin:0;position:absolute;top:10px;right:10px}
 #grande button{width:44px;height:44px;border-radius:50%;border:0;background:rgba(15,15,14,.75);color:var(--papel);font-size:20px;cursor:pointer}
@@ -174,7 +174,7 @@ dialog input{padding:12px 14px;border:1px solid var(--punteo);border-radius:12px
   </form>
 </dialog>
 
-<dialog id="grande" aria-label="Foto del platillo"><img id="grandeImg" alt="Foto del platillo"><form method="dialog"><button aria-label="Cerrar">×</button></form></dialog>
+<dialog id="grande" aria-label="Foto del platillo" onclick="if(event.target===this||event.target.id==='grandeImg')this.close()"><img id="grandeImg" alt="Foto del platillo"><form method="dialog"><button aria-label="Cerrar">×</button></form></dialog>
 <input type="file" id="archivoFotos" accept="image/*" multiple hidden>
 <input type="file" id="archivoAudio" accept="audio/*" hidden>
 
@@ -353,7 +353,7 @@ function pintarNoche(fecha){
     try { await navigator.clipboard.writeText(liga); nota.textContent = 'Liga copiada'; }
     catch (_) { nota.textContent = liga; }
   };
-  cont.querySelectorAll('.mini').forEach(function(b){ b.onclick = function(){ by('grandeImg').src = b.getAttribute('data-foto'); by('grande').showModal(); }; });
+  cont.querySelectorAll('.mini').forEach(function(b){ b.onclick = function(){ by('grandeImg').src = b.getAttribute('data-foto'); var d = by('grande'); if (d.showModal) d.showModal(); else d.setAttribute('open',''); }; });
   by('subirFotos').onclick = function(){ conSesion(function(){ by('archivoFotos').click(); }); };
   by('subirAudio').onclick = function(){ conSesion(function(){ by('archivoAudio').click(); }); };
   var c = by('carrusel');
