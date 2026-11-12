@@ -109,7 +109,14 @@ footer a,footer button{color:var(--gris);background:none;border:0;padding:0;curs
 .partidas .rom{font-family:var(--serif);font-size:22px;color:var(--coral)}
 .equipo{margin:6px 0 0;color:var(--gris)}
 .equipo b{color:var(--papel);font-weight:600}
-.platos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.platos{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.plato{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.mini{width:84px;height:84px;padding:0;border:0;border-radius:12px;overflow:hidden;cursor:zoom-in;background:var(--hoja)}
+.mini img{width:100%;height:100%;object-fit:cover;display:block}
+#grande{position:relative;width:min(94vw,640px);padding:0;background:var(--tinta);border:0}
+#grande img{display:block;width:100%;max-height:80vh;object-fit:contain}
+#grande form{margin:0;position:absolute;top:10px;right:10px}
+#grande button{width:44px;height:44px;border-radius:50%;border:0;background:rgba(15,15,14,.75);color:var(--papel);font-size:20px;cursor:pointer}
 .platos .nombre{font-family:var(--serif);font-size:22px;line-height:1.1;margin-top:4px}
 .receta{margin-top:16px;padding:16px 18px;background:var(--hoja);border-radius:16px;white-space:pre-line;line-height:1.6}
 .receta.pendiente{color:var(--gris);font-size:14px;white-space:normal}
@@ -167,6 +174,7 @@ dialog input{padding:12px 14px;border:1px solid var(--punteo);border-radius:12px
   </form>
 </dialog>
 
+<dialog id="grande" aria-label="Foto del platillo"><img id="grandeImg" alt="Foto del platillo"><form method="dialog"><button aria-label="Cerrar">×</button></form></dialog>
 <input type="file" id="archivoFotos" accept="image/*" multiple hidden>
 <input type="file" id="archivoAudio" accept="audio/*" hidden>
 
@@ -292,7 +300,7 @@ function pintarNoche(fecha){
   var cont = by('noche');
   if (!n) { cont.innerHTML = '<div class="gutter"><a class="volver" href="#">← Las noches</a><p class="vacio">No encontramos esa noche.</p></div>'; return; }
   nocheActual = n;
-  var ps = partidasDe(n.id), res = puntosDe(ps), fotos = fotosDe(n.id,'noche'), hojas = fotosDe(n.id,'libreta'), audios = fotosDe(n.id,'audio');
+  var ps = partidasDe(n.id), res = puntosDe(ps), fotos = fotosDe(n.id,'noche').filter(function(f){ return f.path !== n.entrada_foto && f.path !== n.plato_foto; }), hojas = fotosDe(n.id,'libreta'), audios = fotosDe(n.id,'audio');
   var h = '<div class="gutter"><a class="volver" href="#">← Las noches</a></div>' +
     '<section class="noche-head gutter"><div class="eyebrow">Martes</div><h1>' + diaMes(n.fecha) + '</h1>' +
     (res.length ? '<p>Ganó <b>' + esc(res[0].nombre) + '</b> · ' + ps.length + (ps.length === 1 ? ' partida' : ' partidas') + '</p>' : '') + '</section>';
@@ -320,9 +328,11 @@ function pintarNoche(fecha){
   if (n.pinche_id) eq.push('Pinche: <b>' + esc(nombre(n.pinche_id)) + '</b>');
   if (eq.length) h += '<p class="equipo">' + eq.join(' · ') + '</p>';
   if (n.entrada || n.plato_fuerte) {
-    h += '<div class="platos">' +
-      (n.entrada ? '<div><div class="eyebrow">Entrada</div><div class="nombre">' + esc(n.entrada) + '</div></div>' : '') +
-      (n.plato_fuerte ? '<div><div class="eyebrow">Plato fuerte</div><div class="nombre">' + esc(n.plato_fuerte) + '</div></div>' : '') + '</div>';
+    var plato = function(etq, nom, foto){
+      return '<div class="plato">' + (foto ? '<button type="button" class="mini" data-foto="' + esc(url(foto)) + '" aria-label="Ver foto: ' + esc(nom) + '"><img src="' + esc(url(foto)) + '" alt="" loading="lazy"></button>' : '') +
+        '<div><div class="eyebrow">' + etq + '</div><div class="nombre">' + esc(nom) + '</div></div></div>';
+    };
+    h += '<div class="platos">' + (n.entrada ? plato('Entrada', n.entrada, n.entrada_foto) : '') + (n.plato_fuerte ? plato('Plato fuerte', n.plato_fuerte, n.plato_foto) : '') + '</div>';
   }
   if (audios.length) {
     h += '<div class="audios">' + audios.map(function(a){ return '<figure><audio controls preload="none" src="' + esc(url(a.path)) + '"></audio>' + (a.subio_nombre ? '<figcaption>Subió ' + esc(a.subio_nombre) + '</figcaption>' : '') + '</figure>'; }).join('') + '</div>';
@@ -343,6 +353,7 @@ function pintarNoche(fecha){
     try { await navigator.clipboard.writeText(liga); nota.textContent = 'Liga copiada'; }
     catch (_) { nota.textContent = liga; }
   };
+  cont.querySelectorAll('.mini').forEach(function(b){ b.onclick = function(){ by('grandeImg').src = b.getAttribute('data-foto'); by('grande').showModal(); }; });
   by('subirFotos').onclick = function(){ conSesion(function(){ by('archivoFotos').click(); }); };
   by('subirAudio').onclick = function(){ conSesion(function(){ by('archivoAudio').click(); }); };
   var c = by('carrusel');
