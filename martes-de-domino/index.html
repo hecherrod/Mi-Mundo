@@ -305,6 +305,7 @@ function pintarNoche(fecha){
   } else {
     h += '<div class="gutter"><p class="vacio">Todavía no hay fotos de esta noche.</p></div>';
   }
+  h += '<div class="gutter"><button class="accion" type="button" id="compartir">Compartir esta noche<small id="compartirNota">Manda la liga con el dibujo</small></button></div>';
   h += '<div class="gutter"><button class="accion" type="button" id="subirFotos">+ Subir mis fotos de esta noche<small>' + (sesion ? 'Como ' + esc(nombreSesion()) : 'Con tu número y PIN') + '</small></button><div class="estado" id="estadoFotos" role="status"></div></div>';
 
   if (ps.length) {
@@ -335,6 +336,13 @@ function pintarNoche(fecha){
   } else { h += '<div style="height:48px"></div>'; }
 
   cont.innerHTML = h;
+  by('compartir').onclick = async function(){
+    var liga = location.origin + location.pathname.replace(/[^/]*$/, '') + 'noche/' + n.fecha + '/';
+    var nota = by('compartirNota');
+    try { if (navigator.share) { await navigator.share({ title:'Martes de Dominó · ' + diaMes(n.fecha), url:liga }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+    try { await navigator.clipboard.writeText(liga); nota.textContent = 'Liga copiada'; }
+    catch (_) { nota.textContent = liga; }
+  };
   by('subirFotos').onclick = function(){ conSesion(function(){ by('archivoFotos').click(); }); };
   by('subirAudio').onclick = function(){ conSesion(function(){ by('archivoAudio').click(); }); };
   var c = by('carrusel');
