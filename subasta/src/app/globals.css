@@ -381,3 +381,8 @@ footer button:hover{color:var(--amber)}
 .modal-art .art.photo.round{aspect-ratio:1;width:100%;height:auto}
 .pending-note{font-size:12px!important;line-height:1.7;color:var(--muted)!important;border:1px dashed var(--line-2);padding:10px 12px;margin-top:17px}
 @media(max-width:700px){.pedestal{height:86%}.modal-art .art.photo.round{height:100%;width:auto}}
+
+/* Vista previa de inventario */
+strong.tbd{font-family:var(--sans)!important;font-size:13px!important;font-weight:500!important;color:var(--soft)!important;letter-spacing:.3px;margin-top:8px!important}
+.current strong.tbd{font-size:18px!important}
+.lot-label .rev{font-style:normal;color:var(--danger)}
