@@ -341,7 +341,7 @@ function pintarNoche(fecha){
       return '<div class="plato">' + (foto ? '<button type="button" class="mini" data-foto="' + esc(url(foto)) + '" aria-label="Ver foto: ' + esc(nom) + '"><img src="' + esc(url(foto)) + '" alt="" loading="lazy"></button>' : '') +
         '<div><div class="eyebrow">' + etq + '</div><div class="nombre">' + esc(nom) + '</div>' + (nota ? '<div class="suave">' + esc(nota) + '</div>' : '') + '</div></div>';
     };
-    h += '<div class="platos">' + (n.entrada ? plato('Entrada', n.entrada, n.entrada_foto) : '') + (n.plato_fuerte ? plato('Plato fuerte', n.plato_fuerte, n.plato_foto) : '') +
+    h += '<div class="platos">' + (n.entrada ? plato('Entrada', n.entrada, n.entrada_foto, n.entrada_credito) : '') + (n.plato_fuerte ? plato('Plato fuerte', n.plato_fuerte, n.plato_foto, n.plato_credito) : '') +
       (n.guarnicion ? plato('Guarnición', n.guarnicion, null, n.guarnicion_credito) : '') + '</div>';
   }
   if (audios.length) {
