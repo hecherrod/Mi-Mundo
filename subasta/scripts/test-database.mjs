@@ -19,8 +19,8 @@ const ids = (await db.query('select gen_random_uuid() as owner,gen_random_uuid()
 for (const [role, id] of Object.entries(ids)) {
   await db.query('insert into auth.users values($1,$2,$3,$4)', [id, `${role}@example.test`, role === 'unverified' ? null : new Date().toISOString(), JSON.stringify({ name: role })]);
 }
-await db.exec(`insert into mi_mundo_private.auction_rounds(id,title,closes_at) values('muestra-2026','Prueba',clock_timestamp()+interval '1 day');
-  insert into mi_mundo_private.auction_lots values('muestra-2026',1,'{"base":500,"title":"Obra"}'),('muestra-2026',2,'{"base":500,"title":"Otra"}');`);
+await db.exec(`insert into mi_mundo_private.auction_rounds(id,title,closes_at) values('edicion-01','Prueba',clock_timestamp()+interval '1 day');
+  insert into mi_mundo_private.auction_lots values('edicion-01',1,'{"base":500,"title":"Obra"}'),('edicion-01',2,'{"base":500,"title":"Otra"}');`);
 async function rpc(role, action, data = {}) {
   await db.query("select set_config('request.jwt.claim.sub',$1,false)", [ids[role] || '']);
   return (await db.query('select public.mi_mundo_auction($1,$2::jsonb) as result', [action, JSON.stringify(data)])).rows[0].result;
@@ -32,15 +32,16 @@ assert.equal((await rpc('unverified','profile')).status,401);
 assert.equal((await rpc('participant','admin')).status,403);
 assert.equal((await rpc('participant','admin_action',{action:'settings',bankAccount:'123456789012345678'})).status,403);
 assert.equal((await rpc('participant','save_profile',profile)).ok,true);
-assert.equal((await rpc('participant','bid',{lot:1,amount:1000})).ok,true);
+assert.equal((await rpc('participant','bid',{lot:1,amount:500})).ok,true);
 assert.equal((await rpc('runner','save_profile',{...profile,email:'runner@example.test'})).ok,true);
 assert.equal((await rpc('runner','bid',{lot:1,amount:1500})).ok,true);
 assert.equal((await rpc('participant','bid',{lot:1,amount:2000})).ok,true);
-assert.equal((await rpc('participant','bid',{lot:1,amount:2200})).status,409);
+assert.equal((await rpc('participant','bid',{lot:1,amount:2200})).status,400);
+assert.equal((await rpc('runner','bid',{lot:1,amount:2000})).status,409);
 assert.equal((await rpc('runner','catalog')).mine[0].amount,1500);
 assert.equal((await rpc('runner','offers')).offers.length,0);
 assert.equal((await rpc('owner','admin')).offers.length,0);
-await db.exec("update mi_mundo_private.auction_rounds set closes_at=clock_timestamp() where id='muestra-2026'");
+await db.exec("update mi_mundo_private.auction_rounds set closes_at=clock_timestamp() where id='edicion-01'");
 let offers = (await rpc('owner','admin')).offers;
 assert.equal(offers.length,1);
 assert.equal(offers[0].user_id,ids.participant);

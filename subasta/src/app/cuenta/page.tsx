@@ -61,7 +61,7 @@ export default function Account() {
     <span className="eyebrow">PARTICIPA SIN DEPÓSITO</span>
     <h1>Mi cuenta y mis resultados</h1>
     <p>Registra tu correo y WhatsApp. Si ganas, recibirás instrucciones y tendrás 24 horas desde el envío para pagar. Si el plazo vence, la obra se ofrece al siguiente postor por su propia puja.</p>
-    <p className="trial-banner">Edición de muestra. Los pagos y avisos externos requieren que la organización configure sus cuentas de cobro y mensajería.</p>
+    <p className="trial-banner">Si ganas, la organización te enviará las instrucciones de pago por WhatsApp o correo.</p>
     {!signedIn ? <a className="primary" href="/subasta/?vista=acceso&volver=cuenta" target="_top">Entrar con mi cuenta de Mi Mundo</a> : <>
       <form className="profile-form" onSubmit={save}>
         <h2>Tu registro</h2>

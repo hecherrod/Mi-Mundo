@@ -147,7 +147,7 @@ begin
   end if;
 
   perform mi_mundo_private.auction_advance();
-  select * into v_round from mi_mundo_private.auction_rounds where id='muestra-2026' for update;
+  select * into v_round from mi_mundo_private.auction_rounds where id='edicion-01' for update;
   if not found then return jsonb_build_object('error','La edición todavía no está disponible.','status',503); end if;
   v_now := clock_timestamp();
   v_settings := jsonb_build_object('bankName',v_round.bank_name,'bankAccount',v_round.bank_clabe,'beneficiary',v_round.bank_beneficiary);
@@ -205,8 +205,9 @@ begin
     v_lot_id := (p_data->>'lot')::integer;
     select * into v_lot from mi_mundo_private.auction_lots where round_id=v_round.id and id=v_lot_id;
     if not found then return jsonb_build_object('error','Obra no encontrada.','status',404); end if;
-    select coalesce(max(amount),(v_lot.details->>'base')::integer) into v_current from mi_mundo_private.auction_bids where round_id=v_round.id and lot=v_lot_id;
-    if v_amount<v_current+500 then return jsonb_build_object('error','La puja cambió. El incremento mínimo es de $500 MXN.','status',409); end if;
+    select max(amount) into v_current from mi_mundo_private.auction_bids where round_id=v_round.id and lot=v_lot_id;
+    if (v_amount-(v_lot.details->>'base')::integer)%500<>0 then return jsonb_build_object('error','Las pujas suben de $500 en $500 MXN.','status',400); end if;
+    if v_amount<coalesce(v_current+500,(v_lot.details->>'base')::integer) then return jsonb_build_object('error','La puja cambió. Cada oferta debe subir $500 MXN sobre la actual.','status',409); end if;
     insert into mi_mundo_private.auction_bids(round_id,lot,user_id,amount) values(v_round.id,v_lot_id,v_user.id,v_amount);
     return jsonb_build_object('ok',true);
   end if;
